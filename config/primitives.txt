@@ -35,7 +35,7 @@ BUFR                            vlog
 CAPTUREE2                       vlog
 CARRY4                          vhdl
 CARRY8                          vlog
-CFGLUT5                         vlog
+CFGLUT5                         vhdl
 CMAC                            vlog
 CMACE4                          vlog
 DCIRESET                        vlog
@@ -146,8 +146,8 @@ ISERDESE3                       vlog
 ISERDES_NODELAY                 vlog
 JTAG_SIME2                      vlog
 KEEPER                          vlog
-LDCE                            vlog
-LDPE                            vlog
+LDCE                            vhdl
+LDPE                            vhdl
 LUT1                            vhdl
 LUT2                            vhdl
 LUT3                            vhdl

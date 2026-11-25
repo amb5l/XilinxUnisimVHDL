@@ -81,6 +81,27 @@ Left as Verilog this batch, and why:
   this batch (extra clocks, a vector data input, or an RXRECCLK select)
   and stay `vlog`.
 
+## Third batch
+
+`LDCE`, `LDPE`, and `CFGLUT5`.
+
+This pin has no other latch or flop. `FDCE`, `FDPE`, `FDRE`, and `FDSE`
+are already VHDL. There is no `FD`, `FDR`, `FDS`, `LD`, or `LUT*_D` /
+`LUT*_L`.
+
+`LDCE` and `LDPE` follow the `latchsre` UDP. A row that names an output
+drives it, a `-` row holds, and no match drives `X`. `GE` of `Z` enables.
+`CLR` or `PRE` of `Z` does not. `GSR` forces `INIT` for 100 ns. The
+specify path on `D` and `G` is present even without `XIL_TIMING`; this
+NVC does not apply it, so `Q` is not delayed.
+
+`CFGLUT5` is a 32-bit shift register. `O6` reads `data(I4 downto I0)`,
+`O5` reads the low 16 bits (`I4` is ignored), and `CDO` is `data(31)`.
+An `X` or `Z` address bit reads `X`. `CE` must be 1 to shift on the
+clock edge (`negedge` when `IS_CLK_INVERTED`). The Verilog forces `INIT`
+until a 1 ns poll has seen `CLK` at its idle level, or until 101 ns.
+A pulse shorter than that poll does not shift.
+
 ## Conventions
 
 - One entity and one architecture per file. The entity name is the
@@ -142,11 +163,11 @@ NVC also presents a Verilog `X` on an output port to a VHDL signal as
    component in `vcomponents`.
 3. Set that row's `lang` to `vhdl` in `config/primitives.txt`
    (`python3 scripts/primitives.py --check` must pass).
-4. Extend `test/tb/tb_eq.vhd` (`EQ_PRIMS`) or `test/tb/tb_eq_io.vhd`
-   (`EQ_IO_PRIMS`) in `test/Makefile` so the VHDL model and the submodule
-   Verilog see the same stimulus. Exhaustive for a small combinational
-   cell. For a register, cover GSR, clock enable, reset priority,
-   `INIT`, and `IS_*_INVERTED`.
+4. Extend `test/tb/tb_eq.vhd` (`EQ_PRIMS`), `test/tb/tb_eq_io.vhd`
+   (`EQ_IO_PRIMS`), or `test/tb/tb_eq_ff.vhd` (`EQ_FF_PRIMS`) so the
+   VHDL model and the submodule Verilog see the same stimulus.
+   Exhaustive for a small combinational cell. For a register, cover
+   GSR, clock enable, reset priority, `INIT`, and `IS_*_INVERTED`.
 5. `make test`.
 
 `make` rebuilds library `unisim` without that Verilog file. The
