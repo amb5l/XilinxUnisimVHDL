@@ -11,6 +11,8 @@ on:
 
 env:
   NVC_REPO: https://github.com/amb5l/nvc
+  # Branch tip. Integer overrides in config/type_map.yaml stay; this NVC
+  # zero-extends an integer generic onto a sized Verilog parameter.
   NVC_REF: unisim/5-generics
 
 jobs:
