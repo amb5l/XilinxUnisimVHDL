@@ -663,6 +663,33 @@ wins. The 100 ps specify path is not copied. An out-of-range
 
 `tb_eq_cfg` compares all four with the submodule Verilog.
 
+## Sixteenth batch
+
+`HARD_SYNC` is two or three registers. `DOUT` is the second register
+when `LATENCY` is 2 and the third when it is 3. Any other `LATENCY`
+behaves as 2 and does not `$finish`. `GSR` loads `INIT`. The 100 ps
+specify path is not copied. `glbl` holds `GSR` for `ROC_WIDTH` (100 ns).
+On this NVC that delay is about 100 ps, so `tb_eq_misc` does not clock
+`HARD_SYNC` until 120 ns. Possible NVC bug. The VHDL ROC stays 100 ns.
+
+`RIU_OR` ors the two read-data halves and ands the two valids.
+`SIM_DEVICE` and `SIM_VERSION` are not used. An illegal value does not
+`$finish`.
+
+`HPIO_VREF` drives `VREF` as 1. `FABRIC_VREF_TUNE` and `VREF_CNTR` are
+not used. An illegal `VREF_CNTR` does not `$finish`.
+
+`ZHOLD_DELAY` delays each output by 200 ps times its tap count.
+`DEFAULT` and `"0"` are no delay. The delayed nonblocking assign is
+transport, so a pulse shorter than the delay still emerges. An
+unrecognised tap string is 0 taps and does not `$finish`. On this NVC
+the Verilog `<= #(200 ps * taps)` updates immediately, so the bench
+compares the outputs only after the VHDL delay has elapsed, and the
+short pulse is checked on the VHDL side. Possible NVC bug.
+
+`tb_eq_misc` compares all four with the submodule Verilog. A Verilog
+`X` arrives on a VHDL port as `U`.
+
 ## Adding another primitive
 
 1. Read the Verilog functional model (`XIL_TIMING` undefined). Reimplement
@@ -676,8 +703,8 @@ wins. The 100 ps specify path is not copied. An out-of-range
    `test/tb/tb_eq_ram.vhd` (`EQ_RAM_PRIMS`), `test/tb/tb_eq_simprim.vhd`,
    `test/tb/tb_eq_bufg.vhd`, `test/tb/tb_eq_ddr.vhd`,
    `test/tb/tb_eq_dsp.vhd`,    `test/tb/tb_eq_dsp48.vhd`,
-   `test/tb/tb_eq_bram.vhd`,    `test/tb/tb_eq_serdes.vhd`, `test/tb/tb_eq_mmcm.vhd`, or
-   `test/tb/tb_eq_cfg.vhd` so the
+   `test/tb/tb_eq_bram.vhd`,    `test/tb/tb_eq_serdes.vhd`, `test/tb/tb_eq_mmcm.vhd`,
+   `test/tb/tb_eq_cfg.vhd`, or `test/tb/tb_eq_misc.vhd` so the
    VHDL model and the submodule Verilog see the same stimulus.
    Exhaustive for a small combinational cell. For a register, cover
    GSR, clock enable, reset priority, `INIT`, and `IS_*_INVERTED`.

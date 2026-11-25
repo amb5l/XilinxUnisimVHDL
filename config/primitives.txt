@@ -84,13 +84,13 @@ GTYE3_CHANNEL                   vlog
 GTYE3_COMMON                    vlog
 GTYE4_CHANNEL                   vlog
 GTYE4_COMMON                    vlog
-HARD_SYNC                       vlog
+HARD_SYNC                       vhdl  2 or 3 stage sync; 100 ps specify path not copied; illegal LATENCY is 2
 HBM_ONE_STACK_INTF              vlog
 HBM_REF_CLK                     vlog
 HBM_SNGLBLI_INTF_APB            vlog
 HBM_SNGLBLI_INTF_AXI            vlog
 HBM_TWO_STACK_INTF              vlog
-HPIO_VREF                       vlog
+HPIO_VREF                       vhdl  VREF is constant 1; tune value is not used
 HSADC                           vlog
 HSDAC                           vlog
 IBUF                            vhdl
@@ -238,7 +238,7 @@ RAMS64E                         vhdl  no $finish; ADR5:0 plus WADR7/6 space comp
 RAMS64E1                        vhdl  no $finish; third space bit WADR8
 RFADC                           vlog
 RFDAC                           vlog
-RIU_OR                          vlog
+RIU_OR                          vhdl  read data is the or, valid is the and; illegal attributes do not $finish
 RXTX_BITSLICE                   vlog
 RX_BITSLICE                     vlog
 SIM_CONFIGE2                    vlog
@@ -259,4 +259,4 @@ VCC                             vhdl
 VCU                             vlog
 XADC                            vlog
 XORCY                           vhdl
-ZHOLD_DELAY                     vlog
+ZHOLD_DELAY                     vhdl  200 ps per tap, transport; an unrecognised tap count is 0

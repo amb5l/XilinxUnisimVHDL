@@ -1,7 +1,7 @@
 # Primitive status
 
 Which source is analysed is `config/primitives.txt` (`vlog`, `vhdl`, or
-`skip`). One hundred and thirty-nine simple primitives are hand-written VHDL; see
+`skip`). One hundred and forty-three simple primitives are hand-written VHDL; see
 [vhdl-models.md](vhdl-models.md). The rest of this table is still the
 Verilog model from the XilinxUnisimLibrary submodule. `GTM_DUAL` is the
 only `skip`: it is SystemVerilog and is not in this table. Notes in the
@@ -83,13 +83,13 @@ note records that the weak Verilog driver is modeled strong.
 | `GTYE3_COMMON` | Verilog only |
 | `GTYE4_CHANNEL` | Verilog only |
 | `GTYE4_COMMON` | Verilog only |
-| `HARD_SYNC` | Verilog only |
+| `HARD_SYNC` | VHDL `src/vhdl/HARD_SYNC.vhd` |
 | `HBM_ONE_STACK_INTF` | Verilog only |
 | `HBM_REF_CLK` | Verilog only |
 | `HBM_SNGLBLI_INTF_APB` | Verilog only |
 | `HBM_SNGLBLI_INTF_AXI` | Verilog only |
 | `HBM_TWO_STACK_INTF` | Verilog only |
-| `HPIO_VREF` | Verilog only |
+| `HPIO_VREF` | VHDL `src/vhdl/HPIO_VREF.vhd` |
 | `HSADC` | Verilog only |
 | `HSDAC` | Verilog only |
 | `IBUF` | VHDL `src/vhdl/IBUF.vhd` |
@@ -237,7 +237,7 @@ note records that the weak Verilog driver is modeled strong.
 | `RAMS64E1` | VHDL `src/vhdl/RAMS64E1.vhd` |
 | `RFADC` | Verilog only |
 | `RFDAC` | Verilog only |
-| `RIU_OR` | Verilog only |
+| `RIU_OR` | VHDL `src/vhdl/RIU_OR.vhd` |
 | `RX_BITSLICE` | Verilog only |
 | `RXTX_BITSLICE` | Verilog only |
 | `SIM_CONFIGE2` | Verilog only |
@@ -258,7 +258,7 @@ note records that the weak Verilog driver is modeled strong.
 | `VCU` | Verilog only |
 | `XADC` | Verilog only |
 | `XORCY` | VHDL `src/vhdl/XORCY.vhd` |
-| `ZHOLD_DELAY` | Verilog only |
+| `ZHOLD_DELAY` | VHDL `src/vhdl/ZHOLD_DELAY.vhd` |
 
 250 component declarations, including `GTM_DUAL` (`skip` in
 `config/primitives.txt`: the header is in the package, the SystemVerilog

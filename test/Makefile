@@ -11,7 +11,7 @@ NVC_M ?= 1g
 BUILD ?= $(ROOT)/build
 WORK := $(abspath work)
 
-Benches := tb_ram32x1d tb_dsp48e1 tb_ramb18e1 tb_eq tb_eq_io tb_eq_ff tb_iobuf tb_eq_ram tb_eq_simprim tb_eq_bufg tb_eq_ddr tb_eq_dsp tb_eq_dsp48 tb_eq_bram tb_eq_serdes tb_eq_mmcm tb_eq_cfg
+Benches := tb_ram32x1d tb_dsp48e1 tb_ramb18e1 tb_eq tb_eq_io tb_eq_ff tb_iobuf tb_eq_ram tb_eq_simprim tb_eq_bufg tb_eq_ddr tb_eq_dsp tb_eq_dsp48 tb_eq_bram tb_eq_serdes tb_eq_mmcm tb_eq_cfg tb_eq_misc
 
 # Verilog reference for the primitives that now have a VHDL model.
 # Analysed into work, not unisim: unisim already has the VHDL entity.
@@ -46,7 +46,7 @@ VREF_DSP_SRCS := $(addprefix $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/,$(
 
 all: $(Benches)
 
-$(filter-out tb_eq tb_eq_io tb_eq_ff tb_eq_ram tb_eq_simprim tb_eq_bufg tb_eq_ddr tb_eq_dsp tb_eq_dsp48 tb_eq_bram tb_eq_serdes tb_eq_mmcm tb_eq_cfg,$(Benches)):
+$(filter-out tb_eq tb_eq_io tb_eq_ff tb_eq_ram tb_eq_simprim tb_eq_bufg tb_eq_ddr tb_eq_dsp tb_eq_dsp48 tb_eq_bram tb_eq_serdes tb_eq_mmcm tb_eq_cfg tb_eq_misc,$(Benches)):
 	$(NVC) --std=2008 --work=work:$(WORK) -L $(BUILD) -M $(NVC_M) \
 	  -a $(CURDIR)/tb/$@.vhd \
 	  -e $@ unisim.GLBL -r
@@ -178,6 +178,18 @@ tb_eq_cfg:
 	$(NVC) --std=2008 --work=work:$(WORK) -L $(BUILD) -M $(NVC_M) \
 	  -a $(CURDIR)/tb/tb_eq_cfg.vhd \
 	  -e tb_eq_cfg GLBL -r
+
+# HARD_SYNC, RIU_OR, HPIO_VREF, ZHOLD_DELAY. XIL_TIMING stays undefined.
+tb_eq_misc:
+	$(NVC) --std=2008 --work=work:$(WORK) -M $(NVC_M) \
+	  -a $(ROOT)/XilinxUnisimLibrary/verilog/src/glbl.v \
+	    $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/HARD_SYNC.v \
+	    $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/RIU_OR.v \
+	    $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/HPIO_VREF.v \
+	    $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/ZHOLD_DELAY.v
+	$(NVC) --std=2008 --work=work:$(WORK) -L $(BUILD) -M $(NVC_M) \
+	  -a $(CURDIR)/tb/tb_eq_misc.vhd \
+	  -e tb_eq_misc GLBL -r
 
 clean:
 	rm -rf work
