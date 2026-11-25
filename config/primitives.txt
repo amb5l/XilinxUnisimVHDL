@@ -38,12 +38,12 @@ CARRY8                          vhdl  rv0 on inputs; DUAL_CY4 splits at CI_TOP; 
 CFGLUT5                         vhdl
 CMAC                            vlog
 CMACE4                          vlog
-DCIRESET                        vlog
+DCIRESET                        vhdl  LOCKED falls with RST and rises 100 ns after RST falls
 DCM_ADV                         vlog  needs NVC unisim/6-mmcm ($realtime)
 DCM_SP                          vlog  needs NVC unisim/6-mmcm ($realtime)
 DIFFINBUF                       vhdl  no $finish; IBUFDS receiver plus INBUF oscillator
-DNA_PORT                        vlog
-DNA_PORTE2                      vlog
+DNA_PORT                        vhdl  57-bit DNA, MSB out first; 100 ps specify path not copied
+DNA_PORTE2                      vhdl  96-bit DNA, LSB out first; out-of-range value does not $finish
 DPHY_DIFFINBUF                  vhdl  no $finish; HS pair; LP strength is 0 on std_ulogic
 DSP48E1                         vhdl  25x18; PREG 0 delays P 1 ps; AREG 1 loads both stages
 DSP48E2                         vhdl  structural DSP_*; ALU_OUT delayed 1 ps; no $finish
@@ -55,7 +55,7 @@ DSP_M_DATA                      vhdl  MREG 1 registers U and V
 DSP_OUTPUT                      vhdl  PREG 1 registers P; pattern detect; P_FDBK is the register
 DSP_PREADD                      vhdl  INMODE2 gates D; ADDSUB selects subtract
 DSP_PREADD_DATA                 vhdl  DREG/ADREG forced off when mult is A*B or NONE
-EFUSE_USR                       vlog
+EFUSE_USR                       vhdl  EFUSEUSR is SIM_EFUSE_VALUE
 FDCE                            vhdl
 FDPE                            vhdl
 FDRE                            vhdl
