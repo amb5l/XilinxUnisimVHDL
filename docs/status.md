@@ -1,7 +1,7 @@
 # Primitive status
 
 Which source is analysed is `config/primitives.txt` (`vlog`, `vhdl`, or
-`skip`). One hundred and twenty simple primitives are hand-written VHDL; see
+`skip`). One hundred and twenty-four simple primitives are hand-written VHDL; see
 [vhdl-models.md](vhdl-models.md). The rest of this table is still the
 Verilog model from the XilinxUnisimLibrary submodule. `GTM_DUAL` is the
 only `skip`: it is SystemVerilog and is not in this table. Notes in the
@@ -225,10 +225,10 @@ note records that the weak Verilog driver is modeled strong.
 | `RAM64X1D` | VHDL `src/vhdl/RAM64X1D.vhd` |
 | `RAM64X1S` | VHDL `src/vhdl/RAM64X1S.vhd` |
 | `RAM64X8SW` | VHDL `src/vhdl/RAM64X8SW.vhd` |
-| `RAMB18E1` | Verilog only, tested (test/tb/tb_ramb18e1.vhd) |
-| `RAMB18E2` | Verilog only |
-| `RAMB36E1` | Verilog only |
-| `RAMB36E2` | Verilog only |
+| `RAMB18E1` | VHDL `src/vhdl/RAMB18E1.vhd`, tested (test/tb/tb_ramb18e1.vhd) |
+| `RAMB18E2` | VHDL `src/vhdl/RAMB18E2.vhd` |
+| `RAMB36E1` | VHDL `src/vhdl/RAMB36E1.vhd` |
+| `RAMB36E2` | VHDL `src/vhdl/RAMB36E2.vhd` |
 | `RAMD32` | VHDL `src/vhdl/RAMD32.vhd` |
 | `RAMD32M64` | VHDL `src/vhdl/RAMD32M64.vhd` |
 | `RAMD64E` | VHDL `src/vhdl/RAMD64E.vhd` |

@@ -500,6 +500,52 @@ DRC is not modelled, so an invalid OPMODE does not force pattern detect
 to X. `tb_dsp48e1` still multiplies 7 by 9, 25 by 25, 1023 by 17, and
 0 by 99. `tb_eq_dsp48` records 28 checks.
 
+## Twelfth batch
+
+`RAMB18E1`, `RAMB36E1`, `RAMB18E2` and `RAMB36E2` are the block RAMs.
+None of them is a SIMPRIM `$finish` cell, so `XIL_TIMING` is left
+undefined. The E1 specify paths are 100 ps with or without that define,
+and the E2 output assignments are delayed 100 ps. Neither delay is
+copied: the VHDL value is the functional result, and `tb_eq_bram`
+waits 10 ns after the rising edge. Unknown write mode, reset priority,
+collision mode, address-collision config and `SIM_DEVICE` do not
+`$finish`. An unknown write mode is `WRITE_FIRST`.
+
+The memory is a flat bit vector. Address bits at or above the width's
+shift select the word; a non-binary bit there skips the write and
+returns `X`. `INIT_00` upwards and `INITP_00` upwards load that vector
+in 256-bit chunks. `INIT_FILE` other than `"NONE"` is ignored. Widths
+are 1, 2, 4, 9, 18, 36 and, on the 36K cells, 72. Parity bit `i`
+belongs to data byte `i`. `WRITE_FIRST` returns the new word,
+`READ_FIRST` the old word, and `NO_CHANGE` holds the output while a
+byte enable is set. `RSTRAM` loads `SRVAL` into the latch and still
+writes. With `DO_*_REG` 1 the output register samples the old latch
+first. `RSTREG` wins over `REGCE` unless the priority is `"REGCE"`.
+
+`RAM_MODE` `"SDP"` on the E1 cells, and a 36-bit port on `RAMB18E2` or
+a 72-bit port on `RAMB36E2`, makes port A the read and port B the
+write. The wide word is split across the two data ports. `DOA_REG`
+covers both halves. Same-address collision X is not modelled.
+`SIM_COLLISION_CHECK` `"NONE"` is the comparison path.
+
+ECC, the cascade input mux, sleep and address enable are not modelled.
+`RAMB36E1` drives `CASCADEOUT` from data bit 0 and holds the ECC ports
+at 0. `RAMB18E2` and `RAMB36E2` hold `CASDOUT` at 0, which is the
+`CASCADE_ORDER` `"NONE"` result, and `RAMB36E2` holds the ECC ports at
+0.
+
+`tb_eq_bram` compares `RAMB18E1` and `RAMB36E1` with the submodule
+Verilog, including both ports, the three write modes, widths 1, 4, 9,
+18 and 36, the output register, `RSTRAM`, `RSTREG`, `INIT_00` and SDP.
+`READ_FIRST` and `NO_CHANGE` use a non-zero `INIT_A`: the Verilog
+output reg starts `X` and is copied only when the data mux changes, so
+GSR has to make that first transition. `RAMB18E2` and `RAMB36E2`
+elaborate, but their read and write loop counts come from
+`always @(READ_WIDTH_*_BIN)`, which NVC does not run, so those ports
+stay `X`. The bench checks the VHDL against the write-first values the
+Verilog describes. `tb_ramb18e1` still writes `A5A5` and reads it back.
+`tb_eq_bram` records 61 checks.
+
 ## Adding another primitive
 
 1. Read the Verilog functional model (`XIL_TIMING` undefined). Reimplement
@@ -512,7 +558,8 @@ to X. `tb_dsp48e1` still multiplies 7 by 9, 25 by 25, 1023 by 17, and
    (`EQ_IO_PRIMS`), `test/tb/tb_eq_ff.vhd` (`EQ_FF_PRIMS`),
    `test/tb/tb_eq_ram.vhd` (`EQ_RAM_PRIMS`), `test/tb/tb_eq_simprim.vhd`,
    `test/tb/tb_eq_bufg.vhd`, `test/tb/tb_eq_ddr.vhd`,
-   `test/tb/tb_eq_dsp.vhd`, or `test/tb/tb_eq_dsp48.vhd` so the
+   `test/tb/tb_eq_dsp.vhd`, `test/tb/tb_eq_dsp48.vhd`, or
+   `test/tb/tb_eq_bram.vhd` so the
    VHDL model and the submodule Verilog see the same stimulus.
    Exhaustive for a small combinational cell. For a register, cover
    GSR, clock enable, reset priority, `INIT`, and `IS_*_INVERTED`.

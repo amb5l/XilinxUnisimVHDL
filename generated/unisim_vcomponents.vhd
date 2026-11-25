@@ -22411,6 +22411,7 @@ package vcomponents is
   end component RAM64X8SW;
 
   -- RAMB18E1.v
+  -- vhdl: src/vhdl/RAMB18E1.vhd is analysed instead of this Verilog
   component RAMB18E1 is
     generic (
       DOA_REG : integer := 0;
@@ -22540,6 +22541,7 @@ package vcomponents is
   end component RAMB18E1;
 
   -- RAMB18E2.v
+  -- vhdl: src/vhdl/RAMB18E2.vhd is analysed instead of this Verilog
   component RAMB18E2 is
     generic (
       CASCADE_ORDER_A : string := "NONE";
@@ -22695,6 +22697,7 @@ package vcomponents is
   end component RAMB18E2;
 
   -- RAMB36E1.v
+  -- vhdl: src/vhdl/RAMB36E1.vhd is analysed instead of this Verilog
   component RAMB36E1 is
     generic (
       DOA_REG : integer := 0;
@@ -22910,6 +22913,7 @@ package vcomponents is
   end component RAMB36E1;
 
   -- RAMB36E2.v
+  -- vhdl: src/vhdl/RAMB36E2.vhd is analysed instead of this Verilog
   component RAMB36E2 is
     generic (
       CASCADE_ORDER_A : string := "NONE";
