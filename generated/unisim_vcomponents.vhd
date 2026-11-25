@@ -435,6 +435,7 @@ package vcomponents is
   end component CARRY8;
 
   -- CFGLUT5.v
+  -- vhdl: src/vhdl/CFGLUT5.vhd is analysed instead of this Verilog
   component CFGLUT5 is
     generic (
       INIT : bit_vector(31 downto 0) := X"00000000";
@@ -13152,6 +13153,7 @@ package vcomponents is
   end component KEEPER;
 
   -- LDCE.v
+  -- vhdl: src/vhdl/LDCE.vhd is analysed instead of this Verilog
   component LDCE is
     generic (
       INIT : bit := '0';
@@ -13168,6 +13170,7 @@ package vcomponents is
   end component LDCE;
 
   -- LDPE.v
+  -- vhdl: src/vhdl/LDPE.vhd is analysed instead of this Verilog
   component LDPE is
     generic (
       INIT : bit := '1';

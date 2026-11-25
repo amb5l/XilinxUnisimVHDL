@@ -34,6 +34,11 @@ package unisim_sim is
   );
   function lut_eval(init : bit_vector; sel : std_ulogic_vector) return std_ulogic;
   function gate_in(clr : std_ulogic; inv : bit) return std_ulogic;
+  function rv1(s : std_ulogic) return std_ulogic;
+  function vxor(d : std_ulogic; inv : bit) return std_ulogic;
+  function latch_sre(
+    q, clk, d, set, rst, ge : std_ulogic
+  ) return std_ulogic;
   function sync_ff(
     q : std_ulogic;
     d, ce, rst : std_ulogic;
@@ -257,6 +262,93 @@ package body unisim_sim is
       return x;
     end if;
     return 'X';
+  end function;
+
+  -- (s === 'Z') || s, the "rv 1" reduction. Z and 1 enable a latch.
+  function rv1(s : std_ulogic) return std_ulogic is
+  begin
+    if s = 'Z' or s = '1' then
+      return '1';
+    elsif s = '0' then
+      return '0';
+    else
+      return 'X';
+    end if;
+  end function;
+
+  -- Verilog bitwise xor with a 1-bit parameter. X and Z become X.
+  function vxor(d : std_ulogic; inv : bit) return std_ulogic is
+  begin
+    if d /= '0' and d /= '1' then
+      return 'X';
+    elsif inv = '1' then
+      return inv1(d);
+    else
+      return d;
+    end if;
+  end function;
+
+  -- latchsre_ldce / latchsre_ldpe UDP. A matching row that names an
+  -- output drives that value. A '-' row holds. If nothing matches, the
+  -- UDP output is X. The notifier pin is a constant X when XIL_TIMING
+  -- is off, so its edge row never fires.
+  function latch_sre(
+    q, clk, d, set, rst, ge : std_ulogic
+  ) return std_ulogic is
+    variable val : std_ulogic := 'U';
+    variable hold : boolean := false;
+  begin
+    if clk = '1' and d = '0' and set = '0' and rst = '0' and ge = '1' then
+      val := '0';
+    end if;
+    if clk = '1' and d = '1' and set = '0' and rst = '0' and ge = '1' then
+      val := '1';
+    end if;
+    if set = '1' and rst = '0' then
+      val := '1';
+    end if;
+    if rst = '1' then
+      val := '0';
+    end if;
+    if clk = '0' and set = '0' and rst = 'X' and q = '0' then
+      val := '0';
+    end if;
+    if set = '0' and rst = 'X' and ge = '0' and q = '0' then
+      val := '0';
+    end if;
+    if clk = '1' and d = '0' and set = '0' and rst = 'X' and ge = '1' then
+      val := '0';
+    end if;
+    if clk = '0' and set = 'X' and rst = '0' and q = '1' then
+      val := '1';
+    end if;
+    if set = 'X' and rst = '0' and ge = '0' and q = '1' then
+      val := '1';
+    end if;
+    if clk = '1' and d = '1' and set = 'X' and rst = '0' and ge = '1' then
+      val := '1';
+    end if;
+
+    if clk = '0' and set = '0' and rst = '0' then
+      hold := true;
+    end if;
+    if set = '0' and rst = '0' and ge = '0' then
+      hold := true;
+    end if;
+    if d = '0' and set = '0' and q = '0' then
+      hold := true;
+    end if;
+    if d = '1' and rst = '0' and q = '1' then
+      hold := true;
+    end if;
+
+    if val /= 'U' then
+      return val;
+    elsif hold then
+      return q;
+    else
+      return 'X';
+    end if;
   end function;
 
   -- FDRE/FDSE clocked update. set_value is '0' for a reset and '1' for a set.

@@ -1,7 +1,7 @@
 # Primitive status
 
 Which source is analysed is `config/primitives.txt` (`vlog`, `vhdl`, or
-`skip`). Forty-five simple primitives are hand-written VHDL; see
+`skip`). Forty-eight simple primitives are hand-written VHDL; see
 [vhdl-models.md](vhdl-models.md). The rest of this table is still the
 Verilog model from the XilinxUnisimLibrary submodule. `GTM_DUAL` is the
 only `skip`: it is SystemVerilog and is not in this table. Notes in the
@@ -35,7 +35,7 @@ strength caveat.
 | `CAPTUREE2` | Verilog only |
 | `CARRY4` | VHDL `src/vhdl/CARRY4.vhd` |
 | `CARRY8` | Verilog only |
-| `CFGLUT5` | Verilog only |
+| `CFGLUT5` | VHDL `src/vhdl/CFGLUT5.vhd` |
 | `CMAC` | Verilog only |
 | `CMACE4` | Verilog only |
 | `DCIRESET` | Verilog only |
@@ -145,8 +145,8 @@ strength caveat.
 | `ISERDESE3` | Verilog only |
 | `JTAG_SIME2` | Verilog only |
 | `KEEPER` | Verilog only |
-| `LDCE` | Verilog only |
-| `LDPE` | Verilog only |
+| `LDCE` | VHDL `src/vhdl/LDCE.vhd` |
+| `LDPE` | VHDL `src/vhdl/LDPE.vhd` |
 | `LUT1` | VHDL `src/vhdl/LUT1.vhd` |
 | `LUT2` | VHDL `src/vhdl/LUT2.vhd` |
 | `LUT3` | VHDL `src/vhdl/LUT3.vhd` |
