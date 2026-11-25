@@ -12,7 +12,7 @@
 # name                          lang  notes
 AND2B1L                         vhdl
 AUTOBUF                         vhdl
-BIBUF                           vlog
+BIBUF                           vhdl  std_logic inout; weak drive modeled strong; contention is X; 10 ps
 BITSLICE_CONTROL                vlog
 BSCANE2                         vlog
 BUF                             vhdl
@@ -127,18 +127,18 @@ ILKNE4                          vlog
 INBUF                           vlog
 INV                             vhdl
 IN_FIFO                         vlog
-IOBUF                           vlog  inout bufif0; NVC elaborates in/out only (drive strength on IO is not simulated)
-IOBUFDS                         vlog  inout bufif0; NVC elaborates in/out only (drive strength on IO is not simulated)
-IOBUFDSE3                       vlog  inout bufif0; NVC elaborates in/out only (drive strength on IO is not simulated)
-IOBUFDS_DCIEN                   vlog  inout bufif0; NVC elaborates in/out only (drive strength on IO is not simulated)
-IOBUFDS_DIFF_OUT                vlog  inout bufif0; NVC elaborates in/out only (drive strength on IO is not simulated)
-IOBUFDS_DIFF_OUT_DCIEN          vlog  inout bufif0; NVC elaborates in/out only (drive strength on IO is not simulated)
-IOBUFDS_DIFF_OUT_INTERMDISABLE  vlog  inout bufif0; NVC elaborates in/out only (drive strength on IO is not simulated)
-IOBUFDS_INTERMDISABLE           vlog  inout bufif0; NVC elaborates in/out only (drive strength on IO is not simulated)
-IOBUFE3                         vlog  inout bufif0; NVC elaborates in/out only (drive strength on IO is not simulated)
-IOBUF_ANALOG                    vlog  inout bufif0; NVC elaborates in/out only (drive strength on IO is not simulated)
-IOBUF_DCIEN                     vlog  inout bufif0; NVC elaborates in/out only (drive strength on IO is not simulated)
-IOBUF_INTERMDISABLE             vlog  inout bufif0; NVC elaborates in/out only (drive strength on IO is not simulated)
+IOBUF                           vhdl  std_logic inout; 'Z' when disabled; no drive strength
+IOBUFDS                         vhdl  std_logic inout; 'Z' when disabled; no drive strength
+IOBUFDSE3                       vhdl  std_logic inout; 'Z' when disabled; no drive strength
+IOBUFDS_DCIEN                   vhdl  std_logic inout; 'Z' when disabled; no drive strength
+IOBUFDS_DIFF_OUT                vhdl  std_logic inout; 'Z' when disabled; no drive strength
+IOBUFDS_DIFF_OUT_DCIEN          vhdl  std_logic inout; 'Z' when disabled; no drive strength
+IOBUFDS_DIFF_OUT_INTERMDISABLE  vhdl  std_logic inout; 'Z' when disabled; no drive strength
+IOBUFDS_INTERMDISABLE           vhdl  std_logic inout; 'Z' when disabled; no drive strength
+IOBUFE3                         vhdl  std_logic inout; 'Z' when disabled; no drive strength
+IOBUF_ANALOG                    vhdl  std_logic inout; 'Z' when disabled; no drive strength
+IOBUF_DCIEN                     vhdl  std_logic inout; 'Z' when disabled; no drive strength
+IOBUF_INTERMDISABLE             vhdl  std_logic inout; 'Z' when disabled; no drive strength
 ISERDES                         vlog
 ISERDESE1                       vlog
 ISERDESE2                       vlog

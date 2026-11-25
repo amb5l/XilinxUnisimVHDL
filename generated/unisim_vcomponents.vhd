@@ -12,7 +12,8 @@
 -- Vivado's VHDL unisim sources are not used. XIL_TIMING and XIL_DR
 -- are undefined, so parameters those macros hide are omitted.
 -- Sized parameters are bit (width 1) or bit_vector. A string default
--- of TRUE or FALSE is boolean. Ports stay std_ulogic / std_logic_vector.
+-- of TRUE or FALSE is boolean. Scalar ports are std_ulogic, scalar
+-- inout ports are std_logic, and vectors are std_logic_vector.
 --
 -- Copyright Xilinx, Inc. / Advanced Micro Devices, Inc. (source models)
 -- Licensed under the Apache License, Version 2.0.
@@ -48,10 +49,11 @@ package vcomponents is
   end component AUTOBUF;
 
   -- BIBUF.v
+  -- vhdl: src/vhdl/BIBUF.vhd is analysed instead of this Verilog
   component BIBUF is
     port (
-      IO : inout std_ulogic;
-      PAD : inout std_ulogic
+      IO : inout std_logic;
+      PAD : inout std_logic
     );
   end component BIBUF;
 
@@ -12662,6 +12664,7 @@ package vcomponents is
   end component INV;
 
   -- IOBUF.v
+  -- vhdl: src/vhdl/IOBUF.vhd is analysed instead of this Verilog
   component IOBUF is
     generic (
       DRIVE : integer := 12;
@@ -12671,13 +12674,14 @@ package vcomponents is
     );
     port (
       O : out std_ulogic;
-      IO : inout std_ulogic;
+      IO : inout std_logic;
       I : in std_ulogic;
       T : in std_ulogic
     );
   end component IOBUF;
 
   -- IOBUF_ANALOG.v
+  -- vhdl: src/vhdl/IOBUF_ANALOG.vhd is analysed instead of this Verilog
   component IOBUF_ANALOG is
     generic (
       DRIVE : integer := 12;
@@ -12687,13 +12691,14 @@ package vcomponents is
     );
     port (
       O : out std_ulogic;
-      IO : inout std_ulogic;
+      IO : inout std_logic;
       I : in std_ulogic;
       T : in std_ulogic
     );
   end component IOBUF_ANALOG;
 
   -- IOBUF_DCIEN.v
+  -- vhdl: src/vhdl/IOBUF_DCIEN.vhd is analysed instead of this Verilog
   component IOBUF_DCIEN is
     generic (
       DRIVE : integer := 12;
@@ -12705,7 +12710,7 @@ package vcomponents is
     );
     port (
       O : out std_ulogic;
-      IO : inout std_ulogic;
+      IO : inout std_logic;
       DCITERMDISABLE : in std_ulogic;
       I : in std_ulogic;
       IBUFDISABLE : in std_ulogic;
@@ -12714,6 +12719,7 @@ package vcomponents is
   end component IOBUF_DCIEN;
 
   -- IOBUF_INTERMDISABLE.v
+  -- vhdl: src/vhdl/IOBUF_INTERMDISABLE.vhd is analysed instead of this Verilog
   component IOBUF_INTERMDISABLE is
     generic (
       DRIVE : integer := 12;
@@ -12725,7 +12731,7 @@ package vcomponents is
     );
     port (
       O : out std_ulogic;
-      IO : inout std_ulogic;
+      IO : inout std_logic;
       I : in std_ulogic;
       IBUFDISABLE : in std_ulogic;
       INTERMDISABLE : in std_ulogic;
@@ -12734,6 +12740,7 @@ package vcomponents is
   end component IOBUF_INTERMDISABLE;
 
   -- IOBUFDS.v
+  -- vhdl: src/vhdl/IOBUFDS.vhd is analysed instead of this Verilog
   component IOBUFDS is
     generic (
       DIFF_TERM : boolean := FALSE;
@@ -12744,14 +12751,15 @@ package vcomponents is
     );
     port (
       O : out std_ulogic;
-      IO : inout std_ulogic;
-      IOB : inout std_ulogic;
+      IO : inout std_logic;
+      IOB : inout std_logic;
       I : in std_ulogic;
       T : in std_ulogic
     );
   end component IOBUFDS;
 
   -- IOBUFDS_DCIEN.v
+  -- vhdl: src/vhdl/IOBUFDS_DCIEN.vhd is analysed instead of this Verilog
   component IOBUFDS_DCIEN is
     generic (
       DIFF_TERM : boolean := FALSE;
@@ -12764,8 +12772,8 @@ package vcomponents is
     );
     port (
       O : out std_ulogic;
-      IO : inout std_ulogic;
-      IOB : inout std_ulogic;
+      IO : inout std_logic;
+      IOB : inout std_logic;
       DCITERMDISABLE : in std_ulogic;
       I : in std_ulogic;
       IBUFDISABLE : in std_ulogic;
@@ -12774,6 +12782,7 @@ package vcomponents is
   end component IOBUFDS_DCIEN;
 
   -- IOBUFDS_DIFF_OUT.v
+  -- vhdl: src/vhdl/IOBUFDS_DIFF_OUT.vhd is analysed instead of this Verilog
   component IOBUFDS_DIFF_OUT is
     generic (
       DIFF_TERM : boolean := FALSE;
@@ -12784,8 +12793,8 @@ package vcomponents is
     port (
       O : out std_ulogic;
       OB : out std_ulogic;
-      IO : inout std_ulogic;
-      IOB : inout std_ulogic;
+      IO : inout std_logic;
+      IOB : inout std_logic;
       I : in std_ulogic;
       TM : in std_ulogic;
       TS : in std_ulogic
@@ -12793,6 +12802,7 @@ package vcomponents is
   end component IOBUFDS_DIFF_OUT;
 
   -- IOBUFDS_DIFF_OUT_DCIEN.v
+  -- vhdl: src/vhdl/IOBUFDS_DIFF_OUT_DCIEN.vhd is analysed instead of this Verilog
   component IOBUFDS_DIFF_OUT_DCIEN is
     generic (
       DIFF_TERM : boolean := FALSE;
@@ -12805,8 +12815,8 @@ package vcomponents is
     port (
       O : out std_ulogic;
       OB : out std_ulogic;
-      IO : inout std_ulogic;
-      IOB : inout std_ulogic;
+      IO : inout std_logic;
+      IOB : inout std_logic;
       DCITERMDISABLE : in std_ulogic;
       I : in std_ulogic;
       IBUFDISABLE : in std_ulogic;
@@ -12816,6 +12826,7 @@ package vcomponents is
   end component IOBUFDS_DIFF_OUT_DCIEN;
 
   -- IOBUFDS_DIFF_OUT_INTERMDISABLE.v
+  -- vhdl: src/vhdl/IOBUFDS_DIFF_OUT_INTERMDISABLE.vhd is analysed instead of this Verilog
   component IOBUFDS_DIFF_OUT_INTERMDISABLE is
     generic (
       DIFF_TERM : boolean := FALSE;
@@ -12828,8 +12839,8 @@ package vcomponents is
     port (
       O : out std_ulogic;
       OB : out std_ulogic;
-      IO : inout std_ulogic;
-      IOB : inout std_ulogic;
+      IO : inout std_logic;
+      IOB : inout std_logic;
       I : in std_ulogic;
       IBUFDISABLE : in std_ulogic;
       INTERMDISABLE : in std_ulogic;
@@ -12839,6 +12850,7 @@ package vcomponents is
   end component IOBUFDS_DIFF_OUT_INTERMDISABLE;
 
   -- IOBUFDS_INTERMDISABLE.v
+  -- vhdl: src/vhdl/IOBUFDS_INTERMDISABLE.vhd is analysed instead of this Verilog
   component IOBUFDS_INTERMDISABLE is
     generic (
       DIFF_TERM : boolean := FALSE;
@@ -12851,8 +12863,8 @@ package vcomponents is
     );
     port (
       O : out std_ulogic;
-      IO : inout std_ulogic;
-      IOB : inout std_ulogic;
+      IO : inout std_logic;
+      IOB : inout std_logic;
       I : in std_ulogic;
       IBUFDISABLE : in std_ulogic;
       INTERMDISABLE : in std_ulogic;
@@ -12861,6 +12873,7 @@ package vcomponents is
   end component IOBUFDS_INTERMDISABLE;
 
   -- IOBUFDSE3.v
+  -- vhdl: src/vhdl/IOBUFDSE3.vhd is analysed instead of this Verilog
   component IOBUFDSE3 is
     generic (
       DIFF_TERM : boolean := FALSE;
@@ -12873,8 +12886,8 @@ package vcomponents is
     );
     port (
       O : out std_ulogic;
-      IO : inout std_ulogic;
-      IOB : inout std_ulogic;
+      IO : inout std_logic;
+      IOB : inout std_logic;
       DCITERMDISABLE : in std_ulogic;
       I : in std_ulogic;
       IBUFDISABLE : in std_ulogic;
@@ -12885,6 +12898,7 @@ package vcomponents is
   end component IOBUFDSE3;
 
   -- IOBUFE3.v
+  -- vhdl: src/vhdl/IOBUFE3.vhd is analysed instead of this Verilog
   component IOBUFE3 is
     generic (
       DRIVE : integer := 12;
@@ -12896,7 +12910,7 @@ package vcomponents is
     );
     port (
       O : out std_ulogic;
-      IO : inout std_ulogic;
+      IO : inout std_logic;
       DCITERMDISABLE : in std_ulogic;
       I : in std_ulogic;
       IBUFDISABLE : in std_ulogic;
@@ -13148,7 +13162,7 @@ package vcomponents is
   -- KEEPER.v
   component KEEPER is
     port (
-      O : inout std_ulogic
+      O : inout std_logic
     );
   end component KEEPER;
 
@@ -20590,25 +20604,25 @@ package vcomponents is
       SAXIHP3WREADY : out std_ulogic;
       DDRA : inout std_logic_vector(14 downto 0);
       DDRBA : inout std_logic_vector(2 downto 0);
-      DDRCASB : inout std_ulogic;
-      DDRCKE : inout std_ulogic;
-      DDRCKN : inout std_ulogic;
-      DDRCKP : inout std_ulogic;
-      DDRCSB : inout std_ulogic;
+      DDRCASB : inout std_logic;
+      DDRCKE : inout std_logic;
+      DDRCKN : inout std_logic;
+      DDRCKP : inout std_logic;
+      DDRCSB : inout std_logic;
       DDRDM : inout std_logic_vector(3 downto 0);
       DDRDQ : inout std_logic_vector(31 downto 0);
       DDRDQSN : inout std_logic_vector(3 downto 0);
       DDRDQSP : inout std_logic_vector(3 downto 0);
-      DDRDRSTB : inout std_ulogic;
-      DDRODT : inout std_ulogic;
-      DDRRASB : inout std_ulogic;
-      DDRVRN : inout std_ulogic;
-      DDRVRP : inout std_ulogic;
-      DDRWEB : inout std_ulogic;
+      DDRDRSTB : inout std_logic;
+      DDRODT : inout std_logic;
+      DDRRASB : inout std_logic;
+      DDRVRN : inout std_logic;
+      DDRVRP : inout std_logic;
+      DDRWEB : inout std_logic;
       MIO : inout std_logic_vector(53 downto 0);
-      PSCLK : inout std_ulogic;
-      PSPORB : inout std_ulogic;
-      PSSRSTB : inout std_ulogic;
+      PSCLK : inout std_logic;
+      PSPORB : inout std_logic;
+      PSSRSTB : inout std_logic;
       DDRARB : in std_logic_vector(3 downto 0);
       DMA0ACLK : in std_ulogic;
       DMA0DAREADY : in std_ulogic;
@@ -21393,11 +21407,11 @@ package vcomponents is
       SAXIGP6WCOUNT : out std_logic_vector(7 downto 0);
       SAXIGP6WREADY : out std_ulogic;
       PSS_ALTO_CORE_PAD_BOOTMODE : inout std_logic_vector(3 downto 0);
-      PSS_ALTO_CORE_PAD_CLK : inout std_ulogic;
-      PSS_ALTO_CORE_PAD_DONEB : inout std_ulogic;
+      PSS_ALTO_CORE_PAD_CLK : inout std_logic;
+      PSS_ALTO_CORE_PAD_DONEB : inout std_logic;
       PSS_ALTO_CORE_PAD_DRAMA : inout std_logic_vector(17 downto 0);
-      PSS_ALTO_CORE_PAD_DRAMACTN : inout std_ulogic;
-      PSS_ALTO_CORE_PAD_DRAMALERTN : inout std_ulogic;
+      PSS_ALTO_CORE_PAD_DRAMACTN : inout std_logic;
+      PSS_ALTO_CORE_PAD_DRAMALERTN : inout std_logic;
       PSS_ALTO_CORE_PAD_DRAMBA : inout std_logic_vector(1 downto 0);
       PSS_ALTO_CORE_PAD_DRAMBG : inout std_logic_vector(1 downto 0);
       PSS_ALTO_CORE_PAD_DRAMCK : inout std_logic_vector(1 downto 0);
@@ -21409,21 +21423,21 @@ package vcomponents is
       PSS_ALTO_CORE_PAD_DRAMDQS : inout std_logic_vector(8 downto 0);
       PSS_ALTO_CORE_PAD_DRAMDQSN : inout std_logic_vector(8 downto 0);
       PSS_ALTO_CORE_PAD_DRAMODT : inout std_logic_vector(1 downto 0);
-      PSS_ALTO_CORE_PAD_DRAMPARITY : inout std_ulogic;
-      PSS_ALTO_CORE_PAD_DRAMRAMRSTN : inout std_ulogic;
-      PSS_ALTO_CORE_PAD_ERROROUT : inout std_ulogic;
-      PSS_ALTO_CORE_PAD_ERRORSTATUS : inout std_ulogic;
-      PSS_ALTO_CORE_PAD_INITB : inout std_ulogic;
-      PSS_ALTO_CORE_PAD_JTAGTCK : inout std_ulogic;
-      PSS_ALTO_CORE_PAD_JTAGTDI : inout std_ulogic;
-      PSS_ALTO_CORE_PAD_JTAGTDO : inout std_ulogic;
-      PSS_ALTO_CORE_PAD_JTAGTMS : inout std_ulogic;
+      PSS_ALTO_CORE_PAD_DRAMPARITY : inout std_logic;
+      PSS_ALTO_CORE_PAD_DRAMRAMRSTN : inout std_logic;
+      PSS_ALTO_CORE_PAD_ERROROUT : inout std_logic;
+      PSS_ALTO_CORE_PAD_ERRORSTATUS : inout std_logic;
+      PSS_ALTO_CORE_PAD_INITB : inout std_logic;
+      PSS_ALTO_CORE_PAD_JTAGTCK : inout std_logic;
+      PSS_ALTO_CORE_PAD_JTAGTDI : inout std_logic;
+      PSS_ALTO_CORE_PAD_JTAGTDO : inout std_logic;
+      PSS_ALTO_CORE_PAD_JTAGTMS : inout std_logic;
       PSS_ALTO_CORE_PAD_MIO : inout std_logic_vector(77 downto 0);
-      PSS_ALTO_CORE_PAD_PORB : inout std_ulogic;
-      PSS_ALTO_CORE_PAD_PROGB : inout std_ulogic;
-      PSS_ALTO_CORE_PAD_RCALIBINOUT : inout std_ulogic;
-      PSS_ALTO_CORE_PAD_SRSTB : inout std_ulogic;
-      PSS_ALTO_CORE_PAD_ZQ : inout std_ulogic;
+      PSS_ALTO_CORE_PAD_PORB : inout std_logic;
+      PSS_ALTO_CORE_PAD_PROGB : inout std_logic;
+      PSS_ALTO_CORE_PAD_RCALIBINOUT : inout std_logic;
+      PSS_ALTO_CORE_PAD_SRSTB : inout std_logic;
+      PSS_ALTO_CORE_PAD_ZQ : inout std_logic;
       ADMAFCICLK : in std_logic_vector(7 downto 0);
       AIBPMUAFIFMFPDACK : in std_ulogic;
       AIBPMUAFIFMLPDACK : in std_ulogic;
@@ -23521,11 +23535,11 @@ package vcomponents is
     );
     port (
       CSOB : out std_ulogic;
-      DONE : inout std_ulogic;
+      DONE : inout std_logic;
       CCLK : in std_ulogic;
       CSB : in std_ulogic;
       D : inout std_logic_vector(31 downto 0);
-      INITB : inout std_ulogic;
+      INITB : inout std_logic;
       M : in std_logic_vector(2 downto 0);
       PROGB : in std_ulogic;
       RDWRB : in std_ulogic
@@ -23544,11 +23558,11 @@ package vcomponents is
       CSOB : out std_ulogic;
       PRDONE : out std_ulogic;
       PRERROR : out std_ulogic;
-      DONE : inout std_ulogic;
+      DONE : inout std_logic;
       CCLK : in std_ulogic;
       CSB : in std_ulogic;
       D : inout std_logic_vector(31 downto 0);
-      INITB : inout std_ulogic;
+      INITB : inout std_logic;
       M : in std_logic_vector(2 downto 0);
       PROGB : in std_ulogic;
       RDWRB : in std_ulogic

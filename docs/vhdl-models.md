@@ -66,8 +66,9 @@ has elapsed and `GTS` has fallen.
 
 Left as Verilog this batch, and why:
 
-- `IOBUF*` and `BIBUF` have `inout` ports. NVC elaborates `in` and `out`
-  only, so a model of the `bufif0` driver would not elaborate.
+- `IOBUF*` and `BIBUF` are native VHDL in the fourth batch. Their
+  Verilog models are not an equivalence reference: NVC will not
+  elaborate an `inout` port.
 - `PULLUP`, `PULLDOWN`, and `KEEPER` drive weak or pull strengths.
   `std_ulogic` cannot represent them.
 - `INBUF` and `DIFFINBUF` `$finish` at time 0 when `XIL_TIMING` is
@@ -102,11 +103,100 @@ clock edge (`negedge` when `IS_CLK_INVERTED`). The Verilog forces `INIT`
 until a 1 ns poll has seen `CLK` at its idle level, or until 101 ns.
 A pulse shorter than that poll does not shift.
 
+## Fourth batch
+
+`BIBUF`, `IOBUF`, `IOBUF_ANALOG`, `IOBUF_DCIEN`, `IOBUF_INTERMDISABLE`,
+`IOBUFDS`, `IOBUFDS_DCIEN`, `IOBUFDS_DIFF_OUT`,
+`IOBUFDS_DIFF_OUT_DCIEN`, `IOBUFDS_DIFF_OUT_INTERMDISABLE`,
+`IOBUFDS_INTERMDISABLE`, `IOBUFDSE3`, `IOBUFE3`.
+
+Scalar `inout` ports are `std_logic`. The model drives `'Z'` when its
+output buffer is disabled, and the pad signal resolves that driver with
+whatever the testbench drives. There is no drive strength. NVC cannot
+elaborate the Verilog `inout` models, so `test/tb/tb_iobuf.vhd` is
+self-checking: the expected value is the equation below, not a second
+simulation. The bench drives both directions over `0`, `1`, `X`, and
+`Z`, including contention, and waits 1 ns so the local `GTS` is 0.
+`DQS_BIAS` and `USE_IBUFDISABLE` are the generics directly; the Verilog
+copies them into a reg after 1 ps.
+
+`bufif0` and `notif0` are the NVC primitives (enable 0 passes or
+inverts, and `Z` data stays `Z` on `bufif0`; any other enable drives
+`Z`). `buf` maps `Z` to `X`. A Verilog `en ? 'Z' : data` is not
+`bufif0`: an `X` or `Z` enable merges the branches, so both sides `Z`
+stays `Z` and any other pair is `X`. `~T || IBUFDISABLE` is `not T or
+IBUFDISABLE`. `sel == 1 ? a : sel == 0 ? b : X` (and the `===` form) is
+`a` or `b` for 0 and 1, and `X` otherwise.
+
+- `IOBUF`. `or(ts, GTS, T); bufif0(IO, I, ts); buf(O, IO)`. `O` is `buf`
+  of the resolved pad, so an external `Z` is `X` on `O`. Contention of
+  a driven 1 with an external 0 is `X`.
+- `IOBUF_ANALOG`. `I` and `T` pass through `rv 1` (`Z` becomes 1) and
+  then `IO = ~T_in ? I_in : 'Z'`. `T` of `Z` disables. `I` of `Z` is
+  driven as 1. `O` is the resolved pad, so `Z` passes. No `GTS`.
+- `IOBUF_DCIEN` and `IOBUF_INTERMDISABLE`. The pad driver is `IOBUF`.
+  `DCITERMDISABLE` and `INTERMDISABLE` are not read by the functional
+  assign. `USE_IBUFDISABLE` true:
+  `O = (~T || IBUFDISABLE) == 1 ? out_val : == 0 ? IO : X`. `out_val`
+  is 1 for `7SERIES` and 0 otherwise, so a disabled input does not
+  follow the pad. `USE` false: `O` is the resolved pad.
+- `IOBUFDS`. `IO = (GTS || T) ? 'Z' : I` and `IOB = (GTS || T) ? 'Z' : ~I`
+  (the ternary, so an `X` enable merges). `O` is the differential
+  receiver. The `X` arm is `IO === X || IOB == X`, and `==` never
+  matches `X`, so `X` on `IOB` alone holds the previous value. `X` on
+  `IO` forces `X`.
+- `IOBUFDS_DCIEN` and `IOBUFDS_INTERMDISABLE`. Same pad drivers.
+  `DCITERMDISABLE` and `INTERMDISABLE` are unused functionally. The
+  receiver uses `===` on both pins. `USE_IBUFDISABLE` true:
+  `O = (~T || IBUFDISABLE) === 1 ? out_val : === 0 ? receiver : X`,
+  with the same `out_val` as `IOBUF_DCIEN`.
+- `IOBUFDS_DIFF_OUT`. Separate enables: `bufif0(IO, I, GTS or TM)` and
+  `notif0(IOB, I, GTS or TS)`. The receiver drives `X` when no row
+  matches; it does not hold. `OB` is `~` of the bit written to `O`.
+- `IOBUFDS_DIFF_OUT_DCIEN` and `IOBUFDS_DIFF_OUT_INTERMDISABLE`. Same
+  drivers and receiver. The disable ports are unused functionally.
+  `USE_IBUFDISABLE` true applies `~TM || IBUFDISABLE` to `O` and
+  `~TS || IBUFDISABLE` to `OB`. The forced pair is 1/1 for `7SERIES`,
+  0/`X` for `ULTRASCALE`, and 0/0 otherwise.
+- `IOBUFE3`. `bufif0(IO, I, GTS or T)`. The functional delays are 0.
+  `ULTRASCALE` and `ULTRASCALE_PLUS` use `OSC`; every other legal
+  `SIM_DEVICE` forces `OSC` and `OSC_EN` to 0 (the Verilog flag is 0
+  for UltraScale and 1 for Versal). `OSC[2:0] * 5` is negated when
+  `OSC[3]` is 0. Compared with `SIM_INPUT_BUFFER_OFFSET`: negative
+  yields 0, positive yields 1, and zero toggles `O_OSC` once per
+  `OSC`/`OSC_EN` change. It does not free-run. A non-binary magnitude
+  holds. `USE_IBUFDISABLE` false (the default): `O = OSC_EN ? O_OSC : IO`.
+  `USE` true: `O` follows that mux when `~T || IBUFDISABLE` is 0, is 0
+  when the flag is 1 and `OSC_EN` is 0, and is `X` otherwise.
+  `VREF` and `DCITERMDISABLE` are not in the equation. `DRIVE` must be
+  2 to 24 and the offset -50 to 50.
+- `IOBUFDSE3`. `bufif0(IO, I, GTS or T)` and `notif0(IOB, I, same ts)`.
+  `OSC_EN` is two bits: `11` selects `O_OSC`, `01` and `10` drive `X`,
+  and any other value (including `00` and `X`) selects the receiver.
+  The oscillator updates only when `OSC_EN == 1`, which is the vector
+  `01`. `USE_IBUFDISABLE` true and `~T || IBUFDISABLE == 1` forces the
+  receiver to 0; an `X` flag forces `X`. The `X` arm is `===` on both
+  pins. `DCITERMDISABLE` is unused. The default `USE_IBUFDISABLE` is
+  false, so the receiver runs.
+- `BIBUF`. The Verilog copies each side to the other after 10 ps
+  (`timescale 1 ps`) with strength `(weak1, weak0)`. A weak driver
+  loses to a strong opposite value, so each pin would keep its own
+  strong driver. `std_logic` cannot say weak. The model drives both
+  ways at full strength, delayed 10 ps, initial driver `'Z'`. A value
+  driven on one side with the other released appears on both pins.
+  Releasing both external drivers leaves that value: the model's own
+  drivers are strong, so they hold it. Two opposite drivers resolve
+  to `X`, and releasing them afterwards leaves `X`, because those
+  drivers are part of the resolution. `tb_iobuf` expects this
+  strong-driver behaviour, not the weak-strength result.
+
 ## Conventions
 
 - One entity and one architecture per file. The entity name is the
   primitive name.
 - Ports are `std_ulogic` or `std_logic_vector`, matching the generator.
+  A scalar `inout` is `std_logic` so an external driver resolves with
+  the model.
 - Generics match the generated component: `bit` for a 1-bit parameter,
   `bit_vector` for a wider one, `boolean` for a `TRUE`/`FALSE` string,
   `integer` or `string` otherwise. Defaults match the component.
@@ -168,6 +258,9 @@ NVC also presents a Verilog `X` on an output port to a VHDL signal as
    VHDL model and the submodule Verilog see the same stimulus.
    Exhaustive for a small combinational cell. For a register, cover
    GSR, clock enable, reset priority, `INIT`, and `IS_*_INVERTED`.
+   An `inout` model that NVC cannot elaborate from Verilog is checked
+   by `test/tb/tb_iobuf.vhd` instead, against the equations in this
+   file.
 5. `make test`.
 
 `make` rebuilds library `unisim` without that Verilog file. The

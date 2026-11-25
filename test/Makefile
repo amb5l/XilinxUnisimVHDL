@@ -11,7 +11,7 @@ NVC_M ?= 1g
 BUILD ?= $(ROOT)/build
 WORK := $(abspath work)
 
-Benches := tb_ram32x1d tb_dsp48e1 tb_ramb18e1 tb_eq tb_eq_io tb_eq_ff
+Benches := tb_ram32x1d tb_dsp48e1 tb_ramb18e1 tb_eq tb_eq_io tb_eq_ff tb_iobuf
 
 # Verilog reference for the primitives that now have a VHDL model.
 # Analysed into work, not unisim: unisim already has the VHDL entity.

@@ -46,9 +46,11 @@ consumer does not have to regenerate it.
 
 Ports become `std_ulogic`, or `std_logic_vector(N-1 downto 0)` when the
 Verilog port has a range. Width-1 vectors stay vectors
-(`std_logic_vector(0 downto 0)`). `inout` is preserved on the component.
-NVC's binder currently accepts only `in` and `out` at elaboration, so an
-`inout` primitive analyses and does not yet simulate.
+(`std_logic_vector(0 downto 0)`). A scalar `inout` is `std_logic`, so a
+testbench driver resolves with the model. `in` and `out` scalars stay
+`std_ulogic`. NVC still will not elaborate a Verilog `inout`, which is
+why the `IOBUF*` and `BIBUF` models are hand-written VHDL and
+`tb_iobuf` does not instantiate the Verilog.
 
 Generics follow the parameter's default, unless `config/type_map.yaml`
 overrides that parameter:
