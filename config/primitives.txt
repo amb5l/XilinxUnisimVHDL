@@ -139,7 +139,7 @@ IOBUFE3                         vhdl  std_logic inout; 'Z' when disabled; no dri
 IOBUF_ANALOG                    vhdl  std_logic inout; 'Z' when disabled; no drive strength
 IOBUF_DCIEN                     vhdl  std_logic inout; 'Z' when disabled; no drive strength
 IOBUF_INTERMDISABLE             vhdl  std_logic inout; 'Z' when disabled; no drive strength
-ISERDES                         vlog
+ISERDES                         vhdl  DDR/SDR; 300 ps flops not copied; tap delay 0; no $finish
 ISERDESE1                       vlog
 ISERDESE2                       vlog
 ISERDESE3                       vlog

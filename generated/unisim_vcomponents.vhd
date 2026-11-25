@@ -12953,6 +12953,7 @@ package vcomponents is
   end component IOBUFE3;
 
   -- ISERDES.v
+  -- vhdl: src/vhdl/ISERDES.vhd is analysed instead of this Verilog
   component ISERDES is
     generic (
       BITSLIP_ENABLE : boolean := FALSE;
