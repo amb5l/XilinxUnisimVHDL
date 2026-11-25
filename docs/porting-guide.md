@@ -10,10 +10,11 @@ tree.
 
 `mk/nvc.mk` analyses, with `XIL_TIMING` and `XIL_DR` undefined:
 
-1. `verilog/src/glbl.v`, then `verilog/src/unisims/*.v` except names
-   listed in `config/exclude.txt`, into library `unisim`.
+1. `verilog/src/glbl.v`, then every `vlog` row in
+   `config/primitives.txt`, into library `unisim`.
 2. `generated/unisim_vcomponents.vhd`.
-3. `src/vhdl/*.vhd`, into the same library.
+3. `src/vhdl/<NAME>.vhd` for each `vhdl` row, into the same library,
+   instead of that primitive's Verilog.
 
 `glbl` is a second top-level Verilog unit. Elaborate it beside the
 testbench:
@@ -95,14 +96,40 @@ reports `generic NAME value is not a locally static string` if the
 instantiation leaves that generic unmapped. Map every `string` generic
 in the instance. Integer defaults may be left to the component.
 
+## The primitive index
+
+`config/primitives.txt` is the list `mk/nvc.mk` and
+`scripts/gen_vcomponents.py` both read. It is fixed-width, not CSV.
+`lang` is `vlog`, `vhdl`, or `skip`. `glbl.v` is not a row; it is always
+analysed. `python3 scripts/primitives.py --write` sorts the file, aligns
+the columns, and adds a submodule primitive that is not listed yet
+(`vlog`, with a note when the name is one of the known NVC gaps).
+`python3 scripts/primitives.py --check` (and `make check`, which CI runs)
+fails when a submodule primitive is missing, an entry has no source, or
+the file is not exactly that canonical text.
+
+`config/exclude.txt` is removed. This submodule pin had no exclusions, so
+nothing was migrated into `skip` from that file. `GTM_DUAL` is `skip`
+because `GTM_DUAL.sv` is SystemVerilog and is not part of the Verilog
+analyse list.
+
+A `skip` primitive is not analysed. Its component is still emitted when
+the Verilog header parses, so a design that instantiates it analyses
+against `unisim.vcomponents` and fails later, at elaboration, instead of
+at the component lookup. The generated package comments the row
+`-- skip: not analysed (...)`. If the header does not parse, the
+component is omitted and the generator prints the parse error; `vlog`
+and `vhdl` headers that do not parse still fail the generator.
+
 ## Replacing a Verilog model
 
-1. Write the entity in `src/vhdl`, following `src/vhdl/README.md`.
-2. Add the Verilog filename to `config/exclude.txt` so the file list and
-   the generator both skip it.
-3. Run `make vcomponents` if the component should change, or leave the
-   generated component in place so existing port maps still bind to the
-   VHDL entity.
+1. Write the entity in `src/vhdl/<NAME>.vhd`, following `src/vhdl/README.md`.
+2. Change that primitive's `lang` to `vhdl` in `config/primitives.txt`
+   and realign with `python3 scripts/primitives.py --write`. The Verilog
+   file stays in the submodule; it is no longer analysed.
+3. Run `make vcomponents`. The component is still generated from the
+   Verilog header, with a comment that the VHDL file is what gets
+   analysed, so existing port maps bind to the new entity.
 4. Add a self-checking bench under `test/tb` that
    `use unisim.vcomponents.all` and waits out `GSR`.
 5. Update the row in `docs/status.md` from "Verilog only" to "VHDL native"

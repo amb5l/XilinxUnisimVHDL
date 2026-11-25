@@ -1,0 +1,262 @@
+# Primitive index for library unisim. Fixed-width columns, not CSV.
+# lang is vlog, vhdl, or skip.
+#   vlog  analyse XilinxUnisimLibrary/verilog/src/unisims/<NAME>.v
+#         (or <NAME>.sv when that is the only source)
+#   vhdl  analyse src/vhdl/<NAME>.vhd instead of that Verilog
+#   skip  do not analyse; the component is still emitted when the
+#         Verilog header parses, so a design can analyse against it
+# glbl.v is not listed; it is always analysed.
+# config/exclude.txt is gone. A primitive that used to be excluded is
+# lang skip, with the reason in notes. This pin had no exclusions.
+# Sort and realign with: python3 scripts/primitives.py --write
+# name                          lang  notes
+AND2B1L                         vlog
+AUTOBUF                         vlog
+BIBUF                           vlog
+BITSLICE_CONTROL                vlog
+BSCANE2                         vlog
+BUF                             vlog
+BUFCE_LEAF                      vlog
+BUFCE_ROW                       vlog
+BUFG                            vlog
+BUFGCE                          vlog
+BUFGCE_DIV                      vlog
+BUFGCTRL                        vlog
+BUFGP                           vlog
+BUFG_GT                         vlog
+BUFG_GT_SYNC                    vlog
+BUFG_PS                         vlog
+BUFH                            vlog
+BUFHCE                          vlog
+BUFIO                           vlog
+BUFMR                           vlog
+BUFMRCE                         vlog
+BUFR                            vlog
+CAPTUREE2                       vlog
+CARRY4                          vlog
+CARRY8                          vlog
+CFGLUT5                         vlog
+CMAC                            vlog
+CMACE4                          vlog
+DCIRESET                        vlog
+DCM_ADV                         vlog  needs NVC unisim/6-mmcm ($realtime)
+DCM_SP                          vlog  needs NVC unisim/6-mmcm ($realtime)
+DIFFINBUF                       vlog
+DNA_PORT                        vlog
+DNA_PORTE2                      vlog
+DPHY_DIFFINBUF                  vlog
+DSP48E1                         vlog
+DSP48E2                         vlog
+DSP_ALU                         vlog
+DSP_A_B_DATA                    vlog
+DSP_C_DATA                      vlog
+DSP_MULTIPLIER                  vlog
+DSP_M_DATA                      vlog
+DSP_OUTPUT                      vlog
+DSP_PREADD                      vlog
+DSP_PREADD_DATA                 vlog
+EFUSE_USR                       vlog
+FDCE                            vlog
+FDPE                            vlog
+FDRE                            vlog
+FDSE                            vlog
+FE                              vlog
+FIFO18E1                        vlog
+FIFO18E2                        vlog
+FIFO36E1                        vlog
+FIFO36E2                        vlog
+FRAME_ECCE2                     vlog
+FRAME_ECCE3                     vlog
+FRAME_ECCE4                     vlog
+GND                             vlog
+GTHE2_CHANNEL                   vlog
+GTHE2_COMMON                    vlog
+GTHE3_CHANNEL                   vlog
+GTHE3_COMMON                    vlog
+GTHE4_CHANNEL                   vlog
+GTHE4_COMMON                    vlog
+GTM_DUAL                        skip  SystemVerilog (.sv); not analysed with the Verilog sources
+GTPE2_CHANNEL                   vlog
+GTPE2_COMMON                    vlog
+GTXE2_CHANNEL                   vlog
+GTXE2_COMMON                    vlog
+GTYE3_CHANNEL                   vlog
+GTYE3_COMMON                    vlog
+GTYE4_CHANNEL                   vlog
+GTYE4_COMMON                    vlog
+HARD_SYNC                       vlog
+HBM_ONE_STACK_INTF              vlog
+HBM_REF_CLK                     vlog
+HBM_SNGLBLI_INTF_APB            vlog
+HBM_SNGLBLI_INTF_AXI            vlog
+HBM_TWO_STACK_INTF              vlog
+HPIO_VREF                       vlog
+HSADC                           vlog
+HSDAC                           vlog
+IBUF                            vlog
+IBUFCTRL                        vlog
+IBUFDS                          vlog
+IBUFDSE3                        vlog
+IBUFDS_DIFF_OUT                 vlog
+IBUFDS_DIFF_OUT_IBUFDISABLE     vlog
+IBUFDS_DIFF_OUT_INTERMDISABLE   vlog
+IBUFDS_DPHY                     vlog
+IBUFDS_GTE2                     vlog
+IBUFDS_GTE3                     vlog
+IBUFDS_GTE4                     vlog
+IBUFDS_GTM                      vlog
+IBUFDS_IBUFDISABLE              vlog
+IBUFDS_IBUFDISABLE_INT          vlog
+IBUFDS_INTERMDISABLE            vlog
+IBUFDS_INTERMDISABLE_INT        vlog
+IBUFE3                          vlog
+IBUF_ANALOG                     vlog
+IBUF_IBUFDISABLE                vlog
+IBUF_INTERMDISABLE              vlog
+ICAPE2                          vlog
+ICAPE3                          vlog
+IDDR                            vlog
+IDDRE1                          vlog
+IDDR_2CLK                       vlog
+IDELAYCTRL                      vlog
+IDELAYE2                        vlog
+IDELAYE2_FINEDELAY              vlog
+IDELAYE3                        vlog
+ILKN                            vlog
+ILKNE4                          vlog
+INBUF                           vlog
+INV                             vlog
+IN_FIFO                         vlog
+IOBUF                           vlog  inout bufif0; NVC elaborates in/out only (drive strength on IO is not simulated)
+IOBUFDS                         vlog  inout bufif0; NVC elaborates in/out only (drive strength on IO is not simulated)
+IOBUFDSE3                       vlog  inout bufif0; NVC elaborates in/out only (drive strength on IO is not simulated)
+IOBUFDS_DCIEN                   vlog  inout bufif0; NVC elaborates in/out only (drive strength on IO is not simulated)
+IOBUFDS_DIFF_OUT                vlog  inout bufif0; NVC elaborates in/out only (drive strength on IO is not simulated)
+IOBUFDS_DIFF_OUT_DCIEN          vlog  inout bufif0; NVC elaborates in/out only (drive strength on IO is not simulated)
+IOBUFDS_DIFF_OUT_INTERMDISABLE  vlog  inout bufif0; NVC elaborates in/out only (drive strength on IO is not simulated)
+IOBUFDS_INTERMDISABLE           vlog  inout bufif0; NVC elaborates in/out only (drive strength on IO is not simulated)
+IOBUFE3                         vlog  inout bufif0; NVC elaborates in/out only (drive strength on IO is not simulated)
+IOBUF_ANALOG                    vlog  inout bufif0; NVC elaborates in/out only (drive strength on IO is not simulated)
+IOBUF_DCIEN                     vlog  inout bufif0; NVC elaborates in/out only (drive strength on IO is not simulated)
+IOBUF_INTERMDISABLE             vlog  inout bufif0; NVC elaborates in/out only (drive strength on IO is not simulated)
+ISERDES                         vlog
+ISERDESE1                       vlog
+ISERDESE2                       vlog
+ISERDESE3                       vlog
+ISERDES_NODELAY                 vlog
+JTAG_SIME2                      vlog
+KEEPER                          vlog
+LDCE                            vlog
+LDPE                            vlog
+LUT1                            vlog
+LUT2                            vlog
+LUT3                            vlog
+LUT4                            vlog
+LUT5                            vlog
+LUT6                            vlog
+LUT6_2                          vlog
+MASTER_JTAG                     vlog
+MMCME2_ADV                      vlog  needs NVC unisim/6-mmcm ($realtime)
+MMCME2_BASE                     vlog  instantiates MMCME2_ADV; needs NVC unisim/6-mmcm ($realtime)
+MMCME3_ADV                      vlog  needs NVC unisim/6-mmcm ($realtime)
+MMCME3_BASE                     vlog  needs NVC unisim/6-mmcm ($realtime)
+MMCME4_ADV                      vlog  needs NVC unisim/6-mmcm ($realtime)
+MMCME4_BASE                     vlog  needs NVC unisim/6-mmcm ($realtime)
+MUXCY                           vlog
+MUXF7                           vlog
+MUXF8                           vlog
+MUXF9                           vlog
+OBUF                            vlog
+OBUFDS                          vlog
+OBUFDS_DPHY                     vlog
+OBUFDS_GTE3                     vlog
+OBUFDS_GTE3_ADV                 vlog
+OBUFDS_GTE4                     vlog
+OBUFDS_GTE4_ADV                 vlog
+OBUFDS_GTM                      vlog
+OBUFDS_GTM_ADV                  vlog
+OBUFT                           vlog
+OBUFTDS                         vlog
+OBUFTDS_DCIEN                   vlog
+OBUFT_DCIEN                     vlog
+ODDR                            vlog
+ODDRE1                          vlog
+ODELAYE2                        vlog
+ODELAYE2_FINEDELAY              vlog
+ODELAYE3                        vlog
+OR2L                            vlog
+OSERDES                         vlog
+OSERDESE1                       vlog
+OSERDESE2                       vlog
+OSERDESE3                       vlog
+OUT_FIFO                        vlog
+PCIE40E4                        vlog
+PCIE4CE4                        vlog
+PCIE_2_1                        vlog
+PCIE_3_0                        vlog
+PCIE_3_1                        vlog
+PHASER_IN                       vlog
+PHASER_IN_PHY                   vlog
+PHASER_OUT                      vlog
+PHASER_OUT_PHY                  vlog
+PHASER_REF                      vlog
+PHY_CONTROL                     vlog
+PLLE2_ADV                       vlog  needs NVC unisim/6-mmcm ($realtime)
+PLLE2_BASE                      vlog  instantiates PLLE2_ADV; needs NVC unisim/6-mmcm ($realtime)
+PLLE3_ADV                       vlog  needs NVC unisim/6-mmcm ($realtime)
+PLLE3_BASE                      vlog  needs NVC unisim/6-mmcm ($realtime)
+PLLE4_ADV                       vlog  needs NVC unisim/6-mmcm ($realtime)
+PLLE4_BASE                      vlog  needs NVC unisim/6-mmcm ($realtime)
+PS7                             vlog
+PS8                             vlog
+PULLDOWN                        vlog
+PULLUP                          vlog
+RAM128X1D                       vlog
+RAM128X1S                       vlog
+RAM256X1D                       vlog
+RAM256X1S                       vlog
+RAM32M                          vlog
+RAM32M16                        vlog
+RAM32X16DR8                     vlog
+RAM32X1D                        vlog
+RAM32X1S                        vlog
+RAM512X1S                       vlog
+RAM64M                          vlog
+RAM64M8                         vlog
+RAM64X1D                        vlog
+RAM64X1S                        vlog
+RAM64X8SW                       vlog
+RAMB18E1                        vlog
+RAMB18E2                        vlog
+RAMB36E1                        vlog
+RAMB36E2                        vlog
+RAMD32                          vlog
+RAMD32M64                       vlog
+RAMD64E                         vlog
+RAMS32                          vlog
+RAMS64E                         vlog
+RAMS64E1                        vlog
+RFADC                           vlog
+RFDAC                           vlog
+RIU_OR                          vlog
+RXTX_BITSLICE                   vlog
+RX_BITSLICE                     vlog
+SIM_CONFIGE2                    vlog
+SIM_CONFIGE3                    vlog
+SRL16E                          vlog
+SRLC16E                         vlog
+SRLC32E                         vlog
+STARTUPE2                       vlog
+STARTUPE3                       vlog
+SYSMONE1                        vlog
+SYSMONE4                        vlog
+TX_BITSLICE                     vlog
+TX_BITSLICE_TRI                 vlog
+URAM288                         vlog
+URAM288_BASE                    vlog
+USR_ACCESSE2                    vlog
+VCC                             vlog
+VCU                             vlog
+XADC                            vlog
+XORCY                           vlog
+ZHOLD_DELAY                     vlog

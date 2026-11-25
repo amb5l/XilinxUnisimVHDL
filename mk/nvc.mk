@@ -1,10 +1,11 @@
-# Analyse glbl.v and verilog/src/unisims into library unisim, then the
-# generated vcomponents package and any hand-written sources in src/vhdl.
+# Analyse glbl.v and the vlog rows of config/primitives.txt into library
+# unisim, then the generated vcomponents package, then any vhdl rows
+# (src/vhdl/<NAME>.vhd instead of that primitive's Verilog).
 #
 # XIL_TIMING and XIL_DR are left undefined. Do not pass -D for either
 # macro: the models' `ifdef branches and the generated component ports
-# both assume those macros are unset. config/exclude.txt drops sources
-# the file list must not contain.
+# both assume those macros are unset. skip rows are not analysed. The
+# component generator still emits them when the Verilog header parses.
 
 NVC_MK_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
 ROOT := $(abspath $(NVC_MK_DIR)/..)
@@ -21,22 +22,28 @@ NVC_M ?= 1g
 FILELIST := $(LIBDIR)/unisim.f
 LIBSTAMP := $(LIBDIR)/unisim.stamp
 GEN_PKG := $(ROOT)/generated/unisim_vcomponents.vhd
-VHDL_SRCS := $(wildcard $(ROOT)/src/vhdl/*.vhd)
-VERILOG_SRCS := $(wildcard $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/*.v) \
-	$(ROOT)/XilinxUnisimLibrary/verilog/src/glbl.v
+PRIMITIVES := $(ROOT)/config/primitives.txt
+# scripts/primitives.py is the reader. These lists are the same rows.
+VERILOG_SRCS := $(addprefix $(ROOT)/,$(shell python3 $(ROOT)/scripts/primitives.py --filelist))
+VHDL_SRCS := $(addprefix $(ROOT)/,$(shell python3 $(ROOT)/scripts/primitives.py --vhdl))
 
-.PHONY: all vcomponents test clean
+.PHONY: all vcomponents test check clean
 
 all: $(LIBSTAMP)
 
 vcomponents: $(GEN_PKG)
 
+check:
+	python3 $(ROOT)/scripts/primitives.py --check
+	python3 $(ROOT)/scripts/test_primitives.py
+
 $(GEN_PKG): $(ROOT)/scripts/gen_vcomponents.py $(ROOT)/scripts/unisim_sources.py \
-		$(ROOT)/config/type_map.yaml $(ROOT)/config/exclude.txt $(VERILOG_SRCS)
+		$(ROOT)/scripts/primitives.py \
+		$(ROOT)/config/type_map.yaml $(PRIMITIVES) $(VERILOG_SRCS)
 	python3 $(ROOT)/scripts/gen_vcomponents.py -o $@
 
 $(FILELIST): $(ROOT)/scripts/filelist.py $(ROOT)/scripts/unisim_sources.py \
-		$(ROOT)/config/exclude.txt $(VERILOG_SRCS)
+		$(ROOT)/scripts/primitives.py $(PRIMITIVES) $(VERILOG_SRCS)
 	@mkdir -p $(LIBDIR)
 	python3 $(ROOT)/scripts/filelist.py > $@
 

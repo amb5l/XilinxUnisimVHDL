@@ -3,6 +3,7 @@
 #   make              analyse Verilog + vcomponents into $(BUILD)/unisim
 #   make vcomponents  regenerate generated/unisim_vcomponents.vhd
 #   make test         elaborate and run test/tb
+#   make check        check config/primitives.txt and its unit tests
 #   make clean
 #
 # BUILD   directory that receives the analysed library (default: build)

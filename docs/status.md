@@ -1,7 +1,11 @@
 # Primitive status
 
-Every row is still the Verilog model from the XilinxUnisimLibrary
-submodule. Nothing under `src/vhdl` replaces a primitive yet.
+Every row below is still the Verilog model from the XilinxUnisimLibrary
+submodule. Nothing under `src/vhdl` replaces a primitive yet. Which
+source is analysed is `config/primitives.txt` (`vlog`, `vhdl`, or
+`skip`). `GTM_DUAL` is the only `skip`: it is SystemVerilog and is not
+in this table. Notes in the index call out `$realtime` (MMCM, PLL, DCM)
+and the `IOBUF` `inout` strength caveat.
 
 | Primitive | Implementation |
 | --- | --- |
@@ -255,4 +259,7 @@ submodule. Nothing under `src/vhdl` replaces a primitive yet.
 | `XORCY` | Verilog only |
 | `ZHOLD_DELAY` | Verilog only |
 
-249 components. Three are covered by `make test`.
+250 component declarations, including `GTM_DUAL` (`skip` in
+`config/primitives.txt`: the header is in the package, the SystemVerilog
+model is not analysed). Three of the Verilog models are covered by
+`make test`.

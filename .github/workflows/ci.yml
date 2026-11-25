@@ -24,6 +24,9 @@ jobs:
         with:
           submodules: true
 
+      - name: Check the primitive index
+        run: make check
+
       - name: Install NVC build dependencies
         run: |
           sudo apt-get update

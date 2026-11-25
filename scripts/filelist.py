@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Print the Verilog sources that make up library ``unisim``.
 
-One path per line, relative to the repository root when possible. Files
-named in config/exclude.txt are omitted. glbl.v is first.
+One path per line, relative to the repository root. glbl.v is first,
+then every config/primitives.txt row whose lang is vlog. vhdl and skip
+rows are left out; vhdl sources are printed by ``primitives.py --vhdl``.
 """
 
 from __future__ import annotations
