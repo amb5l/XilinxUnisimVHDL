@@ -1795,6 +1795,7 @@ package vcomponents is
   end component DSP48E2;
 
   -- DSP_A_B_DATA.v
+  -- vhdl: src/vhdl/DSP_A_B_DATA.vhd is analysed instead of this Verilog
   component DSP_A_B_DATA is
     generic (
       ACASCREG : integer := 1;
@@ -1831,6 +1832,7 @@ package vcomponents is
   end component DSP_A_B_DATA;
 
   -- DSP_ALU.v
+  -- vhdl: src/vhdl/DSP_ALU.vhd is analysed instead of this Verilog
   component DSP_ALU is
     generic (
       ALUMODEREG : integer := 1;
@@ -1885,6 +1887,7 @@ package vcomponents is
   end component DSP_ALU;
 
   -- DSP_C_DATA.v
+  -- vhdl: src/vhdl/DSP_C_DATA.vhd is analysed instead of this Verilog
   component DSP_C_DATA is
     generic (
       CREG : integer := 1;
@@ -1901,6 +1904,7 @@ package vcomponents is
   end component DSP_C_DATA;
 
   -- DSP_M_DATA.v
+  -- vhdl: src/vhdl/DSP_M_DATA.vhd is analysed instead of this Verilog
   component DSP_M_DATA is
     generic (
       IS_CLK_INVERTED : bit := '0';
@@ -1919,6 +1923,7 @@ package vcomponents is
   end component DSP_M_DATA;
 
   -- DSP_MULTIPLIER.v
+  -- vhdl: src/vhdl/DSP_MULTIPLIER.vhd is analysed instead of this Verilog
   component DSP_MULTIPLIER is
     generic (
       AMULTSEL : string := "A";
@@ -1937,6 +1942,7 @@ package vcomponents is
   end component DSP_MULTIPLIER;
 
   -- DSP_OUTPUT.v
+  -- vhdl: src/vhdl/DSP_OUTPUT.vhd is analysed instead of this Verilog
   component DSP_OUTPUT is
     generic (
       AUTORESET_PATDET : string := "NO_RESET";
@@ -1977,6 +1983,7 @@ package vcomponents is
   end component DSP_OUTPUT;
 
   -- DSP_PREADD.v
+  -- vhdl: src/vhdl/DSP_PREADD.vhd is analysed instead of this Verilog
   component DSP_PREADD is
     port (
       AD : out std_logic_vector(26 downto 0);
@@ -1988,6 +1995,7 @@ package vcomponents is
   end component DSP_PREADD;
 
   -- DSP_PREADD_DATA.v
+  -- vhdl: src/vhdl/DSP_PREADD_DATA.vhd is analysed instead of this Verilog
   component DSP_PREADD_DATA is
     generic (
       ADREG : integer := 1;

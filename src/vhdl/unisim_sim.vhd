@@ -24,6 +24,9 @@ package unisim_sim is
   function verilog_posedge(prev, curr : std_ulogic) return boolean;
   function verilog_negedge(prev, curr : std_ulogic) return boolean;
   function rv0(s : std_ulogic) return std_ulogic;
+  function rv0v(s : std_logic_vector) return std_logic_vector;
+  function rv1v(s : std_logic_vector) return std_logic_vector;
+  function gate_inv(s : std_logic_vector; inv : bit_vector) return std_logic_vector;
   function bufif0_val(d, en : std_ulogic) return std_ulogic;
   function notif0_val(d, en : std_ulogic) return std_ulogic;
   function sim_device_ok(s : string) return boolean;
@@ -208,6 +211,39 @@ package body unisim_sim is
   begin
     return (prev = '1' and (curr = '0' or curr = 'X' or curr = 'Z'))
         or ((prev = 'X' or prev = 'Z') and curr = '0');
+  end function;
+
+  function rv0v(s : std_logic_vector) return std_logic_vector is
+    variable r : std_logic_vector(s'range);
+  begin
+    for i in s'range loop
+      r(i) := rv0(s(i));
+    end loop;
+    return r;
+  end function;
+
+  function rv1v(s : std_logic_vector) return std_logic_vector is
+    variable r : std_logic_vector(s'range);
+  begin
+    for i in s'range loop
+      r(i) := rv1(s(i));
+    end loop;
+    return r;
+  end function;
+
+  -- Per-bit (s !== Z) && (s xor inv). inv is aligned to s by position.
+  function gate_inv(s : std_logic_vector; inv : bit_vector) return std_logic_vector is
+    variable r : std_logic_vector(s'range);
+    variable b : bit;
+  begin
+    for i in s'range loop
+      b := '0';
+      if i >= inv'low and i <= inv'high then
+        b := inv(i);
+      end if;
+      r(i) := gate_in(s(i), b);
+    end loop;
+    return r;
   end function;
 
   -- (s !== 'Z') && s, the "rv 0" reduction in CARRY4.

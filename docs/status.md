@@ -1,7 +1,7 @@
 # Primitive status
 
 Which source is analysed is `config/primitives.txt` (`vlog`, `vhdl`, or
-`skip`). One hundred and ten simple primitives are hand-written VHDL; see
+`skip`). One hundred and eighteen simple primitives are hand-written VHDL; see
 [vhdl-models.md](vhdl-models.md). The rest of this table is still the
 Verilog model from the XilinxUnisimLibrary submodule. `GTM_DUAL` is the
 only `skip`: it is SystemVerilog and is not in this table. Notes in the
@@ -47,14 +47,14 @@ note records that the weak Verilog driver is modeled strong.
 | `DPHY_DIFFINBUF` | VHDL `src/vhdl/DPHY_DIFFINBUF.vhd` |
 | `DSP48E1` | Verilog only, tested (test/tb/tb_dsp48e1.vhd) |
 | `DSP48E2` | Verilog only |
-| `DSP_A_B_DATA` | Verilog only |
-| `DSP_ALU` | Verilog only |
-| `DSP_C_DATA` | Verilog only |
-| `DSP_M_DATA` | Verilog only |
-| `DSP_MULTIPLIER` | Verilog only |
-| `DSP_OUTPUT` | Verilog only |
-| `DSP_PREADD` | Verilog only |
-| `DSP_PREADD_DATA` | Verilog only |
+| `DSP_A_B_DATA` | VHDL `src/vhdl/DSP_A_B_DATA.vhd` |
+| `DSP_ALU` | VHDL `src/vhdl/DSP_ALU.vhd` |
+| `DSP_C_DATA` | VHDL `src/vhdl/DSP_C_DATA.vhd` |
+| `DSP_M_DATA` | VHDL `src/vhdl/DSP_M_DATA.vhd` |
+| `DSP_MULTIPLIER` | VHDL `src/vhdl/DSP_MULTIPLIER.vhd` |
+| `DSP_OUTPUT` | VHDL `src/vhdl/DSP_OUTPUT.vhd` |
+| `DSP_PREADD` | VHDL `src/vhdl/DSP_PREADD.vhd` |
+| `DSP_PREADD_DATA` | VHDL `src/vhdl/DSP_PREADD_DATA.vhd` |
 | `EFUSE_USR` | Verilog only |
 | `FDCE` | VHDL `src/vhdl/FDCE.vhd` |
 | `FDPE` | VHDL `src/vhdl/FDPE.vhd` |
