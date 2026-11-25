@@ -8715,6 +8715,7 @@ package vcomponents is
   end component GTYE4_COMMON;
 
   -- HARD_SYNC.v
+  -- vhdl: src/vhdl/HARD_SYNC.vhd is analysed instead of this Verilog
   component HARD_SYNC is
     generic (
       INIT : bit := '0';
@@ -11441,6 +11442,7 @@ package vcomponents is
   end component HBM_TWO_STACK_INTF;
 
   -- HPIO_VREF.v
+  -- vhdl: src/vhdl/HPIO_VREF.vhd is analysed instead of this Verilog
   component HPIO_VREF is
     generic (
       VREF_CNTR : string := "OFF"
@@ -23464,6 +23466,7 @@ package vcomponents is
   end component RFDAC;
 
   -- RIU_OR.v
+  -- vhdl: src/vhdl/RIU_OR.vhd is analysed instead of this Verilog
   component RIU_OR is
     generic (
       SIM_DEVICE : string := "ULTRASCALE";
@@ -24559,6 +24562,7 @@ package vcomponents is
   end component XORCY;
 
   -- ZHOLD_DELAY.v
+  -- vhdl: src/vhdl/ZHOLD_DELAY.vhd is analysed instead of this Verilog
   component ZHOLD_DELAY is
     generic (
       IS_DLYIN_INVERTED : bit := '0';
