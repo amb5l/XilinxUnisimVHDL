@@ -16,22 +16,22 @@ BIBUF                           vhdl  std_logic inout; weak drive modeled strong
 BITSLICE_CONTROL                vlog
 BSCANE2                         vlog
 BUF                             vhdl
-BUFCE_LEAF                      vlog
-BUFCE_ROW                       vlog
+BUFCE_LEAF                      vhdl  SYNC while I is 0; ASYNC follows CE; no $finish
+BUFCE_ROW                       vhdl  no $finish; HARDSYNC matches SYNC
 BUFG                            vhdl
-BUFGCE                          vlog
-BUFGCE_DIV                      vlog
-BUFGCTRL                        vlog
+BUFGCE                          vhdl  SYNC/ASYNC/HARDSYNC; STARTUP_SYNC on every device
+BUFGCE_DIV                      vhdl  divide 1..8; HARDSYNC only on VERSAL*
+BUFGCTRL                        vhdl  HARDSYNC and STARTUP_SYNC only on VERSAL*
 BUFGP                           vhdl
-BUFG_GT                         vlog
-BUFG_GT_SYNC                    vlog
-BUFG_PS                         vlog
+BUFG_GT                         vhdl  1 ps O delay except VERSAL*; DIV 000 is pass-through
+BUFG_GT_SYNC                    vhdl  CESYNC is rv 1; CLRSYNC is rv 0
+BUFG_PS                         vhdl  gated by ~GSR; STARTUP_SYNC only on VERSAL*
 BUFH                            vhdl
-BUFHCE                          vlog
-BUFIO                           vlog
-BUFMR                           vlog
-BUFMRCE                         vlog
-BUFR                            vlog
+BUFHCE                          vhdl  two BUFGCTRL; ASYNC drives IGNORE0
+BUFIO                           vhdl
+BUFMR                           vhdl
+BUFMRCE                         vhdl  two BUFGCTRL; CE_TYPE is unused
+BUFR                            vhdl  BYPASS is a buf; 7SERIES counts i_ce
 CAPTUREE2                       vlog
 CARRY4                          vhdl
 CARRY8                          vhdl  rv0 on inputs; DUAL_CY4 splits at CI_TOP; other CARRY_TYPE $finish

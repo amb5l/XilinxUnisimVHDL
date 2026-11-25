@@ -13,6 +13,9 @@ package unisim_sim is
   --   GTS is '1', then '0' after 0 ns  (glbl TOC_WIDTH = 0)
   procedure roc(signal gsr : out std_ulogic);
   procedure toc(signal gts : out std_ulogic);
+  -- glbl.GRESTORE: low, high at 10 ns for 10 ns, then low
+  -- (GRES_START = GRES_WIDTH = 10000 ps).
+  procedure grestore(signal g : out std_ulogic);
 
   function to_sul(b : bit) return std_ulogic;
   function buf1(i : std_ulogic) return std_ulogic;
@@ -60,7 +63,30 @@ package unisim_sim is
   function lut_eval(init : bit_vector; sel : std_ulogic_vector) return std_ulogic;
   function gate_in(clr : std_ulogic; inv : bit) return std_ulogic;
   function rv1(s : std_ulogic) return std_ulogic;
+  -- (d === 'Z') || (d xor inv). Z is 1; the invert does not apply to Z.
+  function rv1x(d : std_ulogic; inv : bit) return std_ulogic;
   function vxor(d : std_ulogic; inv : bit) return std_ulogic;
+  -- True when SIM_DEVICE is one of the VERSAL* names the clock buffers
+  -- treat as "versal or later" (HARDSYNC / STARTUP_SYNC stay enabled).
+  function sim_versal(s : string) return boolean;
+  -- BUFGCE_DIV / BUFG_GT divider. count is an integer, so an uninitialised
+  -- Verilog X is represented only by first_rise / first_half.
+  type bufg_div_t is record
+    o : std_ulogic;
+    count : integer;
+    first_rise : std_ulogic;
+    first_half : std_ulogic;
+  end record;
+  -- Procedural assign while gsr_muxed is 1: O=0, count=0, first_rise=1,
+  -- first_half=0.
+  function bufg_div_held return bufg_div_t;
+  -- One firing of the divider always. first_n = 1 copies i_ce and ignores
+  -- clr. clr of 1 resets; clr of 0 advances; any other clr holds.
+  function bufg_div_step(
+    st : bufg_div_t;
+    i_ce, clr : std_ulogic;
+    first_n, second_n : integer
+  ) return bufg_div_t;
   function latch_sre(
     q, clk, d, set, rst, ge : std_ulogic
   ) return std_ulogic;
@@ -123,6 +149,16 @@ package body unisim_sim is
   begin
     gts <= '1';
     gts <= '0' after 0 ns;
+    wait;
+  end procedure;
+
+  procedure grestore(signal g : out std_ulogic) is
+  begin
+    g <= '0';
+    wait for 10 ns;
+    g <= '1';
+    wait for 10 ns;
+    g <= '0';
     wait;
   end procedure;
 
@@ -463,6 +499,65 @@ package body unisim_sim is
     else
       return 'X';
     end if;
+  end function;
+
+  function rv1x(d : std_ulogic; inv : bit) return std_ulogic is
+  begin
+    if d = 'Z' then
+      return '1';
+    end if;
+    return vxor(d, inv);
+  end function;
+
+  function sim_versal(s : string) return boolean is
+    constant tag : string := "VERSAL";
+  begin
+    if s'length < tag'length then
+      return false;
+    end if;
+    return s(s'left to s'left + tag'length - 1) = tag;
+  end function;
+
+  function bufg_div_held return bufg_div_t is
+  begin
+    return ('0', 0, '1', '0');
+  end function;
+
+  function bufg_div_step(
+    st : bufg_div_t;
+    i_ce, clr : std_ulogic;
+    first_n, second_n : integer
+  ) return bufg_div_t is
+    variable r : bufg_div_t := st;
+  begin
+    if first_n = 1 then
+      r.o := i_ce;
+      return r;
+    end if;
+    if clr = '1' then
+      r.o := '0';
+      r.count := 1;
+      r.first_half := '1';
+      r.first_rise := '1';
+    elsif clr = '0' then
+      if i_ce = '1' and r.first_rise = '1' then
+        r.o := '1';
+        r.count := 1;
+        r.first_half := '1';
+        r.first_rise := '0';
+      elsif r.count = second_n and r.first_half = '0' then
+        r.o := not r.o;
+        r.count := 1;
+        r.first_half := '1';
+      elsif r.count = first_n and r.first_half = '1' then
+        r.o := not r.o;
+        r.count := 1;
+        r.first_half := '0';
+      elsif r.first_rise = '0' then
+        r.count := r.count + 1;
+      end if;
+    end if;
+    return r;
   end function;
 
   -- Verilog bitwise xor with a 1-bit parameter. X and Z become X.

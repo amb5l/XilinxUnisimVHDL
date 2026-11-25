@@ -1,7 +1,7 @@
 # Primitive status
 
 Which source is analysed is `config/primitives.txt` (`vlog`, `vhdl`, or
-`skip`). Ninety-two simple primitives are hand-written VHDL; see
+`skip`). One hundred and five simple primitives are hand-written VHDL; see
 [vhdl-models.md](vhdl-models.md). The rest of this table is still the
 Verilog model from the XilinxUnisimLibrary submodule. `GTM_DUAL` is the
 only `skip`: it is SystemVerilog and is not in this table. Notes in the
@@ -16,22 +16,22 @@ note records that the weak Verilog driver is modeled strong.
 | `BITSLICE_CONTROL` | Verilog only |
 | `BSCANE2` | Verilog only |
 | `BUF` | VHDL `src/vhdl/BUF.vhd` |
-| `BUFCE_LEAF` | Verilog only |
-| `BUFCE_ROW` | Verilog only |
+| `BUFCE_LEAF` | VHDL `src/vhdl/BUFCE_LEAF.vhd` |
+| `BUFCE_ROW` | VHDL `src/vhdl/BUFCE_ROW.vhd` |
 | `BUFG` | VHDL `src/vhdl/BUFG.vhd` |
-| `BUFG_GT` | Verilog only |
-| `BUFG_GT_SYNC` | Verilog only |
-| `BUFG_PS` | Verilog only |
-| `BUFGCE` | Verilog only |
-| `BUFGCE_DIV` | Verilog only |
-| `BUFGCTRL` | Verilog only |
+| `BUFG_GT` | VHDL `src/vhdl/BUFG_GT.vhd` |
+| `BUFG_GT_SYNC` | VHDL `src/vhdl/BUFG_GT_SYNC.vhd` |
+| `BUFG_PS` | VHDL `src/vhdl/BUFG_PS.vhd` |
+| `BUFGCE` | VHDL `src/vhdl/BUFGCE.vhd` |
+| `BUFGCE_DIV` | VHDL `src/vhdl/BUFGCE_DIV.vhd` |
+| `BUFGCTRL` | VHDL `src/vhdl/BUFGCTRL.vhd` |
 | `BUFGP` | VHDL `src/vhdl/BUFGP.vhd` |
 | `BUFH` | VHDL `src/vhdl/BUFH.vhd` |
-| `BUFHCE` | Verilog only |
-| `BUFIO` | Verilog only |
-| `BUFMR` | Verilog only |
-| `BUFMRCE` | Verilog only |
-| `BUFR` | Verilog only |
+| `BUFHCE` | VHDL `src/vhdl/BUFHCE.vhd` |
+| `BUFIO` | VHDL `src/vhdl/BUFIO.vhd` |
+| `BUFMR` | VHDL `src/vhdl/BUFMR.vhd` |
+| `BUFMRCE` | VHDL `src/vhdl/BUFMRCE.vhd` |
+| `BUFR` | VHDL `src/vhdl/BUFR.vhd` |
 | `CAPTUREE2` | Verilog only |
 | `CARRY4` | VHDL `src/vhdl/CARRY4.vhd` |
 | `CARRY8` | VHDL `src/vhdl/CARRY8.vhd` |
