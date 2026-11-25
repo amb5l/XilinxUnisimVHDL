@@ -11761,6 +11761,7 @@ package vcomponents is
   end component IBUFDS_GTE2;
 
   -- IBUFDS_GTE3.v
+  -- vhdl: src/vhdl/IBUFDS_GTE3.vhd is analysed instead of this Verilog
   component IBUFDS_GTE3 is
     generic (
       REFCLK_EN_TX_PATH : bit := '0';
@@ -11777,6 +11778,7 @@ package vcomponents is
   end component IBUFDS_GTE3;
 
   -- IBUFDS_GTE4.v
+  -- vhdl: src/vhdl/IBUFDS_GTE4.vhd is analysed instead of this Verilog
   component IBUFDS_GTE4 is
     generic (
       REFCLK_EN_TX_PATH : bit := '0';
@@ -13917,6 +13919,7 @@ package vcomponents is
   end component OBUFDS_GTE3;
 
   -- OBUFDS_GTE3_ADV.v
+  -- vhdl: src/vhdl/OBUFDS_GTE3_ADV.vhd is analysed instead of this Verilog
   component OBUFDS_GTE3_ADV is
     generic (
       REFCLK_EN_TX_PATH : bit := '0';
@@ -13947,6 +13950,7 @@ package vcomponents is
   end component OBUFDS_GTE4;
 
   -- OBUFDS_GTE4_ADV.v
+  -- vhdl: src/vhdl/OBUFDS_GTE4_ADV.vhd is analysed instead of this Verilog
   component OBUFDS_GTE4_ADV is
     generic (
       REFCLK_EN_TX_PATH : bit := '0';

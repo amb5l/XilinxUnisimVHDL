@@ -690,6 +690,22 @@ short pulse is checked on the VHDL side. Possible NVC bug.
 `tb_eq_misc` compares all four with the submodule Verilog. A Verilog
 `X` arrives on a VHDL port as `U`.
 
+## Seventeenth batch
+
+`IBUFDS_GTE4` drives `O` from `I` unless `REFCLK_EN_TX_PATH` is set or
+`CEB` is 1. `Z` and `X` on `I` become `X`. `ODIV2` copies `O`, toggles
+on each rising edge of `I`, or stays 0, from `REFCLK_HROW_CK_SEL`.
+`CEB` of 0 or `Z` lets that divider count. `IBUFDS_GTE3` drives `O` to
+0 when the TX path or `CEB` is set, and otherwise passes `I`, including
+`Z`. Only `CEB` 0 advances its divider; a divider that is already 1
+still clears on the next rising edge. `OBUFDS_GTE4_ADV` is `Z` unless
+the TX path is on and `CEB` is not 1, then `O` is the `I` bit selected
+by `RXRECCLK_SEL` and `OB` is its inverse. `OBUFDS_GTE3_ADV` is the
+same select into `bufif0` and `notif0`, with `GTS` in the enable. The
+100 ps GTE4 specify path is not copied.
+
+`tb_eq_gte` compares all four with the submodule Verilog.
+
 ## Adding another primitive
 
 1. Read the Verilog functional model (`XIL_TIMING` undefined). Reimplement
@@ -704,7 +720,8 @@ short pulse is checked on the VHDL side. Possible NVC bug.
    `test/tb/tb_eq_bufg.vhd`, `test/tb/tb_eq_ddr.vhd`,
    `test/tb/tb_eq_dsp.vhd`,    `test/tb/tb_eq_dsp48.vhd`,
    `test/tb/tb_eq_bram.vhd`,    `test/tb/tb_eq_serdes.vhd`, `test/tb/tb_eq_mmcm.vhd`,
-   `test/tb/tb_eq_cfg.vhd`, or `test/tb/tb_eq_misc.vhd` so the
+   `test/tb/tb_eq_cfg.vhd`, `test/tb/tb_eq_misc.vhd`, or
+   `test/tb/tb_eq_gte.vhd` so the
    VHDL model and the submodule Verilog see the same stimulus.
    Exhaustive for a small combinational cell. For a register, cover
    GSR, clock enable, reset priority, `INIT`, and `IS_*_INVERTED`.
