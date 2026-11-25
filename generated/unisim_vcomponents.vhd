@@ -11889,6 +11889,7 @@ package vcomponents is
   end component IBUFDS_INTERMDISABLE_INT;
 
   -- IBUFDSE3.v
+  -- vhdl: src/vhdl/IBUFDSE3.vhd is analysed instead of this Verilog
   component IBUFDSE3 is
     generic (
       DIFF_TERM : boolean := FALSE;
@@ -11910,6 +11911,7 @@ package vcomponents is
   end component IBUFDSE3;
 
   -- IBUFE3.v
+  -- vhdl: src/vhdl/IBUFE3.vhd is analysed instead of this Verilog
   component IBUFE3 is
     generic (
       IBUF_LOW_PWR : boolean := TRUE;
@@ -13890,6 +13892,7 @@ package vcomponents is
   end component OBUFDS;
 
   -- OBUFDS_DPHY.v
+  -- vhdl: src/vhdl/OBUFDS_DPHY.vhd is analysed instead of this Verilog
   component OBUFDS_DPHY is
     generic (
       IOSTANDARD : string := "DEFAULT"

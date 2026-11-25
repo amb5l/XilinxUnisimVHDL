@@ -1,7 +1,7 @@
 # Primitive status
 
 Which source is analysed is `config/primitives.txt` (`vlog`, `vhdl`, or
-`skip`). One hundred and fifty-one simple primitives are hand-written VHDL; see
+`skip`). One hundred and fifty-four simple primitives are hand-written VHDL; see
 [vhdl-models.md](vhdl-models.md). The rest of this table is still the
 Verilog model from the XilinxUnisimLibrary submodule. `GTM_DUAL` is the
 only `skip`: it is SystemVerilog and is not in this table. Notes in the
@@ -110,8 +110,8 @@ note records that the weak Verilog driver is modeled strong.
 | `IBUFDS_IBUFDISABLE_INT` | VHDL `src/vhdl/IBUFDS_IBUFDISABLE_INT.vhd` |
 | `IBUFDS_INTERMDISABLE` | VHDL `src/vhdl/IBUFDS_INTERMDISABLE.vhd` |
 | `IBUFDS_INTERMDISABLE_INT` | VHDL `src/vhdl/IBUFDS_INTERMDISABLE_INT.vhd` |
-| `IBUFDSE3` | Verilog only |
-| `IBUFE3` | Verilog only |
+| `IBUFDSE3` | VHDL `src/vhdl/IBUFDSE3.vhd` |
+| `IBUFE3` | VHDL `src/vhdl/IBUFE3.vhd` |
 | `ICAPE2` | Verilog only |
 | `ICAPE3` | Verilog only |
 | `IDDR` | VHDL `src/vhdl/IDDR.vhd` |
@@ -167,7 +167,7 @@ note records that the weak Verilog driver is modeled strong.
 | `MUXF9` | VHDL `src/vhdl/MUXF9.vhd` |
 | `OBUF` | VHDL `src/vhdl/OBUF.vhd` |
 | `OBUFDS` | VHDL `src/vhdl/OBUFDS.vhd` |
-| `OBUFDS_DPHY` | Verilog only |
+| `OBUFDS_DPHY` | VHDL `src/vhdl/OBUFDS_DPHY.vhd` |
 | `OBUFDS_GTE3` | VHDL `src/vhdl/OBUFDS_GTE3.vhd` |
 | `OBUFDS_GTE3_ADV` | VHDL `src/vhdl/OBUFDS_GTE3_ADV.vhd` |
 | `OBUFDS_GTE4` | VHDL `src/vhdl/OBUFDS_GTE4.vhd` |
