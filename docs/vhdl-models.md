@@ -431,6 +431,52 @@ a clock before comparing: on this NVC a Verilog nonblocking assignment
 and the continuous assign to the port each become visible to the VHDL
 testbench on the next resume of the stimulus process.
 
+## Tenth batch
+
+`DSP_PREADD`, `DSP_MULTIPLIER`, `DSP_C_DATA`, `DSP_M_DATA`,
+`DSP_A_B_DATA`, `DSP_PREADD_DATA`, `DSP_ALU`, and `DSP_OUTPUT` are the
+DSP58 sub-blocks. Each Verilog source `$finish`s unless `XIL_TIMING` is
+defined. The VHDL models are the functional behaviour, with no kill
+switch and no attribute `$finish`. `DSP48E1` and `DSP48E2` stay Verilog
+for the next batch.
+
+`XIL_TIMING` is a usable reference for `DSP_PREADD` and
+`DSP_MULTIPLIER`. Their behavioural assigns read the ports, so the
+specify paths do not hide the result. `tb_eq_dsp` analyses those two
+with `-D XIL_TIMING` and compares them directly. The same netlist does
+not work for the registered cells: `C_delay` and the other delay nets
+stay undriven, and the reference output stays 0. Those six are
+self-checked from the Verilog equations.
+
+`DSP_PREADD` adds or subtracts a 27-bit value and wraps. `INMODE2`
+selects `D_DATA`; 0 selects zero; `X` makes the sum `X`.
+`DSP_MULTIPLIER` is a signed 27 by 18 product. Even product bits go to `U`
+and odd bits go to `V`, with `U(44)` held at 1 and `V(44)` the inverted
+sign. `USE_MULT` `"NONE"` forces the product to 0. An unknown
+`AMULTSEL`, `BMULTSEL`, or `USE_MULT` falls back to `A`, `B`, or
+`MULTIPLY`.
+
+`DSP_C_DATA` and `DSP_M_DATA` register `C`, or `U` and `V`, when the
+register generic is 1. `C` is rv 1. `DSP_A_B_DATA` has a two-deep
+pipeline. `AREG`/`BREG` of 0 passes the port or the cascade, 1 clocks
+the port into stage 2, and 2 clocks stage 1 into stage 2. `A` and `B`
+are rv 1. An unknown `A_INPUT` or `B_INPUT` is `DIRECT`. The
+`AREG`/`ACASCREG` legality check is not implemented.
+
+`DSP_PREADD_DATA` forces the `D` and `AD` registers off when both
+multiplier selects are the direct ports or `USE_MULT` is `"NONE"`.
+`DIN` is rv 0. `PREADDINSEL` `"B"` sign-extends `B`. An unknown select
+falls back to `A`.
+
+`DSP_ALU` is the W/X/Y/Z mux and the four SIMD slices. `ALU_OUT` is
+delayed 1 ps, matching the Verilog. Unless `USE_SIMD` is `ONE48`, `U`
+and `V` are replaced by `45'h100000000000`. An unknown `USE_SIMD` is
+`ONE48`. The OPMODE DRC is not modelled. `DSP_OUTPUT` registers `P`
+when `PREG` is 1. `P_FDBK` is always that register, so it stays 0 when
+`PREG` is 0. Pattern detect follows the mask, and an unknown string
+attribute falls back to `NO_RESET`, `RESET`, `MASK`, `PATTERN`, or
+`NO_PATDET`. `tb_eq_dsp` records 123 checks.
+
 ## Adding another primitive
 
 1. Read the Verilog functional model (`XIL_TIMING` undefined). Reimplement
@@ -442,7 +488,8 @@ testbench on the next resume of the stimulus process.
 4. Extend    `test/tb/tb_eq.vhd` (`EQ_PRIMS`), `test/tb/tb_eq_io.vhd`
    (`EQ_IO_PRIMS`), `test/tb/tb_eq_ff.vhd` (`EQ_FF_PRIMS`),
    `test/tb/tb_eq_ram.vhd` (`EQ_RAM_PRIMS`), `test/tb/tb_eq_simprim.vhd`,
-   `test/tb/tb_eq_bufg.vhd`, or `test/tb/tb_eq_ddr.vhd` so the
+   `test/tb/tb_eq_bufg.vhd`, `test/tb/tb_eq_ddr.vhd`, or
+   `test/tb/tb_eq_dsp.vhd` so the
    VHDL model and the submodule Verilog see the same stimulus.
    Exhaustive for a small combinational cell. For a register, cover
    GSR, clock enable, reset priority, `INIT`, and `IS_*_INVERTED`.
