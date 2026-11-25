@@ -1,7 +1,7 @@
 # Primitive status
 
 Which source is analysed is `config/primitives.txt` (`vlog`, `vhdl`, or
-`skip`). One hundred and thirty-five simple primitives are hand-written VHDL; see
+`skip`). One hundred and thirty-nine simple primitives are hand-written VHDL; see
 [vhdl-models.md](vhdl-models.md). The rest of this table is still the
 Verilog model from the XilinxUnisimLibrary submodule. `GTM_DUAL` is the
 only `skip`: it is SystemVerilog and is not in this table. Notes in the
@@ -38,12 +38,12 @@ note records that the weak Verilog driver is modeled strong.
 | `CFGLUT5` | VHDL `src/vhdl/CFGLUT5.vhd` |
 | `CMAC` | Verilog only |
 | `CMACE4` | Verilog only |
-| `DCIRESET` | Verilog only |
+| `DCIRESET` | VHDL `src/vhdl/DCIRESET.vhd` |
 | `DCM_ADV` | Verilog only |
 | `DCM_SP` | Verilog only |
 | `DIFFINBUF` | VHDL `src/vhdl/DIFFINBUF.vhd` |
-| `DNA_PORT` | Verilog only |
-| `DNA_PORTE2` | Verilog only |
+| `DNA_PORT` | VHDL `src/vhdl/DNA_PORT.vhd` |
+| `DNA_PORTE2` | VHDL `src/vhdl/DNA_PORTE2.vhd` |
 | `DPHY_DIFFINBUF` | VHDL `src/vhdl/DPHY_DIFFINBUF.vhd` |
 | `DSP48E1` | VHDL `src/vhdl/DSP48E1.vhd` |
 | `DSP48E2` | VHDL `src/vhdl/DSP48E2.vhd` |
@@ -55,7 +55,7 @@ note records that the weak Verilog driver is modeled strong.
 | `DSP_OUTPUT` | VHDL `src/vhdl/DSP_OUTPUT.vhd` |
 | `DSP_PREADD` | VHDL `src/vhdl/DSP_PREADD.vhd` |
 | `DSP_PREADD_DATA` | VHDL `src/vhdl/DSP_PREADD_DATA.vhd` |
-| `EFUSE_USR` | Verilog only |
+| `EFUSE_USR` | VHDL `src/vhdl/EFUSE_USR.vhd` |
 | `FDCE` | VHDL `src/vhdl/FDCE.vhd` |
 | `FDPE` | VHDL `src/vhdl/FDPE.vhd` |
 | `FDRE` | VHDL `src/vhdl/FDRE.vhd` |

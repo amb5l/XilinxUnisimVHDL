@@ -645,6 +645,24 @@ does not lock on this NVC; that is left as a possible NVC bug.
 that `%m` is an unknown format specifier. The locked clocks still
 match; those messages are left as printed.
 
+## Fifteenth batch
+
+`EFUSE_USR` drives `EFUSEUSR` from `SIM_EFUSE_VALUE`. `DCIRESET`
+drops `LOCKED` when `RST` is high and raises it 100 ns after `RST`
+falls. That delay is the Verilog continuous assign (`#(100 ns, 0)`),
+so the bench compares the rise. On this NVC the fall takes 100 ns as
+well; the VHDL keeps the 0 ns fall, and the bench does not require
+the Verilog to match until 100 ns later. A short pulse does not
+`$finish`.
+
+`DNA_PORT` is a 57-bit shift register, MSB out first. `READ` reloads
+`SIM_DNA_VALUE` and `SHIFT` appends `DIN` at the LSB. `DNA_PORTE2` is
+96 bits, LSB out first, and `SHIFT` inserts `DIN` at the MSB. `READ`
+wins. The 100 ps specify path is not copied. An out-of-range
+`SIM_DNA_VALUE` on `DNA_PORTE2` does not `$finish`.
+
+`tb_eq_cfg` compares all four with the submodule Verilog.
+
 ## Adding another primitive
 
 1. Read the Verilog functional model (`XIL_TIMING` undefined). Reimplement
@@ -658,8 +676,8 @@ match; those messages are left as printed.
    `test/tb/tb_eq_ram.vhd` (`EQ_RAM_PRIMS`), `test/tb/tb_eq_simprim.vhd`,
    `test/tb/tb_eq_bufg.vhd`, `test/tb/tb_eq_ddr.vhd`,
    `test/tb/tb_eq_dsp.vhd`,    `test/tb/tb_eq_dsp48.vhd`,
-   `test/tb/tb_eq_bram.vhd`, `test/tb/tb_eq_serdes.vhd`, or
-   `test/tb/tb_eq_mmcm.vhd` so the
+   `test/tb/tb_eq_bram.vhd`,    `test/tb/tb_eq_serdes.vhd`, `test/tb/tb_eq_mmcm.vhd`, or
+   `test/tb/tb_eq_cfg.vhd` so the
    VHDL model and the submodule Verilog see the same stimulus.
    Exhaustive for a small combinational cell. For a register, cover
    GSR, clock enable, reset priority, `INIT`, and `IS_*_INVERTED`.

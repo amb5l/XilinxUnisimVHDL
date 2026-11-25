@@ -1428,6 +1428,7 @@ package vcomponents is
   end component CMACE4;
 
   -- DCIRESET.v
+  -- vhdl: src/vhdl/DCIRESET.vhd is analysed instead of this Verilog
   component DCIRESET is
     port (
       LOCKED : out std_ulogic;
@@ -1558,6 +1559,7 @@ package vcomponents is
   end component DIFFINBUF;
 
   -- DNA_PORT.v
+  -- vhdl: src/vhdl/DNA_PORT.vhd is analysed instead of this Verilog
   component DNA_PORT is
     generic (
       SIM_DNA_VALUE : bit_vector(56 downto 0) := "000000000000000000000000000000000000000000000000000000000"
@@ -1572,6 +1574,7 @@ package vcomponents is
   end component DNA_PORT;
 
   -- DNA_PORTE2.v
+  -- vhdl: src/vhdl/DNA_PORTE2.vhd is analysed instead of this Verilog
   component DNA_PORTE2 is
     generic (
       SIM_DNA_VALUE : bit_vector(95 downto 0) := X"000000000000000000000000"
@@ -2037,6 +2040,7 @@ package vcomponents is
   end component DSP_PREADD_DATA;
 
   -- EFUSE_USR.v
+  -- vhdl: src/vhdl/EFUSE_USR.vhd is analysed instead of this Verilog
   component EFUSE_USR is
     generic (
       SIM_EFUSE_VALUE : bit_vector(31 downto 0) := X"00000000"
