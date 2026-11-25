@@ -11,7 +11,7 @@ on:
 
 env:
   NVC_REPO: https://github.com/amb5l/nvc
-  NVC_REF: cursor/vlog-unisim-mixed-c281
+  NVC_REF: unisim/5-generics
 
 jobs:
   unisim:
