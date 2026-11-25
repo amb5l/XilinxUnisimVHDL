@@ -585,10 +585,16 @@ data word. An illegal width or tristate pairing does not `$finish`.
 The same bench compares both cells. `OSERDES` has its own clocks. It
 records 80 checks for `ISERDES` and 80 for `OSERDES`.
 
-`ISERDES_NODELAY`, `ISERDESE1` and `OSERDESE1` still have their
-behaviour in the open Verilog. `ISERDESE2`, `OSERDESE2`, `ISERDESE3`
-and `OSERDESE3` instantiate `B_` / `SIP_` modules that are not in the
-submodule.
+`ISERDES_NODELAY` is that deserializer without the tap chain. The
+falling-edge sample is `posedge CLKB`. `RST` replaces `SR` and stores
+0, because `REV` is tied off. There is no `O` port. The bench drives
+`CLKB` as the complement of `CLK` in the same delta and compares
+networking and memory, both DDR and width 4. With `ISERDES` that is
+160 checks, and `OSERDES` adds 80.
+
+`ISERDESE1` and `OSERDESE1` still have their behaviour in the open
+Verilog. `ISERDESE2`, `OSERDESE2`, `ISERDESE3` and `OSERDESE3`
+instantiate `B_` / `SIP_` modules that are not in the submodule.
 
 ## Adding another primitive
 

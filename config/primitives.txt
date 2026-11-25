@@ -143,7 +143,7 @@ ISERDES                         vhdl  DDR/SDR; 300 ps flops not copied; tap dela
 ISERDESE1                       vlog
 ISERDESE2                       vlog
 ISERDESE3                       vlog
-ISERDES_NODELAY                 vlog
+ISERDES_NODELAY                 vhdl  CLKB is the falling edge; RST stores 0; no tap delay; no $finish
 JTAG_SIME2                      vlog
 KEEPER                          vlog
 LDCE                            vhdl

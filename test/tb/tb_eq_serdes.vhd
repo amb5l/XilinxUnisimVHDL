@@ -15,11 +15,15 @@ end entity tb_eq_serdes;
 architecture sim of tb_eq_serdes is
   constant step : time := 5 ns;
 
-  signal clk, clkdiv, d, oclk, sr, slip : std_ulogic := '0';
+  signal clk, clkb, clkdiv, d, oclk, sr, slip : std_ulogic := '0';
   signal q1_h, q2_h, q3_h, q4_h, q5_h, q6_h : std_ulogic;
   signal q1_v, q2_v, q3_v, q4_v, q5_v, q6_v : std_ulogic;
   signal qm1_h, qm2_h, qm3_h, qm4_h : std_ulogic;
   signal qm1_v, qm2_v, qm3_v, qm4_v : std_ulogic;
+  signal nq1_h, nq2_h, nq3_h, nq4_h, nq5_h, nq6_h : std_ulogic;
+  signal nq1_v, nq2_v, nq3_v, nq4_v, nq5_v, nq6_v : std_ulogic;
+  signal nm1_h, nm2_h, nm3_h, nm4_h : std_ulogic;
+  signal nm1_v, nm2_v, nm3_v, nm4_v : std_ulogic;
   signal oser_done : boolean := false;
 
   signal oclk_s, odiv, oce : std_ulogic := '0';
@@ -47,6 +51,22 @@ architecture sim of tb_eq_serdes is
       BITSLIP, CE1, CE2, CLK, CLKDIV, D : in std_ulogic;
       DLYCE, DLYINC, DLYRST, OCLK, REV : in std_ulogic;
       SHIFTIN1, SHIFTIN2, SR : in std_ulogic
+    );
+  end component;
+
+  component ISERDES_NODELAY is
+    generic (
+      BITSLIP_ENABLE : boolean := FALSE;
+      DATA_RATE : string := "DDR";
+      DATA_WIDTH : integer := 4;
+      INTERFACE_TYPE : string := "MEMORY";
+      NUM_CE : integer := 2
+    );
+    port (
+      Q1, Q2, Q3, Q4, Q5, Q6 : out std_ulogic;
+      SHIFTOUT1, SHIFTOUT2 : out std_ulogic;
+      BITSLIP, CE1, CE2, CLK, CLKB, CLKDIV, D, OCLK, RST : in std_ulogic;
+      SHIFTIN1, SHIFTIN2 : in std_ulogic
     );
   end component;
 
@@ -114,6 +134,51 @@ begin
       REV => '0', SHIFTIN1 => '0', SHIFTIN2 => '0', SR => sr
     );
 
+  nd_net_h : entity unisim.ISERDES_NODELAY
+    generic map (
+      BITSLIP_ENABLE => TRUE, DATA_RATE => "DDR", DATA_WIDTH => 4,
+      INTERFACE_TYPE => "NETWORKING", NUM_CE => 2
+    )
+    port map (
+      Q1 => nq1_h, Q2 => nq2_h, Q3 => nq3_h, Q4 => nq4_h, Q5 => nq5_h, Q6 => nq6_h,
+      SHIFTOUT1 => open, SHIFTOUT2 => open,
+      BITSLIP => slip, CE1 => '1', CE2 => '1', CLK => clk, CLKB => clkb, CLKDIV => clkdiv,
+      D => d, OCLK => '0', RST => sr, SHIFTIN1 => '0', SHIFTIN2 => '0'
+    );
+  nd_net_v : ISERDES_NODELAY
+    generic map (
+      BITSLIP_ENABLE => TRUE, DATA_RATE => "DDR", DATA_WIDTH => 4,
+      INTERFACE_TYPE => "NETWORKING", NUM_CE => 2
+    )
+    port map (
+      Q1 => nq1_v, Q2 => nq2_v, Q3 => nq3_v, Q4 => nq4_v, Q5 => nq5_v, Q6 => nq6_v,
+      SHIFTOUT1 => open, SHIFTOUT2 => open,
+      BITSLIP => slip, CE1 => '1', CE2 => '1', CLK => clk, CLKB => clkb, CLKDIV => clkdiv,
+      D => d, OCLK => '0', RST => sr, SHIFTIN1 => '0', SHIFTIN2 => '0'
+    );
+  nd_mem_h : entity unisim.ISERDES_NODELAY
+    generic map (
+      BITSLIP_ENABLE => FALSE, DATA_RATE => "DDR", DATA_WIDTH => 4,
+      INTERFACE_TYPE => "MEMORY", NUM_CE => 1
+    )
+    port map (
+      Q1 => nm1_h, Q2 => nm2_h, Q3 => nm3_h, Q4 => nm4_h, Q5 => open, Q6 => open,
+      SHIFTOUT1 => open, SHIFTOUT2 => open,
+      BITSLIP => '0', CE1 => '1', CE2 => '1', CLK => clk, CLKB => clkb, CLKDIV => clkdiv,
+      D => d, OCLK => oclk, RST => sr, SHIFTIN1 => '0', SHIFTIN2 => '0'
+    );
+  nd_mem_v : ISERDES_NODELAY
+    generic map (
+      BITSLIP_ENABLE => FALSE, DATA_RATE => "DDR", DATA_WIDTH => 4,
+      INTERFACE_TYPE => "MEMORY", NUM_CE => 1
+    )
+    port map (
+      Q1 => nm1_v, Q2 => nm2_v, Q3 => nm3_v, Q4 => nm4_v, Q5 => open, Q6 => open,
+      SHIFTOUT1 => open, SHIFTOUT2 => open,
+      BITSLIP => '0', CE1 => '1', CE2 => '1', CLK => clk, CLKB => clkb, CLKDIV => clkdiv,
+      D => d, OCLK => oclk, RST => sr, SHIFTIN1 => '0', SHIFTIN2 => '0'
+    );
+
   oser_h : entity unisim.OSERDES
     generic map (DATA_RATE_OQ => "DDR", DATA_RATE_TQ => "BUF", DATA_WIDTH => 4, TRISTATE_WIDTH => 1)
     port map (
@@ -169,12 +234,14 @@ begin
       wait for 1 ns;
       if rise then
         clk <= '1';
+        clkb <= '0';
         oclk <= '1';
         if div_rise then
           clkdiv <= '1';
         end if;
       else
         clk <= '0';
+        clkb <= '1';
         oclk <= '0';
       end if;
       wait for step;
@@ -183,10 +250,12 @@ begin
     wait for 120 ns;
     sr <= '1';
     clk <= '1';
+    clkb <= '0';
     oclk <= '1';
     clkdiv <= '1';
     wait for step;
     clk <= '0';
+    clkb <= '1';
     oclk <= '0';
     wait for step;
     clkdiv <= '0';
@@ -206,6 +275,16 @@ begin
         check(qm2_h, qm2_v, "mem q2");
         check(qm3_h, qm3_v, "mem q3");
         check(qm4_h, qm4_v, "mem q4");
+        check(nq1_h, nq1_v, "nd q1");
+        check(nq2_h, nq2_v, "nd q2");
+        check(nq3_h, nq3_v, "nd q3");
+        check(nq4_h, nq4_v, "nd q4");
+        check(nq5_h, nq5_v, "nd q5");
+        check(nq6_h, nq6_v, "nd q6");
+        check(nm1_h, nm1_v, "nd mem q1");
+        check(nm2_h, nm2_v, "nd mem q2");
+        check(nm3_h, nm3_v, "nd mem q3");
+        check(nm4_h, nm4_v, "nd mem q4");
         clkdiv <= '0';
         wait for step;
       end if;

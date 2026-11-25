@@ -13005,6 +13005,7 @@ package vcomponents is
   end component ISERDES;
 
   -- ISERDES_NODELAY.v
+  -- vhdl: src/vhdl/ISERDES_NODELAY.vhd is analysed instead of this Verilog
   component ISERDES_NODELAY is
     generic (
       BITSLIP_ENABLE : boolean := FALSE;
