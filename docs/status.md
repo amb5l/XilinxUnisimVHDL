@@ -1,7 +1,7 @@
 # Primitive status
 
 Which source is analysed is `config/primitives.txt` (`vlog`, `vhdl`, or
-`skip`). Eighty-two simple primitives are hand-written VHDL; see
+`skip`). Ninety-two simple primitives are hand-written VHDL; see
 [vhdl-models.md](vhdl-models.md). The rest of this table is still the
 Verilog model from the XilinxUnisimLibrary submodule. `GTM_DUAL` is the
 only `skip`: it is SystemVerilog and is not in this table. Notes in the
@@ -41,10 +41,10 @@ note records that the weak Verilog driver is modeled strong.
 | `DCIRESET` | Verilog only |
 | `DCM_ADV` | Verilog only |
 | `DCM_SP` | Verilog only |
-| `DIFFINBUF` | Verilog only |
+| `DIFFINBUF` | VHDL `src/vhdl/DIFFINBUF.vhd` |
 | `DNA_PORT` | Verilog only |
 | `DNA_PORTE2` | Verilog only |
-| `DPHY_DIFFINBUF` | Verilog only |
+| `DPHY_DIFFINBUF` | VHDL `src/vhdl/DPHY_DIFFINBUF.vhd` |
 | `DSP48E1` | Verilog only, tested (test/tb/tb_dsp48e1.vhd) |
 | `DSP48E2` | Verilog only |
 | `DSP_A_B_DATA` | Verilog only |
@@ -96,7 +96,7 @@ note records that the weak Verilog driver is modeled strong.
 | `IBUF_ANALOG` | VHDL `src/vhdl/IBUF_ANALOG.vhd` |
 | `IBUF_IBUFDISABLE` | VHDL `src/vhdl/IBUF_IBUFDISABLE.vhd` |
 | `IBUF_INTERMDISABLE` | VHDL `src/vhdl/IBUF_INTERMDISABLE.vhd` |
-| `IBUFCTRL` | Verilog only |
+| `IBUFCTRL` | VHDL `src/vhdl/IBUFCTRL.vhd` |
 | `IBUFDS` | VHDL `src/vhdl/IBUFDS.vhd` |
 | `IBUFDS_DIFF_OUT` | VHDL `src/vhdl/IBUFDS_DIFF_OUT.vhd` |
 | `IBUFDS_DIFF_OUT_IBUFDISABLE` | VHDL `src/vhdl/IBUFDS_DIFF_OUT_IBUFDISABLE.vhd` |
@@ -124,7 +124,7 @@ note records that the weak Verilog driver is modeled strong.
 | `ILKN` | Verilog only |
 | `ILKNE4` | Verilog only |
 | `IN_FIFO` | Verilog only |
-| `INBUF` | Verilog only |
+| `INBUF` | VHDL `src/vhdl/INBUF.vhd` |
 | `INV` | VHDL `src/vhdl/INV.vhd` |
 | `IOBUF` | VHDL `src/vhdl/IOBUF.vhd` |
 | `IOBUF_ANALOG` | VHDL `src/vhdl/IOBUF_ANALOG.vhd` |
@@ -229,12 +229,12 @@ note records that the weak Verilog driver is modeled strong.
 | `RAMB18E2` | Verilog only |
 | `RAMB36E1` | Verilog only |
 | `RAMB36E2` | Verilog only |
-| `RAMD32` | Verilog only; `$finish` when `XIL_TIMING` is undefined |
-| `RAMD32M64` | Verilog only; `$finish` when `XIL_TIMING` is undefined |
-| `RAMD64E` | Verilog only; `$finish` when `XIL_TIMING` is undefined |
-| `RAMS32` | Verilog only; `$finish` when `XIL_TIMING` is undefined |
-| `RAMS64E` | Verilog only; `$finish` when `XIL_TIMING` is undefined |
-| `RAMS64E1` | Verilog only; `$finish` when `XIL_TIMING` is undefined |
+| `RAMD32` | VHDL `src/vhdl/RAMD32.vhd` |
+| `RAMD32M64` | VHDL `src/vhdl/RAMD32M64.vhd` |
+| `RAMD64E` | VHDL `src/vhdl/RAMD64E.vhd` |
+| `RAMS32` | VHDL `src/vhdl/RAMS32.vhd` |
+| `RAMS64E` | VHDL `src/vhdl/RAMS64E.vhd` |
+| `RAMS64E1` | VHDL `src/vhdl/RAMS64E1.vhd` |
 | `RFADC` | Verilog only |
 | `RFDAC` | Verilog only |
 | `RIU_OR` | Verilog only |

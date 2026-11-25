@@ -41,10 +41,10 @@ CMACE4                          vlog
 DCIRESET                        vlog
 DCM_ADV                         vlog  needs NVC unisim/6-mmcm ($realtime)
 DCM_SP                          vlog  needs NVC unisim/6-mmcm ($realtime)
-DIFFINBUF                       vlog
+DIFFINBUF                       vhdl  no $finish; IBUFDS receiver plus INBUF oscillator
 DNA_PORT                        vlog
 DNA_PORTE2                      vlog
-DPHY_DIFFINBUF                  vlog
+DPHY_DIFFINBUF                  vhdl  no $finish; HS pair; LP strength is 0 on std_ulogic
 DSP48E1                         vlog
 DSP48E2                         vlog
 DSP_ALU                         vlog
@@ -94,7 +94,7 @@ HPIO_VREF                       vlog
 HSADC                           vlog
 HSDAC                           vlog
 IBUF                            vhdl
-IBUFCTRL                        vlog
+IBUFCTRL                        vhdl  no $finish; disable is (not T or IBUFDISABLE); INTERMDISABLE unused
 IBUFDS                          vhdl
 IBUFDSE3                        vlog
 IBUFDS_DIFF_OUT                 vhdl
@@ -124,7 +124,7 @@ IDELAYE2_FINEDELAY              vlog
 IDELAYE3                        vlog
 ILKN                            vlog
 ILKNE4                          vlog
-INBUF                           vlog
+INBUF                           vhdl  no $finish; PAD unless OSC_EN=1, then offset oscillator
 INV                             vhdl
 IN_FIFO                         vlog
 IOBUF                           vhdl  std_logic inout; 'Z' when disabled; no drive strength
@@ -230,12 +230,12 @@ RAMB18E1                        vlog
 RAMB18E2                        vlog
 RAMB36E1                        vlog
 RAMB36E2                        vlog
-RAMD32                          vlog  $finish when XIL_TIMING is undefined
-RAMD32M64                       vlog  $finish when XIL_TIMING is undefined
-RAMD64E                         vlog  $finish when XIL_TIMING is undefined
-RAMS32                          vlog  $finish when XIL_TIMING is undefined
-RAMS64E                         vlog  $finish when XIL_TIMING is undefined
-RAMS64E1                        vlog  $finish when XIL_TIMING is undefined
+RAMD32                          vhdl  no $finish; rv1(WE) write, zero delay; X address ignored
+RAMD32M64                       vhdl  no $finish; Verilog body is empty, O stays Z
+RAMD64E                         vhdl  no $finish; WADR7/6 must match space unless masked
+RAMS32                          vhdl  no $finish; single address; same write rule as RAMD32
+RAMS64E                         vhdl  no $finish; ADR5:0 plus WADR7/6 space compare
+RAMS64E1                        vhdl  no $finish; third space bit WADR8
 RFADC                           vlog
 RFDAC                           vlog
 RIU_OR                          vlog

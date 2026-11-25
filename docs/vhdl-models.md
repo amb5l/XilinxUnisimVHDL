@@ -71,16 +71,13 @@ Left as Verilog this batch, and why:
   elaborate an `inout` port.
 - `PULLUP`, `PULLDOWN`, and `KEEPER` drive weak or pull strengths.
   `std_ulogic` cannot represent them.
-- `INBUF` and `DIFFINBUF` `$finish` at time 0 when `XIL_TIMING` is
-  undefined, so the Verilog reference cannot sit in an equivalence
-  bench. The functional path is a small mux, but it is not converted
-  until that `$finish` is handled.
 - `OBUFDS_DPHY` is a supply-strength LP/HS state machine.
 - `IBUFDS_DPHY`, `IBUFDS_GTE2`, `IBUFDS_GTE3`, `IBUFDS_GTE4`,
-  `IBUFDS_GTM`, `IBUFE3`, `IBUFDSE3`, `DPHY_DIFFINBUF`, `IBUFCTRL`,
-  `OBUFDS_GTE3_ADV`, `OBUFDS_GTE4_ADV`, and `OBUFDS_GTM` are larger than
-  this batch (extra clocks, a vector data input, or an RXRECCLK select)
-  and stay `vlog`.
+  `IBUFDS_GTM`, `IBUFE3`, `IBUFDSE3`, `OBUFDS_GTE3_ADV`,
+  `OBUFDS_GTE4_ADV`, and `OBUFDS_GTM` are larger than this batch
+  (extra clocks, a vector data input, or an RXRECCLK select) and stay
+  `vlog`. `INBUF`, `DIFFINBUF`, `DPHY_DIFFINBUF`, and `IBUFCTRL` are
+  the seventh batch.
 
 ## Third batch
 
@@ -238,10 +235,8 @@ code, including X, writes nothing. The write is not delayed. `O` is a
 reg, so it stays X until `A` changes or 100 ps have passed. A write
 before that publishes only the written bit.
 
-`RAMS32`, `RAMD32`, `RAMS64E`, `RAMD64E`, `RAMS64E1`, and `RAMD32M64`
-stay Verilog. Each one executes `$finish` at time 0 when `XIL_TIMING`
-is undefined, so the functional body cannot be an equivalence
-reference. Block RAM (`RAMB*`) is not part of this batch.
+Block RAM (`RAMB*`) is not part of this batch. The SIMPRIM
+`$finish` RAMs are the seventh batch.
 
 ## Sixth batch
 
@@ -262,6 +257,41 @@ single chain, which is also the parameter's fallback. The Verilog
 copies `CARRY_TYPE` into a reg 2 ps after time 0. `tb_eq` compares
 after that, over every binary `S`/`DI` word with `CI` and `CI_TOP` at
 0 and 1, then the `X` and `Z` cases.
+
+## Seventh batch
+
+The SIMPRIM cells whose Verilog executes `$finish` when `XIL_TIMING`
+is undefined. This pin has 22 of them. `LUTCY1`, `LUTCY2`, `LCLK_DELAY`,
+`RAMD64E5`, and `RAMS64E5` are not in the submodule. This batch is the
+RAMs and the input buffers. `DSP_*` stays with the DSP batch.
+`BUFCE_ROW` stays with the clock buffers. `HBM_*` stays later.
+
+`RAMD32` and `RAMS32` write on the rising edge of `CLK xor
+IS_CLK_INVERTED` when `rv 1` of `WE` is 1, with no transport delay.
+`Z` on `WE` writes and `X` does not. A non-binary address reads `X`
+and the write is ignored. `RAMD64E`, `RAMS64E`, and `RAMS64E1` add
+the address-space compare on `WADR6` and up: a mask bit of 0 requires
+that write-address bit to equal the space bit. `RAMD32M64` has an
+empty behavioral model, so `O` stays `Z`.
+
+`IBUFCTRL` passes `I` through when `USE_IBUFDISABLE` is false. When it
+is true, `O` is `I` if `not T or IBUFDISABLE` is 0, `0` if that is 1,
+and `X` otherwise. `INTERMDISABLE` is unused. `INBUF` follows `PAD`
+unless `OSC_EN` is 1, which selects the offset oscillator already used
+by `IOBUFE3`. `DIFFINBUF` is that oscillator plus the `IBUFDS`
+receiver. `DPHY_DIFFINBUF` resolves the HS pair the same way. Its LP
+outputs are 0: the Verilog enables them only for Strong strength, and
+`std_ulogic` has no strength.
+
+`tb_eq_simprim` analyses the Verilog with `-D XIL_TIMING`. NVC accepts
+the specify blocks and the simulation runs. `$setuphold` does not drive
+the delayed data and clock nets, so a RAM write in that elaboration
+never happens and it is not a functional reference. The RAM checks are
+self-checking. `IBUFCTRL`, the `DIFFINBUF` receiver, `INBUF` with
+`OSC_EN` held at 0, and the empty `RAMD32M64` do not depend on those
+nets and are compared with the Verilog. The oscillator is self-checked.
+`DPHY_DIFFINBUF` calls `$sformat`, which this NVC does not implement, so
+that reference aborts and the cell is self-checked.
 
 ## Conventions
 
