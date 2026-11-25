@@ -55,8 +55,8 @@ make test     # RAM32X1D, DSP48E1, RAMB18E1, VHDL/Verilog equivalence
 `make` prints how many Verilog files it analysed. `config/primitives.txt`
 is the index: `vlog` rows plus `glbl.v` are analysed, `vhdl` rows
 analyse `src/vhdl/<NAME>.vhd` instead, and `skip` rows are left out of
-the file list. This pin is 125 `vlog`, 124 `vhdl`, and `GTM_DUAL` `skip`
-(SystemVerilog), so the Verilog analyse list is 126 including `glbl.v`.
+the file list. This pin is 122 `vlog`, 127 `vhdl`, and `GTM_DUAL` `skip`
+(SystemVerilog), so the Verilog analyse list is 123 including `glbl.v`.
 `XIL_TIMING` and `XIL_DR` are left undefined.
 
 Other targets:
@@ -85,7 +85,7 @@ Note that `GSR` is high for the first 100 ns.
 
 ## Status
 
-One hundred and twenty-four simple primitives are hand-written VHDL
+One hundred and twenty-seven simple primitives are hand-written VHDL
 ([docs/vhdl-models.md](docs/vhdl-models.md)); the rest are still the
 Verilog models. Self-checking benches cover RAM32X1D, DSP48E1,
 RAMB18E1, and VHDL-versus-Verilog equivalence benches for the converted

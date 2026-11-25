@@ -1,7 +1,7 @@
 # Primitive status
 
 Which source is analysed is `config/primitives.txt` (`vlog`, `vhdl`, or
-`skip`). One hundred and twenty-four simple primitives are hand-written VHDL; see
+`skip`). One hundred and twenty-seven simple primitives are hand-written VHDL; see
 [vhdl-models.md](vhdl-models.md). The rest of this table is still the
 Verilog model from the XilinxUnisimLibrary submodule. `GTM_DUAL` is the
 only `skip`: it is SystemVerilog and is not in this table. Notes in the
@@ -138,8 +138,8 @@ note records that the weak Verilog driver is modeled strong.
 | `IOBUFDS_INTERMDISABLE` | VHDL `src/vhdl/IOBUFDS_INTERMDISABLE.vhd` |
 | `IOBUFDSE3` | VHDL `src/vhdl/IOBUFDSE3.vhd` |
 | `IOBUFE3` | VHDL `src/vhdl/IOBUFE3.vhd` |
-| `ISERDES` | Verilog only |
-| `ISERDES_NODELAY` | Verilog only |
+| `ISERDES` | VHDL `src/vhdl/ISERDES.vhd` |
+| `ISERDES_NODELAY` | VHDL `src/vhdl/ISERDES_NODELAY.vhd` |
 | `ISERDESE1` | Verilog only |
 | `ISERDESE2` | Verilog only |
 | `ISERDESE3` | Verilog only |
@@ -184,7 +184,7 @@ note records that the weak Verilog driver is modeled strong.
 | `ODELAYE2_FINEDELAY` | Verilog only |
 | `ODELAYE3` | Verilog only |
 | `OR2L` | VHDL `src/vhdl/OR2L.vhd` |
-| `OSERDES` | Verilog only |
+| `OSERDES` | VHDL `src/vhdl/OSERDES.vhd` |
 | `OSERDESE1` | Verilog only |
 | `OSERDESE2` | Verilog only |
 | `OSERDESE3` | Verilog only |

@@ -12953,6 +12953,7 @@ package vcomponents is
   end component IOBUFE3;
 
   -- ISERDES.v
+  -- vhdl: src/vhdl/ISERDES.vhd is analysed instead of this Verilog
   component ISERDES is
     generic (
       BITSLIP_ENABLE : boolean := FALSE;
@@ -13004,6 +13005,7 @@ package vcomponents is
   end component ISERDES;
 
   -- ISERDES_NODELAY.v
+  -- vhdl: src/vhdl/ISERDES_NODELAY.vhd is analysed instead of this Verilog
   component ISERDES_NODELAY is
     generic (
       BITSLIP_ENABLE : boolean := FALSE;
@@ -14187,6 +14189,7 @@ package vcomponents is
   end component OR2L;
 
   -- OSERDES.v
+  -- vhdl: src/vhdl/OSERDES.vhd is analysed instead of this Verilog
   component OSERDES is
     generic (
       DATA_RATE_OQ : string := "DDR";

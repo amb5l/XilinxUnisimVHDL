@@ -546,6 +546,56 @@ stay `X`. The bench checks the VHDL against the write-first values the
 Verilog describes. `tb_ramb18e1` still writes `A5A5` and reads it back.
 `tb_eq_bram` records 61 checks.
 
+## Thirteenth batch
+
+`ISERDES` is the input deserializer. It is not a SIMPRIM `$finish`
+cell, so `XIL_TIMING` is left undefined. The rank flops in the Verilog
+are delayed 300 ps and the muxes 60 ps. Neither delay is copied. The
+IDELAY tap chain (`SIM_TAPDELAY_VALUE`, `SIM_DELAY_D`) is zero delay,
+so `IOBDELAY` `"IBUF"`, `"IFD"` and `"BOTH"` match `"NONE"`. An illegal
+`BITSLIP_ENABLE` / `INTERFACE_TYPE` pair, an unknown width, or an
+unknown rate does not `$finish`. An unknown width uses the DDR width-4
+divider.
+
+`DDR` samples `D` on both edges of `CLK`. `SDR` samples the rising
+edge. `MEMORY` clocks the fabric rank from `OCLK`. `NETWORKING` clocks
+it from `CLK`. Rank 2 loads from `CLKDIV`, or from the internal divider
+when bitslip is enabled, and rank 3 follows `CLKDIV`. `Q1` is the
+oldest bit of the parallel word. `NUM_CE` 2 holds `CE1` while `CLKDIV`
+is high and `CE2` while it is low. `SR` wins over `REV` unless `REV`
+is 1 and the matching `SRVAL` is 1, in which case the flop takes the
+inverted `SRVAL`.
+
+`tb_eq_serdes` compares networking and memory, both DDR and width 4,
+with the submodule Verilog. `D` is changed before the clock: the
+Verilog sampler reads a nonblocking copy of `D`, so a same-timestep
+change loses the race. `OCLK` is driven with `CLK`, not through a
+delta. `SR` is pulsed first, because a Verilog instance created from
+VHDL does not see `glbl.GSR`.
+
+`OSERDES` is the output serializer. `XIL_TIMING` stays undefined. The
+specify paths are 100 ps and the rank flops are delayed 1 ps; neither
+is copied. `SAME_EDGE` is the DDR clocking: the high level of `CLK` is
+one rank and the low level is the rank captured on the falling edge.
+The load generator matches the `ISERDES` divider. `DATA_RATE_TQ`
+`"BUF"` with `TRISTATE_WIDTH` 1 passes `T1` through to `TQ`. DDR
+tristate width 4 shifts `T1` to `T4` on the same load pulse as the
+data word. An illegal width or tristate pairing does not `$finish`.
+
+The same bench compares both cells. `OSERDES` has its own clocks. It
+records 80 checks for `ISERDES` and 80 for `OSERDES`.
+
+`ISERDES_NODELAY` is that deserializer without the tap chain. The
+falling-edge sample is `posedge CLKB`. `RST` replaces `SR` and stores
+0, because `REV` is tied off. There is no `O` port. The bench drives
+`CLKB` as the complement of `CLK` in the same delta and compares
+networking and memory, both DDR and width 4. With `ISERDES` that is
+160 checks, and `OSERDES` adds 80.
+
+`ISERDESE1` and `OSERDESE1` still have their behaviour in the open
+Verilog. `ISERDESE2`, `OSERDESE2`, `ISERDESE3` and `OSERDESE3`
+instantiate `B_` / `SIP_` modules that are not in the submodule.
+
 ## Adding another primitive
 
 1. Read the Verilog functional model (`XIL_TIMING` undefined). Reimplement
@@ -558,8 +608,8 @@ Verilog describes. `tb_ramb18e1` still writes `A5A5` and reads it back.
    (`EQ_IO_PRIMS`), `test/tb/tb_eq_ff.vhd` (`EQ_FF_PRIMS`),
    `test/tb/tb_eq_ram.vhd` (`EQ_RAM_PRIMS`), `test/tb/tb_eq_simprim.vhd`,
    `test/tb/tb_eq_bufg.vhd`, `test/tb/tb_eq_ddr.vhd`,
-   `test/tb/tb_eq_dsp.vhd`, `test/tb/tb_eq_dsp48.vhd`, or
-   `test/tb/tb_eq_bram.vhd` so the
+   `test/tb/tb_eq_dsp.vhd`, `test/tb/tb_eq_dsp48.vhd`,
+   `test/tb/tb_eq_bram.vhd`, or `test/tb/tb_eq_serdes.vhd` so the
    VHDL model and the submodule Verilog see the same stimulus.
    Exhaustive for a small combinational cell. For a register, cover
    GSR, clock enable, reset priority, `INIT`, and `IS_*_INVERTED`.

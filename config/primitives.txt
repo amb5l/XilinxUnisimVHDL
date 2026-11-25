@@ -139,11 +139,11 @@ IOBUFE3                         vhdl  std_logic inout; 'Z' when disabled; no dri
 IOBUF_ANALOG                    vhdl  std_logic inout; 'Z' when disabled; no drive strength
 IOBUF_DCIEN                     vhdl  std_logic inout; 'Z' when disabled; no drive strength
 IOBUF_INTERMDISABLE             vhdl  std_logic inout; 'Z' when disabled; no drive strength
-ISERDES                         vlog
+ISERDES                         vhdl  DDR/SDR; 300 ps flops not copied; tap delay 0; no $finish
 ISERDESE1                       vlog
 ISERDESE2                       vlog
 ISERDESE3                       vlog
-ISERDES_NODELAY                 vlog
+ISERDES_NODELAY                 vhdl  CLKB is the falling edge; RST stores 0; no tap delay; no $finish
 JTAG_SIME2                      vlog
 KEEPER                          vlog
 LDCE                            vhdl
@@ -185,7 +185,7 @@ ODELAYE2                        vlog
 ODELAYE2_FINEDELAY              vlog
 ODELAYE3                        vlog
 OR2L                            vhdl
-OSERDES                         vlog
+OSERDES                         vhdl  DDR/SDR; 1 ps flops not copied; no $finish
 OSERDESE1                       vlog
 OSERDESE2                       vlog
 OSERDESE3                       vlog
