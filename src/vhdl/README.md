@@ -1,9 +1,10 @@
 # Hand-written VHDL in library `unisim`
 
-Sources in this directory are analysed into the same `unisim` library as
-the Verilog primitives and `vcomponents`, after the generated package.
-`make` picks up every `*.vhd` here. There are none yet: every primitive
-is still the Verilog model from XilinxUnisimLibrary.
+A source here is analysed into the same `unisim` library as the Verilog
+primitives and `vcomponents`, after the generated package, when
+`config/primitives.txt` marks that primitive `vhdl`. The file name is
+`src/vhdl/<NAME>.vhd`. There are none yet: every Verilog primitive is
+still `vlog`.
 
 ## Conventions
 
@@ -22,11 +23,11 @@ is still the Verilog model from XilinxUnisimLibrary.
   unisim sources.
 - Behaviour that must survive `GSR` should wait until `glbl.GSR` has
   fallen. In these models that is 100 ns from time 0.
-- When a VHDL entity replaces a Verilog primitive, add the Verilog file
-  to `config/exclude.txt` so the two definitions of the same name are
-  not both in the library. Leave the component in `vcomponents` so
-  existing instantiations keep binding. Record the change in
-  `docs/status.md`.
+- When a VHDL entity replaces a Verilog primitive, set its `lang` to
+  `vhdl` in `config/primitives.txt`. `make` then analyses this file and
+  not the Verilog, so the two definitions of the same name are not both
+  in the library. The component stays in `vcomponents`. Record the
+  change in `docs/status.md`.
 
 `src/overrides/` is reserved for sources that patch around the submodule
 without editing it (the submodule is read-only). Nothing there is

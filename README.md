@@ -52,8 +52,11 @@ make          # analyse glbl.v and every unisim into build/unisim
 make test     # RAM32X1D, DSP48E1, RAMB18E1
 ```
 
-`make` prints how many Verilog files it analysed. With nothing in
-`config/exclude.txt` that is 250: `glbl.v` plus 249 primitives.
+`make` prints how many Verilog files it analysed. `config/primitives.txt`
+is the index: `vlog` rows plus `glbl.v` are analysed, `vhdl` rows
+analyse `src/vhdl/<NAME>.vhd` instead, and `skip` rows are left out of
+the file list. This pin is 249 `vlog`, no `vhdl`, and `GTM_DUAL` `skip`
+(SystemVerilog), so the Verilog analyse list is 250 including `glbl.v`.
 `XIL_TIMING` and `XIL_DR` are left undefined.
 
 Other targets:
@@ -62,6 +65,7 @@ Other targets:
 | --- | --- |
 | `make vcomponents` | Regenerate `generated/unisim_vcomponents.vhd` |
 | `make test` | Elaborate `tb_*` beside `unisim.GLBL` and run |
+| `make check` | Check `config/primitives.txt` (complete, sorted, aligned) |
 | `make clean` | Remove `build/` and `test/work/` |
 
 `BUILD` is the directory that receives the library (default `build`).
@@ -92,3 +96,12 @@ primitives under test override those vectors in
 [config/type_map.yaml](config/type_map.yaml). `real` generics (MMCM, PLL,
 DCM periods) analyse and do not elaborate yet. Details are in the
 porting guide.
+
+[config/primitives.txt](config/primitives.txt) names every primitive in
+the submodule. Notes record the known NVC gaps: MMCM/PLL/DCM models that
+call `$realtime` need `unisim/6-mmcm`, and `IOBUF*` `inout` ports use
+`bufif0` drive strength, which NVC does not elaborate (`in` and `out`
+only). `GTM_DUAL` is `skip` because the source is SystemVerilog. A
+`skip` row is still given a component declaration when the header
+parses, so a design that instantiates it can analyse. Details are in
+the porting guide.
