@@ -101,10 +101,10 @@ IBUFDS_DIFF_OUT                 vhdl
 IBUFDS_DIFF_OUT_IBUFDISABLE     vhdl
 IBUFDS_DIFF_OUT_INTERMDISABLE   vhdl
 IBUFDS_DPHY                     vlog
-IBUFDS_GTE2                     vlog
+IBUFDS_GTE2                     vhdl  O updates only when I changes; ODIV2 lags one edge
 IBUFDS_GTE3                     vhdl  O is I unless TX path or CEB; ODIV2 divide-by-2
 IBUFDS_GTE4                     vhdl  CEB === 1 gates O to 0; Z on I becomes X
-IBUFDS_GTM                      vlog
+IBUFDS_GTM                      vhdl  CEB === 1 gates O to 0; ODIV2 divide-by-2
 IBUFDS_IBUFDISABLE              vhdl
 IBUFDS_IBUFDISABLE_INT          vhdl
 IBUFDS_INTERMDISABLE            vhdl
@@ -173,8 +173,8 @@ OBUFDS_GTE3                     vhdl
 OBUFDS_GTE3_ADV                 vhdl  bufif0 of the selected I bit
 OBUFDS_GTE4                     vhdl
 OBUFDS_GTE4_ADV                 vhdl  Z unless TX path and CEB is not 1
-OBUFDS_GTM                      vlog
-OBUFDS_GTM_ADV                  vlog
+OBUFDS_GTM                      vhdl  Z unless TX path and CEB is not 1
+OBUFDS_GTM_ADV                  vhdl  selected I bit; RXRECCLK_SEL is a generic
 OBUFT                           vhdl
 OBUFTDS                         vhdl
 OBUFTDS_DCIEN                   vhdl

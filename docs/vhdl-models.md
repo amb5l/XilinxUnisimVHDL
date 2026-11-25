@@ -706,6 +706,23 @@ same select into `bufif0` and `notif0`, with `GTS` in the enable. The
 
 `tb_eq_gte` compares all four with the submodule Verilog.
 
+## Eighteenth batch
+
+`IBUFDS_GTE2` drives `O` with `I & ~CEB`, and that assignment runs
+only when `I` changes, so a later `CEB` is invisible until the next
+change on `I`. `ODIV2` is the divider flag from the previous rising
+edge. Only `CEB` 0 advances the count. `CLKCM_CFG`, `CLKRCV_TRST`
+and `CLKSWING_CFG` are unused, and an illegal value does not
+`$finish`.
+
+`IBUFDS_GTM` matches `IBUFDS_GTE4`: `CEB` must be 1 to force `O` to
+0, `Z` on `I` becomes `X`, and `CEB` of 0 or `Z` lets the divider
+count. `REFCLK_HROW_CK_SEL` is an integer. `OBUFDS_GTM` is `Z` unless
+the TX path is on and `CEB` is not 1. `OBUFDS_GTM_ADV` is the same
+enable on the `I` bit chosen by the `RXRECCLK_SEL` generic.
+
+`tb_eq_gtm` compares all four with the submodule Verilog.
+
 ## Adding another primitive
 
 1. Read the Verilog functional model (`XIL_TIMING` undefined). Reimplement
@@ -720,8 +737,8 @@ same select into `bufif0` and `notif0`, with `GTS` in the enable. The
    `test/tb/tb_eq_bufg.vhd`, `test/tb/tb_eq_ddr.vhd`,
    `test/tb/tb_eq_dsp.vhd`,    `test/tb/tb_eq_dsp48.vhd`,
    `test/tb/tb_eq_bram.vhd`,    `test/tb/tb_eq_serdes.vhd`, `test/tb/tb_eq_mmcm.vhd`,
-   `test/tb/tb_eq_cfg.vhd`, `test/tb/tb_eq_misc.vhd`, or
-   `test/tb/tb_eq_gte.vhd` so the
+   `test/tb/tb_eq_cfg.vhd`, `test/tb/tb_eq_misc.vhd`,
+   `test/tb/tb_eq_gte.vhd`, or `test/tb/tb_eq_gtm.vhd` so the
    VHDL model and the submodule Verilog see the same stimulus.
    Exhaustive for a small combinational cell. For a register, cover
    GSR, clock enable, reset priority, `INIT`, and `IS_*_INVERTED`.
