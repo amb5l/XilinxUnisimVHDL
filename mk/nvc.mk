@@ -62,6 +62,7 @@ compare:
 	  --report $(abspath $(LIBDIR))/compare_report.txt \
 	  --json $(abspath $(LIBDIR))/compare_report.json \
 	  $(if $(VIVADO),--vivado "$(VIVADO)",) \
+	  $(if $(VCOMP),--vcomp-name "$(VCOMP)",) \
 	  $(if $(STRICT),--strict,)
 
 clean:

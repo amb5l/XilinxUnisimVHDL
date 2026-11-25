@@ -21,9 +21,17 @@ repository root, with Vivado installed at
 python scripts/compare_vcomponents.py --vivado "C:\AMDDevTools\2026.1\Vivado"
 ```
 
-`--vivado` accepts the Vivado root, the `unisims` directory, or the
-`.vhd` file. The search is case-insensitive and looks for
-`data\vhdl\src\unisims\unisim_VCOMP.vhd`.
+`--vivado` accepts the Vivado root, the `unisims` directory, or one
+`.vhd` file. A directory search opens `unisim_VCOMP.vhd` only
+(case-insensitive). Other packages in that folder, including
+`retarget_VCOMP.vhd`, are not substitutes. If `unisim_VCOMP.vhd` is
+missing, the script exits 2 and names the VCOMP files it did see.
+
+Compare the retarget package on its own with:
+
+```bat
+python scripts/compare_vcomponents.py --vivado "C:\AMDDevTools\2026.1\Vivado" --vcomp-name retarget_VCOMP.vhd
+```
 
 The same paths can come from the environment. `VIVADO_VCOMP` is a file
 and wins over `XILINX_VIVADO`, which is the Vivado root:

@@ -10,7 +10,8 @@ components and normalised values; it does not copy Vivado source text.
 The Vivado root is read from --vivado, or from VIVADO_VCOMP (a file), or
 from XILINX_VIVADO (a directory). The component package is
 data/vhdl/src/unisims/unisim_VCOMP.vhd under that root. The filename match
-is case-insensitive.
+is case-insensitive and exact: retarget_VCOMP.vhd is not a substitute.
+Pass --vcomp-name retarget_VCOMP.vhd to compare that package instead.
 
 Exit status is 0 when both files parse, including when they differ.
 --strict exits 1 when a difference is not marked expected (type_map).
@@ -128,34 +129,91 @@ def _child_ci(directory: Path, name: str) -> Path | None:
     return None
 
 
-def locate_vcomp(spec: Path) -> Path:
-    """Find unisim_VCOMP.vhd from a file path or a Vivado directory."""
-    if spec.is_file():
-        return spec
+def _vcomp_files(directory: Path) -> list[Path]:
+    """*.vhd files in directory whose names contain 'vcomp'."""
+    try:
+        children = list(directory.iterdir())
+    except OSError:
+        return []
+    found = [
+        child
+        for child in children
+        if child.is_file()
+        and "vcomp" in child.name.lower()
+        and child.suffix.lower() == ".vhd"
+    ]
+    return sorted(found, key=lambda path: path.name.lower())
+
+
+def _exact_file(directory: Path, filename: str) -> Path | None:
+    matches = [child for child in _vcomp_files(directory) if child.name.lower() == filename.lower()]
+    # Also accept an exact name that does not contain the letters "vcomp".
+    if not matches:
+        found = _child_ci(directory, filename)
+        if found is not None and found.is_file():
+            matches = [found]
+    if len(matches) > 1:
+        names = ", ".join(path.name for path in matches)
+        raise FileNotFoundError(
+            f"more than one file matches {filename} in {directory}: {names}"
+        )
+    return matches[0] if matches else None
+
+
+def locate_unisims_dir(spec: Path) -> Path:
+    """The unisims directory holding the VCOMP packages.
+
+    Only the canonical data/vhdl/src/unisims chain is walked, plus a
+    directory the caller already pointed at when that directory itself
+    contains VCOMP packages. A shorter accidental match such as src/unisims
+    somewhere else in the Vivado tree is not used.
+    """
     if not spec.is_dir():
         raise FileNotFoundError(f"Vivado path does not exist: {spec}")
+    if _vcomp_files(spec):
+        return spec
     parts = list(VCOMP_REL)
-    for start in range(len(parts) + 1):
+    for index in range(len(parts)):
+        if index > 0 and spec.name.lower() != parts[index - 1]:
+            continue
         cur = spec
+        walked = False
         ok = True
-        for part in parts[start:]:
+        for part in parts[index:]:
             nxt = _child_ci(cur, part)
             if nxt is None or not nxt.is_dir():
                 ok = False
                 break
             cur = nxt
-        if not ok:
-            continue
-        found = _child_ci(cur, VCOMP_NAME)
-        if found is not None and found.is_file():
-            return found
+            walked = True
+        if ok and walked:
+            return cur
     raise FileNotFoundError(
-        f"could not find {VCOMP_NAME} under {spec} "
-        "(expected data/vhdl/src/unisims/unisim_VCOMP.vhd)"
+        f"could not find data/vhdl/src/unisims under {spec}"
     )
 
 
-def resolve_vivado(cli: str | None) -> Path:
+def locate_vcomp(spec: Path, filename: str = VCOMP_NAME) -> Path:
+    """Find filename from a file path or a Vivado directory.
+
+    A directory search returns only a case-insensitive exact name match.
+    retarget_VCOMP.vhd is never substituted for unisim_VCOMP.vhd.
+    """
+    if spec.is_file():
+        return spec
+    directory = locate_unisims_dir(spec)
+    found = _exact_file(directory, filename)
+    if found is not None:
+        return found
+    present = ", ".join(path.name for path in _vcomp_files(directory)) or "(none)"
+    raise FileNotFoundError(
+        f"{filename} not found in {directory}. VCOMP packages there: {present}. "
+        "Not substituting another file. "
+        "Pass --vcomp-name retarget_VCOMP.vhd to compare that package instead."
+    )
+
+
+def resolve_vivado(cli: str | None, filename: str = VCOMP_NAME) -> Path:
     if cli:
         spec = cli
     elif os.environ.get("VIVADO_VCOMP"):
@@ -167,7 +225,7 @@ def resolve_vivado(cli: str | None) -> Path:
             "pass --vivado, or set VIVADO_VCOMP to the package file, "
             "or set XILINX_VIVADO to the Vivado root"
         )
-    return locate_vcomp(Path(spec))
+    return locate_vcomp(Path(spec), filename)
 
 
 class Scan:
@@ -384,11 +442,25 @@ class Scan:
 
 
 def parse_components(text: str) -> dict[str, Component]:
+    """Component declarations in a package.
+
+    `component` starts a declaration only when it is the first token of a
+    declarative item. An attribute specification such as
+
+        attribute CELL_KIND of
+          GATE3 : component is "BLOCK";
+
+    contains the same keyword after a colon and is not a declaration.
+    `package ... is` opens the declarative region without a semicolon.
+    Parentheses keep semicolons inside interface lists from ending an item.
+    """
     sc = Scan(text)
     found: dict[str, Component] = {}
     order: dict[str, str] = {}
+    at_item = True
+    depth = 0
     while not sc.eof():
-        if sc.keyword("component"):
+        if at_item and depth == 0 and sc.keyword("component"):
             comp = sc.parse_component()
             key = comp.name.lower()
             if key in found:
@@ -397,8 +469,28 @@ def parse_components(text: str) -> dict[str, Component]:
                 )
             found[key] = comp
             order[key] = comp.name
-        else:
-            sc.consume_token()
+            at_item = True
+            continue
+        if sc.punct(";"):
+            if depth == 0:
+                at_item = True
+            continue
+        if sc.punct("("):
+            depth += 1
+            at_item = False
+            continue
+        if sc.punct(")"):
+            depth = max(0, depth - 1)
+            at_item = False
+            continue
+        if sc.punct(":"):
+            at_item = False
+            continue
+        if depth == 0 and sc.keyword("is"):
+            at_item = True
+            continue
+        sc.consume_token()
+        at_item = False
     return found
 
 
@@ -1115,8 +1207,14 @@ def build_report(
     ours_path: str,
     vivado_path: str,
 ) -> Report:
-    ours = parse_components(ours_text)
-    vivado = parse_components(vivado_text)
+    try:
+        ours = parse_components(ours_text)
+    except ParseError as exc:
+        raise ParseError(f"{ours_path}: {exc}") from exc
+    try:
+        vivado = parse_components(vivado_text)
+    except ParseError as exc:
+        raise ParseError(f"{vivado_path}: {exc}") from exc
     diffs = compare_sets(ours, vivado, type_map)
     return Report(ours_path, vivado_path, len(ours), len(vivado), diffs)
 
@@ -1126,7 +1224,13 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--ours", type=Path, default=DEFAULT_OURS)
     parser.add_argument(
         "--vivado",
-        help="Vivado root, unisims directory, or unisim_VCOMP.vhd file",
+        help="Vivado root, unisims directory, or a VCOMP .vhd file",
+    )
+    parser.add_argument(
+        "--vcomp-name",
+        default=VCOMP_NAME,
+        help="file name to open inside data/vhdl/src/unisims "
+        "(default unisim_VCOMP.vhd; retarget_VCOMP.vhd compares that package)",
     )
     parser.add_argument("--type-map", type=Path, default=DEFAULT_MAP)
     parser.add_argument("--report", type=Path, default=DEFAULT_REPORT)
@@ -1138,7 +1242,8 @@ def main(argv: list[str] | None = None) -> int:
     )
     args = parser.parse_args(argv)
     try:
-        vivado_path = resolve_vivado(args.vivado)
+        vivado_path = resolve_vivado(args.vivado, args.vcomp_name)
+        print(f"Vivado package: {vivado_path}")
         if not args.ours.is_file():
             raise FileNotFoundError(f"generated package not found: {args.ours}")
         type_map = load_type_map(str(args.type_map)) if args.type_map.is_file() else {}

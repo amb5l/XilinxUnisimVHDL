@@ -101,7 +101,9 @@ python scripts/compare_vcomponents.py --vivado "C:\AMDDevTools\2026.1\Vivado"
 ```
 
 The same lookup uses `%XILINX_VIVADO%` or the `VIVADO_VCOMP` file
-override. `make compare` works when GNU make and `python3` are on
+override. A directory search opens `unisim_VCOMP.vhd` only;
+`--vcomp-name retarget_VCOMP.vhd` compares the retarget package
+instead. `make compare` works when GNU make and `python3` are on
 `PATH` (`PYTHON=python` if the interpreter is named `python`). Reports
 land in `build/compare_report.txt` and `build/compare_report.json`.
 How to read them is [docs/compare.md](docs/compare.md).

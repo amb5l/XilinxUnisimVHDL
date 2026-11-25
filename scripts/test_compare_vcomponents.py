@@ -330,7 +330,74 @@ class CompareTests(unittest.TestCase):
             self.assertFalse(report.exists())
 
 
+class AttributeTests(unittest.TestCase):
+    def test_multiline_attribute_spec_is_not_a_component(self) -> None:
+        text = """
+        library ieee;
+        use ieee.std_logic_1164.all;
+        package demo is
+          type width is range 0 to 7;
+          constant KEEP_ME : integer := 1;
+          component GATE3 is
+            port (
+              Y : out std_ulogic;
+              A : in std_ulogic
+            );
+          end component;
+          attribute CELL_KIND of
+            GATE3 : component is "BLOCK";
+          attribute CELL_KIND : string;
+          component WIREBUF is
+            generic (KIND : string := "PLAIN");
+            port (Y : out std_ulogic);
+          end component WIREBUF;
+          attribute CELL_KIND of WIREBUF : component is "BLOCK";
+        end package demo;
+        """
+        comps = cv.parse_components(text)
+        self.assertEqual(set(comps), {"gate3", "wirebuf"})
+        self.assertNotIn("is", comps)
+        self.assertEqual(comps["gate3"].ports[0].name.lower(), "y")
+        self.assertEqual(comps["wirebuf"].generics[0].default_norm, "str:PLAIN")
+
+
 class LocateTests(unittest.TestCase):
+    def test_directory_picks_unisim_not_retarget(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "Vivado"
+            leaf = root / "data" / "vhdl" / "src" / "unisims"
+            decoy = root / "src" / "unisims"
+            leaf.mkdir(parents=True)
+            decoy.mkdir(parents=True)
+            unisim = leaf / "Unisim_Vcomp.VHD"
+            retarget = leaf / "retarget_VCOMP.vhd"
+            unisim.write_text("component REAL_PKG is end component;\n", encoding="utf-8")
+            retarget.write_text("component OTHER_PKG is end component;\n", encoding="utf-8")
+            (decoy / "retarget_VCOMP.vhd").write_text(
+                "component DECOY is end component;\n", encoding="utf-8"
+            )
+            (leaf / "primitive_VCOMP.vhd").write_text(
+                "component PRIM is end component;\n", encoding="utf-8"
+            )
+            self.assertEqual(cv.locate_vcomp(root), unisim)
+            self.assertEqual(cv.locate_vcomp(leaf), unisim)
+            self.assertEqual(cv.locate_vcomp(root, "retarget_VCOMP.vhd"), retarget)
+
+    def test_missing_unisim_does_not_fall_back(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "Vivado"
+            leaf = root / "data" / "vhdl" / "src" / "unisims"
+            leaf.mkdir(parents=True)
+            (leaf / "retarget_VCOMP.vhd").write_text(
+                "component OTHER_PKG is end component;\n", encoding="utf-8"
+            )
+            with self.assertRaises(FileNotFoundError) as caught:
+                cv.locate_vcomp(root)
+            message = str(caught.exception)
+            self.assertIn("unisim_vcomp.vhd", message.lower())
+            self.assertIn("retarget_VCOMP.vhd", message)
+            self.assertIn("Not substituting", message)
+
     def test_case_insensitive_search_from_root_and_leaf(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp) / "Vivado"
