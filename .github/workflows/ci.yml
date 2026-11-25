@@ -11,7 +11,10 @@ on:
 
 env:
   NVC_REPO: https://github.com/amb5l/nvc
-  NVC_REF: cursor/vlog-unisim-mixed-c281
+  # Branch cursor/vlog-unisim-mixed-c281 was deleted; this is that tip.
+  # A 40-hex NVC_REF is fetched directly. Later branches (unisim/5-generics)
+  # are selected by name.
+  NVC_REF: fcc3c3f77dc47ced790c58c3ba86455d1ce2b3fd
 
 jobs:
   unisim:

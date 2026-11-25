@@ -22,12 +22,13 @@ are not a dependency of the generator.
 ## Quick start
 
 NVC needs the mixed Verilog/VHDL fixes that are not in upstream yet.
-Build that branch (the CI workflow does the same thing):
+Build commit `fcc3c3f` (the CI workflow does the same thing; the old
+branch name `cursor/vlog-unisim-mixed-c281` has been deleted):
 
 ```sh
 git clone https://github.com/amb5l/nvc
 cd nvc
-git checkout cursor/vlog-unisim-mixed-c281
+git checkout fcc3c3f77dc47ced790c58c3ba86455d1ce2b3fd
 ./autogen.sh
 mkdir build && cd build
 ../configure --prefix="$HOME/nvc"
