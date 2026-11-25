@@ -1,7 +1,7 @@
 # Primitive status
 
 Which source is analysed is `config/primitives.txt` (`vlog`, `vhdl`, or
-`skip`). Sixty-one simple primitives are hand-written VHDL; see
+`skip`). Seventy-nine simple primitives are hand-written VHDL; see
 [vhdl-models.md](vhdl-models.md). The rest of this table is still the
 Verilog model from the XilinxUnisimLibrary submodule. `GTM_DUAL` is the
 only `skip`: it is SystemVerilog and is not in this table. Notes in the
@@ -210,31 +210,31 @@ note records that the weak Verilog driver is modeled strong.
 | `PS8` | Verilog only |
 | `PULLDOWN` | Verilog only |
 | `PULLUP` | Verilog only |
-| `RAM128X1D` | Verilog only |
-| `RAM128X1S` | Verilog only |
-| `RAM256X1D` | Verilog only |
-| `RAM256X1S` | Verilog only |
-| `RAM32M` | Verilog only |
-| `RAM32M16` | Verilog only |
-| `RAM32X16DR8` | Verilog only |
-| `RAM32X1D` | Verilog only, tested (test/tb/tb_ram32x1d.vhd) |
-| `RAM32X1S` | Verilog only |
-| `RAM512X1S` | Verilog only |
-| `RAM64M` | Verilog only |
-| `RAM64M8` | Verilog only |
-| `RAM64X1D` | Verilog only |
-| `RAM64X1S` | Verilog only |
-| `RAM64X8SW` | Verilog only |
+| `RAM128X1D` | VHDL `src/vhdl/RAM128X1D.vhd` |
+| `RAM128X1S` | VHDL `src/vhdl/RAM128X1S.vhd` |
+| `RAM256X1D` | VHDL `src/vhdl/RAM256X1D.vhd` |
+| `RAM256X1S` | VHDL `src/vhdl/RAM256X1S.vhd` |
+| `RAM32M` | VHDL `src/vhdl/RAM32M.vhd` |
+| `RAM32M16` | VHDL `src/vhdl/RAM32M16.vhd` |
+| `RAM32X16DR8` | VHDL `src/vhdl/RAM32X16DR8.vhd` |
+| `RAM32X1D` | VHDL `src/vhdl/RAM32X1D.vhd`, tested (test/tb/tb_ram32x1d.vhd) |
+| `RAM32X1S` | VHDL `src/vhdl/RAM32X1S.vhd` |
+| `RAM512X1S` | VHDL `src/vhdl/RAM512X1S.vhd` |
+| `RAM64M` | VHDL `src/vhdl/RAM64M.vhd` |
+| `RAM64M8` | VHDL `src/vhdl/RAM64M8.vhd` |
+| `RAM64X1D` | VHDL `src/vhdl/RAM64X1D.vhd` |
+| `RAM64X1S` | VHDL `src/vhdl/RAM64X1S.vhd` |
+| `RAM64X8SW` | VHDL `src/vhdl/RAM64X8SW.vhd` |
 | `RAMB18E1` | Verilog only, tested (test/tb/tb_ramb18e1.vhd) |
 | `RAMB18E2` | Verilog only |
 | `RAMB36E1` | Verilog only |
 | `RAMB36E2` | Verilog only |
-| `RAMD32` | Verilog only |
-| `RAMD32M64` | Verilog only |
-| `RAMD64E` | Verilog only |
-| `RAMS32` | Verilog only |
-| `RAMS64E` | Verilog only |
-| `RAMS64E1` | Verilog only |
+| `RAMD32` | Verilog only; `$finish` when `XIL_TIMING` is undefined |
+| `RAMD32M64` | Verilog only; `$finish` when `XIL_TIMING` is undefined |
+| `RAMD64E` | Verilog only; `$finish` when `XIL_TIMING` is undefined |
+| `RAMS32` | Verilog only; `$finish` when `XIL_TIMING` is undefined |
+| `RAMS64E` | Verilog only; `$finish` when `XIL_TIMING` is undefined |
+| `RAMS64E1` | Verilog only; `$finish` when `XIL_TIMING` is undefined |
 | `RFADC` | Verilog only |
 | `RFDAC` | Verilog only |
 | `RIU_OR` | Verilog only |
@@ -242,9 +242,9 @@ note records that the weak Verilog driver is modeled strong.
 | `RXTX_BITSLICE` | Verilog only |
 | `SIM_CONFIGE2` | Verilog only |
 | `SIM_CONFIGE3` | Verilog only |
-| `SRL16E` | Verilog only |
-| `SRLC16E` | Verilog only |
-| `SRLC32E` | Verilog only |
+| `SRL16E` | VHDL `src/vhdl/SRL16E.vhd` |
+| `SRLC16E` | VHDL `src/vhdl/SRLC16E.vhd` |
+| `SRLC32E` | VHDL `src/vhdl/SRLC32E.vhd` |
 | `STARTUPE2` | Verilog only |
 | `STARTUPE3` | Verilog only |
 | `SYSMONE1` | Verilog only |

@@ -190,6 +190,59 @@ IBUFDISABLE`. `sel == 1 ? a : sel == 0 ? b : X` (and the `===` form) is
   drivers are part of the resolution. `tb_iobuf` expects this
   strong-driver behaviour, not the weak-strength result.
 
+## Fifth batch
+
+`SRL16E`, `SRLC16E`, `SRLC32E`, `RAM32X1S`, `RAM32X1D`, `RAM64X1S`,
+`RAM64X1D`, `RAM128X1S`, `RAM128X1D`, `RAM256X1S`, `RAM256X1D`,
+`RAM512X1S`, `RAM32M`, `RAM32M16`, `RAM32X16DR8`, `RAM64M`, `RAM64M8`,
+`RAM64X8SW`. `test/tb/tb_eq_ram.vhd` compares each one with the submodule
+Verilog. None of these cells uses GSR.
+
+`SRL16E` shifts `{data[14:0], D}` on the rising edge of `CLK`, or the
+falling edge when `IS_CLK_INVERTED` is 1. `CE` of 1 or Z shifts; `CE` of
+0 or X does not. `Q` is `data` at `{A3,A2,A1,A0}`, and a non-0/1 address
+bit reads X. `SRLC16E` adds `Q15 = data(15)`. `SRLC32E` uses a vector
+address and `Q31 = data(31)`. The Verilog forces `INIT` onto the shift
+register until a 1 ns poll has seen `CLK` at its idle level (0, or 1
+when the clock is inverted), or until 101 ns. A 100 ps pulse between
+polls does not release the force and does not shift. The specify path
+`(CLK => Q) = 100 ps` is not applied by this NVC, so `Q` updates on the
+shift.
+
+The single-port and dual-port `RAM*X1S` / `RAM*X1D` cells write
+`mem[A] <= #100 D` on the rising edge of `WCLK xor IS_WCLK_INVERTED`,
+and only when `rv1(WE)` is 1. `WE` of Z writes. `WE` of X does not. The
+address is the pin value in that same delta, so a testbench that
+changes `A` and `WCLK` together writes the new address. The 100 ps
+delay is the functional delay at a 1 ps timescale, modeled with
+`transport` so a second write inside that window does not drop the
+first. A non-0/1 address bit reads X, and a write at that address does
+not change the memory. The read port of a dual-port cell is
+combinational and is not the write address.
+
+`RAM32M` and `RAM32M16` store a pair. `DI(0)` is written at the even
+bit `2*ADDR` and `DI(1)` at the odd bit, delayed 100 ps. The write
+index is assigned from `always @(ADDRD)` or `always @(ADDRH)`. That
+block does not run while the address is constant from time 0, so a
+write before the address changes does not land. Reads are
+combinational and do not use that copy. `RAM64M` and `RAM64M8` are one
+bit wide and index the write address directly, so they do not need
+that change. `RAM32X16DR8` has no `INIT`. Its memories are Verilog
+regs and therefore start at X. `DOA` through `DOG` read one bit at a
+6-bit address. `DOH` reads the pair at `ADDRH`, with the same even/odd
+mapping.
+
+`RAM64X8SW` writes one of eight memories, selected by `WSEL` from
+`111` (`mem_a`, `O(7)`) down to `000` (`mem_h`, `O(0)`). Any other
+code, including X, writes nothing. The write is not delayed. `O` is a
+reg, so it stays X until `A` changes or 100 ps have passed. A write
+before that publishes only the written bit.
+
+`RAMS32`, `RAMD32`, `RAMS64E`, `RAMD64E`, `RAMS64E1`, and `RAMD32M64`
+stay Verilog. Each one executes `$finish` at time 0 when `XIL_TIMING`
+is undefined, so the functional body cannot be an equivalence
+reference. Block RAM (`RAMB*`) is not part of this batch.
+
 ## Conventions
 
 - One entity and one architecture per file. The entity name is the
@@ -203,7 +256,8 @@ IBUFDISABLE`. `sel == 1 ? a : sel == 0 ? b : X` (and the `===` form) is
 - Simulation is zero-delay except where the Verilog functional model
   itself delays an output. `FDRE`, `FDSE`, `FDCE`, and `FDPE` use
   `assign #100 Q = Q_out` at a 1 ps timescale, so `Q` is delayed 100 ps
-  even with `XIL_TIMING` undefined.
+  even with `XIL_TIMING` undefined. The distributed RAMs use the same
+  100 ps on the write, with `transport` delay. `RAM64X8SW` does not.
 - `X` and `Z` follow the Verilog primitives (`buf` maps `Z` to `X`, LUT
   UDPs, `MUXF7`/`MUXF8` select `I0` unless `S` is 1, `CARRY4` treats `Z`
   on `CI`/`CYINIT` as 0).
@@ -254,7 +308,8 @@ NVC also presents a Verilog `X` on an output port to a VHDL signal as
 3. Set that row's `lang` to `vhdl` in `config/primitives.txt`
    (`python3 scripts/primitives.py --check` must pass).
 4. Extend `test/tb/tb_eq.vhd` (`EQ_PRIMS`), `test/tb/tb_eq_io.vhd`
-   (`EQ_IO_PRIMS`), or `test/tb/tb_eq_ff.vhd` (`EQ_FF_PRIMS`) so the
+   (`EQ_IO_PRIMS`), `test/tb/tb_eq_ff.vhd` (`EQ_FF_PRIMS`), or
+   `test/tb/tb_eq_ram.vhd` (`EQ_RAM_PRIMS`) so the
    VHDL model and the submodule Verilog see the same stimulus.
    Exhaustive for a small combinational cell. For a register, cover
    GSR, clock enable, reset priority, `INIT`, and `IS_*_INVERTED`.
