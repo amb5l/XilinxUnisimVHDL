@@ -85,8 +85,11 @@ Note that `GSR` is high for the first 100 ns.
 
 ## Status
 
-Every primitive is still the Verilog model. Three of them have
-self-checking benches. The per-primitive table is
+Twenty-four simple primitives are hand-written VHDL
+([docs/vhdl-models.md](docs/vhdl-models.md)); the rest are still the
+Verilog models. Self-checking benches cover RAM32X1D, DSP48E1,
+RAMB18E1, and a VHDL-versus-Verilog equivalence bench for the converted
+primitives. The per-primitive table is
 [docs/status.md](docs/status.md). How to replace a model with VHDL is
 [docs/porting-guide.md](docs/porting-guide.md).
 

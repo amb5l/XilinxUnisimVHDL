@@ -23,6 +23,7 @@ use ieee.std_logic_1164.all;
 package vcomponents is
 
   -- AND2B1L.v
+  -- vhdl: src/vhdl/AND2B1L.vhd is analysed instead of this Verilog
   component AND2B1L is
     generic (
       IS_SRI_INVERTED : bit := '0'
@@ -164,6 +165,7 @@ package vcomponents is
   end component BSCANE2;
 
   -- BUF.v
+  -- vhdl: src/vhdl/BUF.vhd is analysed instead of this Verilog
   component BUF is
     port (
       O : out std_ulogic;
@@ -200,6 +202,7 @@ package vcomponents is
   end component BUFCE_ROW;
 
   -- BUFG.v
+  -- vhdl: src/vhdl/BUFG.vhd is analysed instead of this Verilog
   component BUFG is
     port (
       O : out std_ulogic;
@@ -401,6 +404,7 @@ package vcomponents is
   end component CAPTUREE2;
 
   -- CARRY4.v
+  -- vhdl: src/vhdl/CARRY4.vhd is analysed instead of this Verilog
   component CARRY4 is
     port (
       CO : out std_logic_vector(3 downto 0);
@@ -2011,6 +2015,7 @@ package vcomponents is
   end component EFUSE_USR;
 
   -- FDCE.v
+  -- vhdl: src/vhdl/FDCE.vhd is analysed instead of this Verilog
   component FDCE is
     generic (
       INIT : bit := '0';
@@ -2028,6 +2033,7 @@ package vcomponents is
   end component FDCE;
 
   -- FDPE.v
+  -- vhdl: src/vhdl/FDPE.vhd is analysed instead of this Verilog
   component FDPE is
     generic (
       INIT : bit := '1';
@@ -2045,6 +2051,7 @@ package vcomponents is
   end component FDPE;
 
   -- FDRE.v
+  -- vhdl: src/vhdl/FDRE.vhd is analysed instead of this Verilog
   component FDRE is
     generic (
       INIT : bit := '0';
@@ -2062,6 +2069,7 @@ package vcomponents is
   end component FDRE;
 
   -- FDSE.v
+  -- vhdl: src/vhdl/FDSE.vhd is analysed instead of this Verilog
   component FDSE is
     generic (
       INIT : bit := '1';
@@ -2418,6 +2426,7 @@ package vcomponents is
   end component FRAME_ECCE4;
 
   -- GND.v
+  -- vhdl: src/vhdl/GND.vhd is analysed instead of this Verilog
   component GND is
     port (
       G : out std_ulogic
@@ -11529,6 +11538,7 @@ package vcomponents is
   end component HSDAC;
 
   -- IBUF.v
+  -- vhdl: src/vhdl/IBUF.vhd is analysed instead of this Verilog
   component IBUF is
     generic (
       CAPACITANCE : string := "DONT_CARE";
@@ -12628,6 +12638,7 @@ package vcomponents is
   end component INBUF;
 
   -- INV.v
+  -- vhdl: src/vhdl/INV.vhd is analysed instead of this Verilog
   component INV is
     port (
       O : out std_ulogic;
@@ -13159,6 +13170,7 @@ package vcomponents is
   end component LDPE;
 
   -- LUT1.v
+  -- vhdl: src/vhdl/LUT1.vhd is analysed instead of this Verilog
   component LUT1 is
     generic (
       INIT : bit_vector(1 downto 0) := "00"
@@ -13170,6 +13182,7 @@ package vcomponents is
   end component LUT1;
 
   -- LUT2.v
+  -- vhdl: src/vhdl/LUT2.vhd is analysed instead of this Verilog
   component LUT2 is
     generic (
       INIT : bit_vector(3 downto 0) := X"0"
@@ -13182,6 +13195,7 @@ package vcomponents is
   end component LUT2;
 
   -- LUT3.v
+  -- vhdl: src/vhdl/LUT3.vhd is analysed instead of this Verilog
   component LUT3 is
     generic (
       INIT : bit_vector(7 downto 0) := X"00"
@@ -13195,6 +13209,7 @@ package vcomponents is
   end component LUT3;
 
   -- LUT4.v
+  -- vhdl: src/vhdl/LUT4.vhd is analysed instead of this Verilog
   component LUT4 is
     generic (
       INIT : bit_vector(15 downto 0) := X"0000"
@@ -13209,6 +13224,7 @@ package vcomponents is
   end component LUT4;
 
   -- LUT5.v
+  -- vhdl: src/vhdl/LUT5.vhd is analysed instead of this Verilog
   component LUT5 is
     generic (
       INIT : bit_vector(31 downto 0) := X"00000000"
@@ -13224,6 +13240,7 @@ package vcomponents is
   end component LUT5;
 
   -- LUT6.v
+  -- vhdl: src/vhdl/LUT6.vhd is analysed instead of this Verilog
   component LUT6 is
     generic (
       INIT : bit_vector(63 downto 0) := X"0000000000000000"
@@ -13727,6 +13744,7 @@ package vcomponents is
   end component MUXCY;
 
   -- MUXF7.v
+  -- vhdl: src/vhdl/MUXF7.vhd is analysed instead of this Verilog
   component MUXF7 is
     port (
       O : out std_ulogic;
@@ -13737,6 +13755,7 @@ package vcomponents is
   end component MUXF7;
 
   -- MUXF8.v
+  -- vhdl: src/vhdl/MUXF8.vhd is analysed instead of this Verilog
   component MUXF8 is
     port (
       O : out std_ulogic;
@@ -13757,6 +13776,7 @@ package vcomponents is
   end component MUXF9;
 
   -- OBUF.v
+  -- vhdl: src/vhdl/OBUF.vhd is analysed instead of this Verilog
   component OBUF is
     generic (
       CAPACITANCE : string := "DONT_CARE";
@@ -13888,6 +13908,7 @@ package vcomponents is
   end component OBUFDS_GTM_ADV;
 
   -- OBUFT.v
+  -- vhdl: src/vhdl/OBUFT.vhd is analysed instead of this Verilog
   component OBUFT is
     generic (
       CAPACITANCE : string := "DONT_CARE";
@@ -14080,6 +14101,7 @@ package vcomponents is
   end component ODELAYE3;
 
   -- OR2L.v
+  -- vhdl: src/vhdl/OR2L.vhd is analysed instead of this Verilog
   component OR2L is
     generic (
       IS_SRI_INVERTED : bit := '0'
@@ -24098,6 +24120,7 @@ package vcomponents is
   end component USR_ACCESSE2;
 
   -- VCC.v
+  -- vhdl: src/vhdl/VCC.vhd is analysed instead of this Verilog
   component VCC is
     port (
       P : out std_ulogic
@@ -24410,6 +24433,7 @@ package vcomponents is
   end component XADC;
 
   -- XORCY.v
+  -- vhdl: src/vhdl/XORCY.vhd is analysed instead of this Verilog
   component XORCY is
     port (
       O : out std_ulogic;

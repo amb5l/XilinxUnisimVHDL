@@ -10,15 +10,15 @@
 # lang skip, with the reason in notes. This pin had no exclusions.
 # Sort and realign with: python3 scripts/primitives.py --write
 # name                          lang  notes
-AND2B1L                         vlog
+AND2B1L                         vhdl
 AUTOBUF                         vlog
 BIBUF                           vlog
 BITSLICE_CONTROL                vlog
 BSCANE2                         vlog
-BUF                             vlog
+BUF                             vhdl
 BUFCE_LEAF                      vlog
 BUFCE_ROW                       vlog
-BUFG                            vlog
+BUFG                            vhdl
 BUFGCE                          vlog
 BUFGCE_DIV                      vlog
 BUFGCTRL                        vlog
@@ -33,7 +33,7 @@ BUFMR                           vlog
 BUFMRCE                         vlog
 BUFR                            vlog
 CAPTUREE2                       vlog
-CARRY4                          vlog
+CARRY4                          vhdl
 CARRY8                          vlog
 CFGLUT5                         vlog
 CMAC                            vlog
@@ -56,10 +56,10 @@ DSP_OUTPUT                      vlog
 DSP_PREADD                      vlog
 DSP_PREADD_DATA                 vlog
 EFUSE_USR                       vlog
-FDCE                            vlog
-FDPE                            vlog
-FDRE                            vlog
-FDSE                            vlog
+FDCE                            vhdl
+FDPE                            vhdl
+FDRE                            vhdl
+FDSE                            vhdl
 FE                              vlog
 FIFO18E1                        vlog
 FIFO18E2                        vlog
@@ -68,7 +68,7 @@ FIFO36E2                        vlog
 FRAME_ECCE2                     vlog
 FRAME_ECCE3                     vlog
 FRAME_ECCE4                     vlog
-GND                             vlog
+GND                             vhdl
 GTHE2_CHANNEL                   vlog
 GTHE2_COMMON                    vlog
 GTHE3_CHANNEL                   vlog
@@ -93,7 +93,7 @@ HBM_TWO_STACK_INTF              vlog
 HPIO_VREF                       vlog
 HSADC                           vlog
 HSDAC                           vlog
-IBUF                            vlog
+IBUF                            vhdl
 IBUFCTRL                        vlog
 IBUFDS                          vlog
 IBUFDSE3                        vlog
@@ -125,7 +125,7 @@ IDELAYE3                        vlog
 ILKN                            vlog
 ILKNE4                          vlog
 INBUF                           vlog
-INV                             vlog
+INV                             vhdl
 IN_FIFO                         vlog
 IOBUF                           vlog  inout bufif0; NVC elaborates in/out only (drive strength on IO is not simulated)
 IOBUFDS                         vlog  inout bufif0; NVC elaborates in/out only (drive strength on IO is not simulated)
@@ -148,12 +148,12 @@ JTAG_SIME2                      vlog
 KEEPER                          vlog
 LDCE                            vlog
 LDPE                            vlog
-LUT1                            vlog
-LUT2                            vlog
-LUT3                            vlog
-LUT4                            vlog
-LUT5                            vlog
-LUT6                            vlog
+LUT1                            vhdl
+LUT2                            vhdl
+LUT3                            vhdl
+LUT4                            vhdl
+LUT5                            vhdl
+LUT6                            vhdl
 LUT6_2                          vlog
 MASTER_JTAG                     vlog
 MMCME2_ADV                      vlog  needs NVC unisim/6-mmcm ($realtime)
@@ -163,10 +163,10 @@ MMCME3_BASE                     vlog  needs NVC unisim/6-mmcm ($realtime)
 MMCME4_ADV                      vlog  needs NVC unisim/6-mmcm ($realtime)
 MMCME4_BASE                     vlog  needs NVC unisim/6-mmcm ($realtime)
 MUXCY                           vlog
-MUXF7                           vlog
-MUXF8                           vlog
+MUXF7                           vhdl
+MUXF8                           vhdl
 MUXF9                           vlog
-OBUF                            vlog
+OBUF                            vhdl
 OBUFDS                          vlog
 OBUFDS_DPHY                     vlog
 OBUFDS_GTE3                     vlog
@@ -175,7 +175,7 @@ OBUFDS_GTE4                     vlog
 OBUFDS_GTE4_ADV                 vlog
 OBUFDS_GTM                      vlog
 OBUFDS_GTM_ADV                  vlog
-OBUFT                           vlog
+OBUFT                           vhdl
 OBUFTDS                         vlog
 OBUFTDS_DCIEN                   vlog
 OBUFT_DCIEN                     vlog
@@ -184,7 +184,7 @@ ODDRE1                          vlog
 ODELAYE2                        vlog
 ODELAYE2_FINEDELAY              vlog
 ODELAYE3                        vlog
-OR2L                            vlog
+OR2L                            vhdl
 OSERDES                         vlog
 OSERDESE1                       vlog
 OSERDESE2                       vlog
@@ -255,8 +255,8 @@ TX_BITSLICE_TRI                 vlog
 URAM288                         vlog
 URAM288_BASE                    vlog
 USR_ACCESSE2                    vlog
-VCC                             vlog
+VCC                             vhdl
 VCU                             vlog
 XADC                            vlog
-XORCY                           vlog
+XORCY                           vhdl
 ZHOLD_DELAY                     vlog

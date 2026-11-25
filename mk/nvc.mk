@@ -1,6 +1,6 @@
 # Analyse glbl.v and the vlog rows of config/primitives.txt into library
-# unisim, then the generated vcomponents package, then any vhdl rows
-# (src/vhdl/<NAME>.vhd instead of that primitive's Verilog).
+# unisim, then the generated vcomponents package, then unisim_sim and
+# any vhdl rows (src/vhdl/<NAME>.vhd instead of that primitive's Verilog).
 #
 # XIL_TIMING and XIL_DR are left undefined. Do not pass -D for either
 # macro: the models' `ifdef branches and the generated component ports
@@ -26,6 +26,8 @@ PRIMITIVES := $(ROOT)/config/primitives.txt
 # scripts/primitives.py is the reader. These lists are the same rows.
 VERILOG_SRCS := $(addprefix $(ROOT)/,$(shell python3 $(ROOT)/scripts/primitives.py --filelist))
 VHDL_SRCS := $(addprefix $(ROOT)/,$(shell python3 $(ROOT)/scripts/primitives.py --vhdl))
+# Package of roc/toc and gate helpers. Not a primitive, so it is not an index row.
+VHDL_SUPPORT := $(ROOT)/src/vhdl/unisim_sim.vhd
 
 .PHONY: all vcomponents test check clean
 
@@ -47,14 +49,14 @@ $(FILELIST): $(ROOT)/scripts/filelist.py $(ROOT)/scripts/unisim_sources.py \
 	@mkdir -p $(LIBDIR)
 	python3 $(ROOT)/scripts/filelist.py > $@
 
-$(LIBSTAMP): $(FILELIST) $(GEN_PKG) $(VHDL_SRCS)
+$(LIBSTAMP): $(FILELIST) $(GEN_PKG) $(VHDL_SUPPORT) $(VHDL_SRCS)
 	@mkdir -p $(LIBDIR)
 	@n=$$(wc -l < $(FILELIST)); \
 	  echo "Analysing $$n Verilog files into library unisim ($(LIBDIR)/unisim)"
 	$(NVC) --std=2008 --work=unisim:$(abspath $(LIBDIR))/unisim -M $(NVC_M) \
 	  -a -f $(FILELIST)
 	$(NVC) --std=2008 --work=unisim:$(abspath $(LIBDIR))/unisim \
-	  -a $(GEN_PKG) $(VHDL_SRCS)
+	  -a $(GEN_PKG) $(VHDL_SUPPORT) $(VHDL_SRCS)
 	@touch $@
 
 test: $(LIBSTAMP)
