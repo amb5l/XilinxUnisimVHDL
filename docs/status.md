@@ -1,7 +1,7 @@
 # Primitive status
 
 Which source is analysed is `config/primitives.txt` (`vlog`, `vhdl`, or
-`skip`). Twenty-four simple primitives are hand-written VHDL; see
+`skip`). Forty-five simple primitives are hand-written VHDL; see
 [vhdl-models.md](vhdl-models.md). The rest of this table is still the
 Verilog model from the XilinxUnisimLibrary submodule. `GTM_DUAL` is the
 only `skip`: it is SystemVerilog and is not in this table. Notes in the
@@ -11,7 +11,7 @@ strength caveat.
 | Primitive | Implementation |
 | --- | --- |
 | `AND2B1L` | VHDL `src/vhdl/AND2B1L.vhd` |
-| `AUTOBUF` | Verilog only |
+| `AUTOBUF` | VHDL `src/vhdl/AUTOBUF.vhd` |
 | `BIBUF` | Verilog only |
 | `BITSLICE_CONTROL` | Verilog only |
 | `BSCANE2` | Verilog only |
@@ -25,8 +25,8 @@ strength caveat.
 | `BUFGCE` | Verilog only |
 | `BUFGCE_DIV` | Verilog only |
 | `BUFGCTRL` | Verilog only |
-| `BUFGP` | Verilog only |
-| `BUFH` | Verilog only |
+| `BUFGP` | VHDL `src/vhdl/BUFGP.vhd` |
+| `BUFH` | VHDL `src/vhdl/BUFH.vhd` |
 | `BUFHCE` | Verilog only |
 | `BUFIO` | Verilog only |
 | `BUFMR` | Verilog only |
@@ -93,23 +93,23 @@ strength caveat.
 | `HSADC` | Verilog only |
 | `HSDAC` | Verilog only |
 | `IBUF` | VHDL `src/vhdl/IBUF.vhd` |
-| `IBUF_ANALOG` | Verilog only |
-| `IBUF_IBUFDISABLE` | Verilog only |
-| `IBUF_INTERMDISABLE` | Verilog only |
+| `IBUF_ANALOG` | VHDL `src/vhdl/IBUF_ANALOG.vhd` |
+| `IBUF_IBUFDISABLE` | VHDL `src/vhdl/IBUF_IBUFDISABLE.vhd` |
+| `IBUF_INTERMDISABLE` | VHDL `src/vhdl/IBUF_INTERMDISABLE.vhd` |
 | `IBUFCTRL` | Verilog only |
-| `IBUFDS` | Verilog only |
-| `IBUFDS_DIFF_OUT` | Verilog only |
-| `IBUFDS_DIFF_OUT_IBUFDISABLE` | Verilog only |
-| `IBUFDS_DIFF_OUT_INTERMDISABLE` | Verilog only |
+| `IBUFDS` | VHDL `src/vhdl/IBUFDS.vhd` |
+| `IBUFDS_DIFF_OUT` | VHDL `src/vhdl/IBUFDS_DIFF_OUT.vhd` |
+| `IBUFDS_DIFF_OUT_IBUFDISABLE` | VHDL `src/vhdl/IBUFDS_DIFF_OUT_IBUFDISABLE.vhd` |
+| `IBUFDS_DIFF_OUT_INTERMDISABLE` | VHDL `src/vhdl/IBUFDS_DIFF_OUT_INTERMDISABLE.vhd` |
 | `IBUFDS_DPHY` | Verilog only |
 | `IBUFDS_GTE2` | Verilog only |
 | `IBUFDS_GTE3` | Verilog only |
 | `IBUFDS_GTE4` | Verilog only |
 | `IBUFDS_GTM` | Verilog only |
-| `IBUFDS_IBUFDISABLE` | Verilog only |
-| `IBUFDS_IBUFDISABLE_INT` | Verilog only |
-| `IBUFDS_INTERMDISABLE` | Verilog only |
-| `IBUFDS_INTERMDISABLE_INT` | Verilog only |
+| `IBUFDS_IBUFDISABLE` | VHDL `src/vhdl/IBUFDS_IBUFDISABLE.vhd` |
+| `IBUFDS_IBUFDISABLE_INT` | VHDL `src/vhdl/IBUFDS_IBUFDISABLE_INT.vhd` |
+| `IBUFDS_INTERMDISABLE` | VHDL `src/vhdl/IBUFDS_INTERMDISABLE.vhd` |
+| `IBUFDS_INTERMDISABLE_INT` | VHDL `src/vhdl/IBUFDS_INTERMDISABLE_INT.vhd` |
 | `IBUFDSE3` | Verilog only |
 | `IBUFE3` | Verilog only |
 | `ICAPE2` | Verilog only |
@@ -153,7 +153,7 @@ strength caveat.
 | `LUT4` | VHDL `src/vhdl/LUT4.vhd` |
 | `LUT5` | VHDL `src/vhdl/LUT5.vhd` |
 | `LUT6` | VHDL `src/vhdl/LUT6.vhd` |
-| `LUT6_2` | Verilog only |
+| `LUT6_2` | VHDL `src/vhdl/LUT6_2.vhd` |
 | `MASTER_JTAG` | Verilog only |
 | `MMCME2_ADV` | Verilog only |
 | `MMCME2_BASE` | Verilog only |
@@ -166,18 +166,18 @@ strength caveat.
 | `MUXF8` | VHDL `src/vhdl/MUXF8.vhd` |
 | `MUXF9` | Verilog only |
 | `OBUF` | VHDL `src/vhdl/OBUF.vhd` |
-| `OBUFDS` | Verilog only |
+| `OBUFDS` | VHDL `src/vhdl/OBUFDS.vhd` |
 | `OBUFDS_DPHY` | Verilog only |
-| `OBUFDS_GTE3` | Verilog only |
+| `OBUFDS_GTE3` | VHDL `src/vhdl/OBUFDS_GTE3.vhd` |
 | `OBUFDS_GTE3_ADV` | Verilog only |
-| `OBUFDS_GTE4` | Verilog only |
+| `OBUFDS_GTE4` | VHDL `src/vhdl/OBUFDS_GTE4.vhd` |
 | `OBUFDS_GTE4_ADV` | Verilog only |
 | `OBUFDS_GTM` | Verilog only |
 | `OBUFDS_GTM_ADV` | Verilog only |
 | `OBUFT` | VHDL `src/vhdl/OBUFT.vhd` |
-| `OBUFT_DCIEN` | Verilog only |
-| `OBUFTDS` | Verilog only |
-| `OBUFTDS_DCIEN` | Verilog only |
+| `OBUFT_DCIEN` | VHDL `src/vhdl/OBUFT_DCIEN.vhd` |
+| `OBUFTDS` | VHDL `src/vhdl/OBUFTDS.vhd` |
+| `OBUFTDS_DCIEN` | VHDL `src/vhdl/OBUFTDS_DCIEN.vhd` |
 | `ODDR` | Verilog only |
 | `ODDRE1` | Verilog only |
 | `ODELAYE2` | Verilog only |

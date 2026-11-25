@@ -11,7 +11,7 @@
 # Sort and realign with: python3 scripts/primitives.py --write
 # name                          lang  notes
 AND2B1L                         vhdl
-AUTOBUF                         vlog
+AUTOBUF                         vhdl
 BIBUF                           vlog
 BITSLICE_CONTROL                vlog
 BSCANE2                         vlog
@@ -22,11 +22,11 @@ BUFG                            vhdl
 BUFGCE                          vlog
 BUFGCE_DIV                      vlog
 BUFGCTRL                        vlog
-BUFGP                           vlog
+BUFGP                           vhdl
 BUFG_GT                         vlog
 BUFG_GT_SYNC                    vlog
 BUFG_PS                         vlog
-BUFH                            vlog
+BUFH                            vhdl
 BUFHCE                          vlog
 BUFIO                           vlog
 BUFMR                           vlog
@@ -95,24 +95,24 @@ HSADC                           vlog
 HSDAC                           vlog
 IBUF                            vhdl
 IBUFCTRL                        vlog
-IBUFDS                          vlog
+IBUFDS                          vhdl
 IBUFDSE3                        vlog
-IBUFDS_DIFF_OUT                 vlog
-IBUFDS_DIFF_OUT_IBUFDISABLE     vlog
-IBUFDS_DIFF_OUT_INTERMDISABLE   vlog
+IBUFDS_DIFF_OUT                 vhdl
+IBUFDS_DIFF_OUT_IBUFDISABLE     vhdl
+IBUFDS_DIFF_OUT_INTERMDISABLE   vhdl
 IBUFDS_DPHY                     vlog
 IBUFDS_GTE2                     vlog
 IBUFDS_GTE3                     vlog
 IBUFDS_GTE4                     vlog
 IBUFDS_GTM                      vlog
-IBUFDS_IBUFDISABLE              vlog
-IBUFDS_IBUFDISABLE_INT          vlog
-IBUFDS_INTERMDISABLE            vlog
-IBUFDS_INTERMDISABLE_INT        vlog
+IBUFDS_IBUFDISABLE              vhdl
+IBUFDS_IBUFDISABLE_INT          vhdl
+IBUFDS_INTERMDISABLE            vhdl
+IBUFDS_INTERMDISABLE_INT        vhdl
 IBUFE3                          vlog
-IBUF_ANALOG                     vlog
-IBUF_IBUFDISABLE                vlog
-IBUF_INTERMDISABLE              vlog
+IBUF_ANALOG                     vhdl
+IBUF_IBUFDISABLE                vhdl
+IBUF_INTERMDISABLE              vhdl
 ICAPE2                          vlog
 ICAPE3                          vlog
 IDDR                            vlog
@@ -154,7 +154,7 @@ LUT3                            vhdl
 LUT4                            vhdl
 LUT5                            vhdl
 LUT6                            vhdl
-LUT6_2                          vlog
+LUT6_2                          vhdl
 MASTER_JTAG                     vlog
 MMCME2_ADV                      vlog  needs NVC unisim/6-mmcm ($realtime)
 MMCME2_BASE                     vlog  instantiates MMCME2_ADV; needs NVC unisim/6-mmcm ($realtime)
@@ -167,18 +167,18 @@ MUXF7                           vhdl
 MUXF8                           vhdl
 MUXF9                           vlog
 OBUF                            vhdl
-OBUFDS                          vlog
+OBUFDS                          vhdl
 OBUFDS_DPHY                     vlog
-OBUFDS_GTE3                     vlog
+OBUFDS_GTE3                     vhdl
 OBUFDS_GTE3_ADV                 vlog
-OBUFDS_GTE4                     vlog
+OBUFDS_GTE4                     vhdl
 OBUFDS_GTE4_ADV                 vlog
 OBUFDS_GTM                      vlog
 OBUFDS_GTM_ADV                  vlog
 OBUFT                           vhdl
-OBUFTDS                         vlog
-OBUFTDS_DCIEN                   vlog
-OBUFT_DCIEN                     vlog
+OBUFTDS                         vhdl
+OBUFTDS_DCIEN                   vhdl
+OBUFT_DCIEN                     vhdl
 ODDR                            vlog
 ODDRE1                          vlog
 ODELAYE2                        vlog

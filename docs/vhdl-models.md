@@ -23,6 +23,64 @@ This pin of the submodule has no `AND2`, `OR2`, `XOR2`, `NAND*`, `NOR*`,
 `XNOR*`, or `IBUFG`. The gate cells that do exist are `AND2B1L`, `OR2L`,
 and `XORCY`.
 
+## Second batch
+
+21 more primitives: `AUTOBUF`, `BUFGP`, `BUFH`, `IBUF_ANALOG`,
+`IBUF_IBUFDISABLE`, `IBUF_INTERMDISABLE`, `IBUFDS`, `IBUFDS_DIFF_OUT`,
+`IBUFDS_IBUFDISABLE`, `IBUFDS_IBUFDISABLE_INT`, `IBUFDS_INTERMDISABLE`,
+`IBUFDS_INTERMDISABLE_INT`, `IBUFDS_DIFF_OUT_IBUFDISABLE`,
+`IBUFDS_DIFF_OUT_INTERMDISABLE`, `OBUFDS`, `OBUFTDS`, `OBUFT_DCIEN`,
+`OBUFTDS_DCIEN`, `OBUFDS_GTE3`, `OBUFDS_GTE4`, `LUT6_2`.
+
+`IBUFDS` resolves a complementary pair to 0 or 1. A `Z`/`0` pin with a
+`Z`/`1` pin yields 0 when `DQS_BIAS` is true and `X` otherwise. An `X`
+yields `X`. Any other pair holds the previous value, which starts at
+`X`. `IBUFDS_DIFF_OUT` is the same receiver except its `X` test is
+Verilog `==`, which never matches, so an `X` holds. `OB` is `not` of
+the resolved bit. The `*_IBUFDISABLE` cells pass the receiver through
+when the disable pin is 0, force a constant when it is 1 (1 on
+`7SERIES`, 0 otherwise; the differential-out companion is 1, `X` on
+`ULTRASCALE`, or 0), and drive `X` for any other disable value.
+`USE_IBUFDISABLE` false passes the receiver through. `INTERMDISABLE`
+and `DCITERMDISABLE` are ports in the functional model and are not
+read. `IBUF_ANALOG` is a plain assign, so `Z` passes. `AUTOBUF`,
+`BUFGP`, and `BUFH` are `buf`.
+
+`OBUFDS` is `bufif0` on `O` and `notif0` on `OB`, enabled by `GTS`.
+`OBUFTDS` ors `T` into that enable. `OBUFDS_GTE3` ors in the complement
+of `REFCLK_EN_TX_PATH` and `CEB`, so the default generic holds both
+outputs at `Z`. `OBUFDS_GTE4` uses a ternary instead of `bufif0`: `Z`
+when the path is off, `CEB` is 1, or `GTS` is 1, otherwise `I` (so `Z`
+passes) and `not I`. `LUT6_2` is a `LUT6` on `O6` and the lower 32
+`INIT` bits as a 5-input LUT on `O5`. The Verilog `O5`/`O6` regs stay
+`X` until an input changes; the VHDL model is combinational, so the two
+match from the first input event.
+
+`DQS_BIAS` and `USE_IBUFDISABLE` on the differential cells are copied
+into a reg with a 1 ps delay in the Verilog. The VHDL model uses the
+generic immediately. `tb_eq_io` compares after 1 ns, when that delay
+has elapsed and `GTS` has fallen.
+
+`notif0` on NVC inverts when the enable is 0 (`Z` and `X` data become
+`X`) and drives `Z` for an enable of 1, `X`, or `Z`.
+
+Left as Verilog this batch, and why:
+
+- `IOBUF*` and `BIBUF` have `inout` ports. NVC elaborates `in` and `out`
+  only, so a model of the `bufif0` driver would not elaborate.
+- `PULLUP`, `PULLDOWN`, and `KEEPER` drive weak or pull strengths.
+  `std_ulogic` cannot represent them.
+- `INBUF` and `DIFFINBUF` `$finish` at time 0 when `XIL_TIMING` is
+  undefined, so the Verilog reference cannot sit in an equivalence
+  bench. The functional path is a small mux, but it is not converted
+  until that `$finish` is handled.
+- `OBUFDS_DPHY` is a supply-strength LP/HS state machine.
+- `IBUFDS_DPHY`, `IBUFDS_GTE2`, `IBUFDS_GTE3`, `IBUFDS_GTE4`,
+  `IBUFDS_GTM`, `IBUFE3`, `IBUFDSE3`, `DPHY_DIFFINBUF`, `IBUFCTRL`,
+  `OBUFDS_GTE3_ADV`, `OBUFDS_GTE4_ADV`, and `OBUFDS_GTM` are larger than
+  this batch (extra clocks, a vector data input, or an RXRECCLK select)
+  and stay `vlog`.
+
 ## Conventions
 
 - One entity and one architecture per file. The entity name is the
@@ -84,10 +142,11 @@ NVC also presents a Verilog `X` on an output port to a VHDL signal as
    component in `vcomponents`.
 3. Set that row's `lang` to `vhdl` in `config/primitives.txt`
    (`python3 scripts/primitives.py --check` must pass).
-4. Extend `test/tb/tb_eq.vhd` and `EQ_PRIMS` in `test/Makefile` so the
-   VHDL model and `vref.<NAME>` (the submodule Verilog) see the same
-   stimulus. Exhaustive for a small combinational cell. For a register,
-   cover GSR, clock enable, reset priority, `INIT`, and `IS_*_INVERTED`.
+4. Extend `test/tb/tb_eq.vhd` (`EQ_PRIMS`) or `test/tb/tb_eq_io.vhd`
+   (`EQ_IO_PRIMS`) in `test/Makefile` so the VHDL model and the submodule
+   Verilog see the same stimulus. Exhaustive for a small combinational
+   cell. For a register, cover GSR, clock enable, reset priority,
+   `INIT`, and `IS_*_INVERTED`.
 5. `make test`.
 
 `make` rebuilds library `unisim` without that Verilog file. The
