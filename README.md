@@ -57,6 +57,7 @@ Other targets:
 | --- | --- |
 | `make vcomponents` | Regenerate `generated/unisim_vcomponents.vhd` |
 | `make test` | Elaborate `tb_*` beside `unisim.GLBL` and run |
+| `make compare` | Compare `vcomponents` with a local Vivado package |
 | `make clean` | Remove `build/` and `test/work/` |
 
 `BUILD` is the directory that receives the library (default `build`).
@@ -87,3 +88,20 @@ primitives under test override those vectors in
 [config/type_map.yaml](config/type_map.yaml). `real` generics (MMCM, PLL,
 DCM periods) analyse and do not elaborate yet. Details are in the
 porting guide.
+
+## Compare with Vivado
+
+`scripts/compare_vcomponents.py` diffs `generated/unisim_vcomponents.vhd`
+against Vivado's `unisim_VCOMP.vhd`. That file is only on a machine
+with Vivado; CI does not have it, and the report does not copy it.
+From the repository root, with Vivado at `C:\AMDDevTools\2026.1\Vivado`:
+
+```bat
+python scripts/compare_vcomponents.py --vivado "C:\AMDDevTools\2026.1\Vivado"
+```
+
+The same lookup uses `%XILINX_VIVADO%` or the `VIVADO_VCOMP` file
+override. `make compare` works when GNU make and `python3` are on
+`PATH` (`PYTHON=python` if the interpreter is named `python`). Reports
+land in `build/compare_report.txt` and `build/compare_report.json`.
+How to read them is [docs/compare.md](docs/compare.md).

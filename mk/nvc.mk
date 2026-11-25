@@ -17,6 +17,7 @@ endif
 
 NVC ?= nvc
 NVC_M ?= 1g
+PYTHON ?= python3
 
 FILELIST := $(LIBDIR)/unisim.f
 LIBSTAMP := $(LIBDIR)/unisim.stamp
@@ -25,7 +26,7 @@ VHDL_SRCS := $(wildcard $(ROOT)/src/vhdl/*.vhd)
 VERILOG_SRCS := $(wildcard $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/*.v) \
 	$(ROOT)/XilinxUnisimLibrary/verilog/src/glbl.v
 
-.PHONY: all vcomponents test clean
+.PHONY: all vcomponents test compare clean
 
 all: $(LIBSTAMP)
 
@@ -52,6 +53,16 @@ $(LIBSTAMP): $(FILELIST) $(GEN_PKG) $(VHDL_SRCS)
 
 test: $(LIBSTAMP)
 	$(MAKE) -C $(ROOT)/test NVC=$(NVC) NVC_M=$(NVC_M) BUILD=$(abspath $(LIBDIR))
+
+# Reads XILINX_VIVADO, or VIVADO_VCOMP, unless VIVADO= is passed.
+# Does not build the library and does not copy Vivado sources.
+compare:
+	@mkdir -p $(LIBDIR)
+	$(PYTHON) $(ROOT)/scripts/compare_vcomponents.py \
+	  --report $(abspath $(LIBDIR))/compare_report.txt \
+	  --json $(abspath $(LIBDIR))/compare_report.json \
+	  $(if $(VIVADO),--vivado "$(VIVADO)",) \
+	  $(if $(STRICT),--strict,)
 
 clean:
 	rm -rf $(LIBDIR)
