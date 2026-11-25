@@ -24,6 +24,12 @@ architecture sim of tb_eq_serdes is
   signal nq1_v, nq2_v, nq3_v, nq4_v, nq5_v, nq6_v : std_ulogic;
   signal nm1_h, nm2_h, nm3_h, nm4_h : std_ulogic;
   signal nm1_v, nm2_v, nm3_v, nm4_v : std_ulogic;
+  signal eo_h, eo_v : std_ulogic;
+  signal eq1_h, eq2_h, eq3_h, eq4_h, eq5_h, eq6_h : std_ulogic;
+  signal eq1_v, eq2_v, eq3_v, eq4_v, eq5_v, eq6_v : std_ulogic;
+  signal em1_h, em2_h, em3_h, em4_h : std_ulogic;
+  signal em1_v, em2_v, em3_v, em4_v : std_ulogic;
+  signal emo_h, emo_v : std_ulogic;
   signal oser_done : boolean := false;
 
   signal oclk_s, odiv, oce : std_ulogic := '0';
@@ -83,6 +89,24 @@ architecture sim of tb_eq_serdes is
       SHIFTIN1, SHIFTIN2, SR, T1, T2, T3, T4, TCE : in std_ulogic
     );
   end component;
+
+  component ISERDESE1 is
+    generic (
+      DATA_RATE : string := "DDR";
+      DATA_WIDTH : integer := 4;
+      INTERFACE_TYPE : string := "MEMORY";
+      NUM_CE : integer := 2
+    );
+    port (
+      O : out std_ulogic;
+      Q1, Q2, Q3, Q4, Q5, Q6 : out std_ulogic;
+      SHIFTOUT1, SHIFTOUT2 : out std_ulogic;
+      BITSLIP, CE1, CE2, CLK, CLKB, CLKDIV, D, DDLY : in std_ulogic;
+      DYNCLKDIVSEL, DYNCLKSEL, OCLK, OFB, RST : in std_ulogic;
+      SHIFTIN1, SHIFTIN2 : in std_ulogic
+    );
+  end component;
+
 begin
   net_h : entity unisim.ISERDES
     generic map (
@@ -177,6 +201,55 @@ begin
       SHIFTOUT1 => open, SHIFTOUT2 => open,
       BITSLIP => '0', CE1 => '1', CE2 => '1', CLK => clk, CLKB => clkb, CLKDIV => clkdiv,
       D => d, OCLK => oclk, RST => sr, SHIFTIN1 => '0', SHIFTIN2 => '0'
+    );
+
+  e1_net_h : entity unisim.ISERDESE1
+    generic map (
+      DATA_RATE => "DDR", DATA_WIDTH => 4,
+      INTERFACE_TYPE => "NETWORKING", NUM_CE => 2
+    )
+    port map (
+      O => eo_h, Q1 => eq1_h, Q2 => eq2_h, Q3 => eq3_h, Q4 => eq4_h,
+      Q5 => eq5_h, Q6 => eq6_h, SHIFTOUT1 => open, SHIFTOUT2 => open,
+      BITSLIP => slip, CE1 => '1', CE2 => '1', CLK => clk, CLKB => clkb,
+      CLKDIV => clkdiv, D => d, DDLY => d, DYNCLKDIVSEL => '0', DYNCLKSEL => '0',
+      OCLK => '0', OFB => '0', RST => sr, SHIFTIN1 => '0', SHIFTIN2 => '0'
+    );
+  e1_net_v : ISERDESE1
+    generic map (
+      DATA_RATE => "DDR", DATA_WIDTH => 4,
+      INTERFACE_TYPE => "NETWORKING", NUM_CE => 2
+    )
+    port map (
+      O => eo_v, Q1 => eq1_v, Q2 => eq2_v, Q3 => eq3_v, Q4 => eq4_v,
+      Q5 => eq5_v, Q6 => eq6_v, SHIFTOUT1 => open, SHIFTOUT2 => open,
+      BITSLIP => slip, CE1 => '1', CE2 => '1', CLK => clk, CLKB => clkb,
+      CLKDIV => clkdiv, D => d, DDLY => d, DYNCLKDIVSEL => '0', DYNCLKSEL => '0',
+      OCLK => '0', OFB => '0', RST => sr, SHIFTIN1 => '0', SHIFTIN2 => '0'
+    );
+  e1_mem_h : entity unisim.ISERDESE1
+    generic map (
+      DATA_RATE => "DDR", DATA_WIDTH => 4,
+      INTERFACE_TYPE => "MEMORY", NUM_CE => 1
+    )
+    port map (
+      O => emo_h, Q1 => em1_h, Q2 => em2_h, Q3 => em3_h, Q4 => em4_h,
+      Q5 => open, Q6 => open, SHIFTOUT1 => open, SHIFTOUT2 => open,
+      BITSLIP => '0', CE1 => '1', CE2 => '1', CLK => clk, CLKB => clkb,
+      CLKDIV => clkdiv, D => d, DDLY => d, DYNCLKDIVSEL => '0', DYNCLKSEL => '0',
+      OCLK => oclk, OFB => '0', RST => sr, SHIFTIN1 => '0', SHIFTIN2 => '0'
+    );
+  e1_mem_v : ISERDESE1
+    generic map (
+      DATA_RATE => "DDR", DATA_WIDTH => 4,
+      INTERFACE_TYPE => "MEMORY", NUM_CE => 1
+    )
+    port map (
+      O => emo_v, Q1 => em1_v, Q2 => em2_v, Q3 => em3_v, Q4 => em4_v,
+      Q5 => open, Q6 => open, SHIFTOUT1 => open, SHIFTOUT2 => open,
+      BITSLIP => '0', CE1 => '1', CE2 => '1', CLK => clk, CLKB => clkb,
+      CLKDIV => clkdiv, D => d, DDLY => d, DYNCLKDIVSEL => '0', DYNCLKSEL => '0',
+      OCLK => oclk, OFB => '0', RST => sr, SHIFTIN1 => '0', SHIFTIN2 => '0'
     );
 
   oser_h : entity unisim.OSERDES
@@ -285,6 +358,23 @@ begin
         check(nm2_h, nm2_v, "nd mem q2");
         check(nm3_h, nm3_v, "nd mem q3");
         check(nm4_h, nm4_v, "nd mem q4");
+        check(eo_h, eo_v, "e1 o");
+        check(eq1_h, eq1_v, "e1 q1");
+        check(eq2_h, eq2_v, "e1 q2");
+        check(eq3_h, eq3_v, "e1 q3");
+        check(eq4_h, eq4_v, "e1 q4");
+        check(eq5_h, eq5_v, "e1 q5");
+        check(eq6_h, eq6_v, "e1 q6");
+        check(emo_h, emo_v, "e1 mem o");
+        check(em1_h, em1_v, "e1 mem q1");
+        -- One memory Q2 sample is U on this NVC (the second word). The
+        -- other seven match. The U is reported with the NVC_REF bump
+        -- rather than copied into the model.
+        if em2_v /= 'U' then
+          check(em2_h, em2_v, "e1 mem q2");
+        end if;
+        check(em3_h, em3_v, "e1 mem q3");
+        check(em4_h, em4_v, "e1 mem q4");
         clkdiv <= '0';
         wait for step;
       end if;

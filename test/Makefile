@@ -133,14 +133,16 @@ tb_eq_bram:
 	  -a $(CURDIR)/tb/tb_eq_bram.vhd \
 	  -e tb_eq_bram GLBL -r
 
-# ISERDES, ISERDES_NODELAY and OSERDES elaborate with XIL_TIMING
-# undefined. The ISERDES flop delays are 300 ps and the OSERDES paths
-# are 100 ps, so the bench does not define XIL_TIMING.
+# ISERDES, ISERDES_NODELAY, ISERDESE1 and OSERDES elaborate with
+# XIL_TIMING undefined. OSERDESE1.v uses defparam, which this NVC does
+# not elaborate, so it is not analysed here. The ISERDES flop delays
+# are 300 ps and the OSERDES paths are 100 ps.
 tb_eq_serdes:
 	$(NVC) --std=2008 --work=work:$(WORK) -M $(NVC_M) \
 	  -a $(ROOT)/XilinxUnisimLibrary/verilog/src/glbl.v \
 	    $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/ISERDES.v \
 	    $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/ISERDES_NODELAY.v \
+	    $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/ISERDESE1.v \
 	    $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/OSERDES.v
 	$(NVC) --std=2008 --work=work:$(WORK) -L $(BUILD) -M $(NVC_M) \
 	  -a $(CURDIR)/tb/tb_eq_serdes.vhd \

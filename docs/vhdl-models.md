@@ -592,9 +592,26 @@ falling-edge sample is `posedge CLKB`. `RST` replaces `SR` and stores
 networking and memory, both DDR and width 4. With `ISERDES` that is
 160 checks, and `OSERDES` adds 80.
 
-`ISERDESE1` and `OSERDESE1` still have their behaviour in the open
-Verilog. `ISERDESE2`, `OSERDESE2`, `ISERDESE3` and `OSERDESE3`
-instantiate `B_` / `SIP_` modules that are not in the submodule.
+`ISERDESE1` is that deserializer with a synchronous `RST`, an `O`
+port, and `DDLY`. `XIL_TIMING` stays undefined. `IOBDELAY` `"NONE"`
+drives `O` and the sampler from `D`. `OFB_USED` false leaves `OFB`
+unused. Networking DDR width 4 clocks rank 2 from the inverted
+divider; memory clocks it from `CLKDIV`. The 300 ps flop delays are
+not copied. The bench compares networking and memory, both DDR and
+width 4, on the same clocks as `ISERDES_NODELAY`. Seven of the eight
+memory `Q2` samples match. The second word is `U` in the Verilog and
+0 in the VHDL; that one sample is not compared. `tb_eq_serdes` records
+255 input checks and 80 `OSERDES` checks.
+
+`OSERDESE1` in `INTERFACE_TYPE` `"DEFAULT"` bypasses the DDR3 FIFO, so
+`OQ` and `TQ` follow the `OSERDES` shift. `OFB` is `OQ` when
+`ODELAY_USED` is 0. The 1 ps flop delays are not copied.
+`MEMORY_DDR3` keeps the FIFO and is not compared. The Verilog uses
+`defparam`, which this NVC does not elaborate, so the bench does not
+analyse `OSERDESE1.v` yet.
+
+`ISERDESE2`, `OSERDESE2`, `ISERDESE3` and `OSERDESE3` instantiate
+`B_` / `SIP_` modules that are not in the submodule.
 
 ## Adding another primitive
 
