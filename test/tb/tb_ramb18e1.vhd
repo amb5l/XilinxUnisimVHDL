@@ -28,6 +28,18 @@ begin
   dut : RAMB18E1
     generic map (
       DOA_REG                   => 0,
+      INIT_A                    => "000000000000000000",
+      INIT_B                    => "000000000000000000",
+      IS_CLKARDCLK_INVERTED     => '0',
+      IS_CLKBWRCLK_INVERTED     => '0',
+      IS_ENARDEN_INVERTED       => '0',
+      IS_ENBWREN_INVERTED       => '0',
+      IS_RSTRAMARSTRAM_INVERTED => '0',
+      IS_RSTRAMB_INVERTED       => '0',
+      IS_RSTREGARSTREG_INVERTED => '0',
+      IS_RSTREGB_INVERTED       => '0',
+      SRVAL_A                   => "000000000000000000",
+      SRVAL_B                   => "000000000000000000",
       DOB_REG                   => 0,
       INIT_FILE                 => "NONE",
       RAM_MODE                  => "TDP",

@@ -9,10 +9,12 @@ src/vhdl/<NAME>.vhd instead of the Verilog. A skip row is not analysed.
 
 Parameter defaults map to VHDL generics as follows:
 
-  * a string literal            -> string
+  * a string literal "TRUE" or "FALSE" -> boolean
+  * any other string literal    -> string
   * an unsized integer          -> integer
   * a real literal              -> real
-  * a sized bit-vector literal  -> std_logic_vector of that width
+  * a 1-bit sized literal       -> bit
+  * a wider sized literal       -> bit_vector of that width
 
 config/type_map.yaml overrides the heuristic per module and parameter.
 Ports become std_ulogic, or std_logic_vector(N-1 downto 0) when the Verilog
@@ -396,10 +398,14 @@ def _vhdl_slv_default(bits: str) -> str:
         return "(others => '0')"
     if set(bits) == {"1"}:
         return "(others => '1')"
-    width = len(bits)
-    if re.fullmatch(r"[01]+", bits) and width % 4 == 0:
+    return _vhdl_bitstring(bits)
+
+
+def _vhdl_bitstring(bits: str) -> str:
+    """Bit-string literal: X\"...\" when the width is a multiple of 4."""
+    if bits and set(bits) <= set("01") and len(bits) % 4 == 0:
         hexdigits = []
-        for i in range(0, width, 4):
+        for i in range(0, len(bits), 4):
             hexdigits.append(format(int(bits[i:i + 4], 2), "X"))
         return 'X"' + "".join(hexdigits) + '"'
     return '"' + bits + '"'
@@ -521,7 +527,7 @@ def _classify_generic(name: str, type_kw: str | None, bounds, expr: str,
         kind = "string"
     elif lit is not None:
         kind = {"string": "string", "int": "integer", "real": "real",
-                "sized": "std_logic_vector"}[lit.kind]
+                "sized": "logic"}[lit.kind]
         if lit.kind == "sized":
             width = lit.width
     else:
@@ -530,6 +536,11 @@ def _classify_generic(name: str, type_kw: str | None, bounds, expr: str,
     if kind == "string":
         if lit is None or lit.kind != "string":
             raise ParseError(f"parameter {name}: string generic without a string default")
+        # Vivado's unisim_VCOMP maps a TRUE/FALSE string parameter to boolean.
+        # An explicit type_map type keeps the override (including string).
+        if (not override or not override.get("type")) and lit.text.upper() in {"TRUE", "FALSE"}:
+            word = "TRUE" if lit.text.upper() == "TRUE" else "FALSE"
+            return Generic(name, "boolean", word)
         default = '"' + lit.text.replace('"', '""') + '"'
         return Generic(name, "string", default)
     if kind == "integer":
@@ -586,6 +597,36 @@ def _classify_generic(name: str, type_kw: str | None, bounds, expr: str,
         else:
             vtype = f"std_logic_vector({width - 1} downto 0)"
         return Generic(name, vtype, default)
+    if kind == "logic":
+        if width is None:
+            if lit is not None and lit.kind == "sized":
+                width = lit.width
+            elif bounds is not None:
+                msb = _eval_int(bounds[0], {})
+                lsb = _eval_int(bounds[1], {})
+                if msb is None or lsb is None:
+                    raise ParseError(f"parameter {name}: vector width is not constant")
+                width = abs(msb - lsb) + 1
+            else:
+                raise ParseError(f"parameter {name}: logic generic width unknown")
+        if lit is not None and lit.kind == "sized":
+            bits = _bits(lit.width, lit.base, lit.digits)
+            width = len(bits)
+        elif lit is not None and lit.kind == "int":
+            bits = format(lit.value, f"0{width}b")[-width:]
+        else:
+            bits = "0" * width
+        if any(c not in "01" for c in bits):
+            # bit / bit_vector cannot represent X or Z. Keep std_logic_vector.
+            default = _vhdl_slv_default(bits)
+            if width == 1:
+                vtype = "std_logic_vector(0 downto 0)"
+            else:
+                vtype = f"std_logic_vector({width - 1} downto 0)"
+            return Generic(name, vtype, default)
+        if width == 1:
+            return Generic(name, "bit", "'" + bits + "'")
+        return Generic(name, f"bit_vector({width - 1} downto 0)", _vhdl_bitstring(bits))
     raise ParseError(f"parameter {name}: unsupported type {kind}")
 
 
@@ -867,6 +908,8 @@ def emit(components: list[Component]) -> str:
     a("--")
     a("-- Vivado's VHDL unisim sources are not used. XIL_TIMING and XIL_DR")
     a("-- are undefined, so parameters those macros hide are omitted.")
+    a("-- Sized parameters are bit (width 1) or bit_vector. A string default")
+    a("-- of TRUE or FALSE is boolean. Ports stay std_ulogic / std_logic_vector.")
     a("--")
     a("-- Copyright Xilinx, Inc. / Advanced Micro Devices, Inc. (source models)")
     a("-- Licensed under the Apache License, Version 2.0.")
