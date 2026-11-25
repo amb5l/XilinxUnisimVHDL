@@ -96,7 +96,7 @@ HSDAC                           vlog
 IBUF                            vhdl
 IBUFCTRL                        vhdl  no $finish; disable is (not T or IBUFDISABLE); INTERMDISABLE unused
 IBUFDS                          vhdl
-IBUFDSE3                        vlog
+IBUFDSE3                        vhdl  OSC_EN 11 selects the offset oscillator
 IBUFDS_DIFF_OUT                 vhdl
 IBUFDS_DIFF_OUT_IBUFDISABLE     vhdl
 IBUFDS_DIFF_OUT_INTERMDISABLE   vhdl
@@ -109,7 +109,7 @@ IBUFDS_IBUFDISABLE              vhdl
 IBUFDS_IBUFDISABLE_INT          vhdl
 IBUFDS_INTERMDISABLE            vhdl
 IBUFDS_INTERMDISABLE_INT        vhdl
-IBUFE3                          vlog
+IBUFE3                          vhdl  OSC_EN selects the offset oscillator
 IBUF_ANALOG                     vhdl
 IBUF_IBUFDISABLE                vhdl
 IBUF_INTERMDISABLE              vhdl
@@ -168,7 +168,7 @@ MUXF8                           vhdl
 MUXF9                           vhdl  S=1 selects I1, otherwise I0
 OBUF                            vhdl
 OBUFDS                          vhdl
-OBUFDS_DPHY                     vlog
+OBUFDS_DPHY                     vhdl  LP copies the LP pins; HS copies HSTX_I
 OBUFDS_GTE3                     vhdl
 OBUFDS_GTE3_ADV                 vhdl  bufif0 of the selected I bit
 OBUFDS_GTE4                     vhdl

@@ -723,6 +723,25 @@ enable on the `I` bit chosen by the `RXRECCLK_SEL` generic.
 
 `tb_eq_gtm` compares all four with the submodule Verilog.
 
+## Nineteenth batch
+
+`IBUFE3` follows `I` unless `OSC_EN` is 1, which selects the offset
+oscillator. `ULTRASCALE` and `ULTRASCALE_PLUS` use the `OSC` pins;
+every other legal `SIM_DEVICE` forces them to 0. `USE_IBUFDISABLE`
+drives `O` to 0 when `IBUFDISABLE` is 1 and `OSC_EN` is 0, and
+to `X` when `OSC_EN` is 1, `X` or `Z`. A zero difference toggles once per change
+and does not free-run.
+
+`IBUFDSE3` is the differential receiver unless `OSC_EN` is `11`
+(the oscillator) or `01`/`10` (`X`). The oscillator updates only on
+`11`. `USE_IBUFDISABLE` drives 0 when `IBUFDISABLE` is 1.
+
+`OBUFDS_DPHY` copies the LP pins when `LPTX_T` is 0, copies `HSTX_I`
+and its inverse when `LPTX_T` is 1 and `HSTX_T` is 0, and drives `Z`
+otherwise.
+
+`tb_eq_e3` compares all three with the submodule Verilog.
+
 ## Adding another primitive
 
 1. Read the Verilog functional model (`XIL_TIMING` undefined). Reimplement
@@ -738,7 +757,8 @@ enable on the `I` bit chosen by the `RXRECCLK_SEL` generic.
    `test/tb/tb_eq_dsp.vhd`,    `test/tb/tb_eq_dsp48.vhd`,
    `test/tb/tb_eq_bram.vhd`,    `test/tb/tb_eq_serdes.vhd`, `test/tb/tb_eq_mmcm.vhd`,
    `test/tb/tb_eq_cfg.vhd`, `test/tb/tb_eq_misc.vhd`,
-   `test/tb/tb_eq_gte.vhd`, or `test/tb/tb_eq_gtm.vhd` so the
+   `test/tb/tb_eq_gte.vhd`, `test/tb/tb_eq_gtm.vhd`, or
+   `test/tb/tb_eq_e3.vhd` so the
    VHDL model and the submodule Verilog see the same stimulus.
    Exhaustive for a small combinational cell. For a register, cover
    GSR, clock enable, reset priority, `INIT`, and `IS_*_INVERTED`.
