@@ -1,6 +1,8 @@
 build/
 work/
 test/work/
+__pycache__/
+*.pyc
 *.ncdb
 *.fst
 *.vcd
