@@ -3,6 +3,7 @@
 #   make              analyse Verilog + vcomponents into $(BUILD)/unisim
 #   make vcomponents  regenerate generated/unisim_vcomponents.vhd
 #   make test         elaborate and run test/tb
+#   make compare      compare vcomponents with a local Vivado unisim_VCOMP.vhd
 #   make clean
 #
 # BUILD   directory that receives the analysed library (default: build)
@@ -15,5 +16,6 @@ BUILD ?= build
 PREFIX ?=
 NVC ?= nvc
 NVC_M ?= 1g
+PYTHON ?= python3
 
 include mk/nvc.mk

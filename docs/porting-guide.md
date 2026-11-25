@@ -114,4 +114,6 @@ file list; wire one in deliberately.
 
 Do not copy headers, comments, or statements out of a Vivado VHDL unisim
 install. New models are written from the public Verilog behaviour and
-the generated component.
+the generated component. A local diff against Vivado's component
+package, which is not stored in this repository, is described in
+[compare.md](compare.md).

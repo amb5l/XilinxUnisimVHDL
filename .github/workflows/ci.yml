@@ -83,3 +83,14 @@ jobs:
           nvc --version
           make
           make test
+
+  # The comparison against Vivado is a local-only step. CI runs the
+  # synthetic unit tests and never looks for a Vivado install.
+  compare:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Unit-test the vcomponents comparison
+        run: python3 scripts/test_compare_vcomponents.py
