@@ -177,6 +177,7 @@ package vcomponents is
   end component BUF;
 
   -- BUFCE_LEAF.v
+  -- vhdl: src/vhdl/BUFCE_LEAF.vhd is analysed instead of this Verilog
   component BUFCE_LEAF is
     generic (
       CE_TYPE : string := "SYNC";
@@ -191,6 +192,7 @@ package vcomponents is
   end component BUFCE_LEAF;
 
   -- BUFCE_ROW.v
+  -- vhdl: src/vhdl/BUFCE_ROW.vhd is analysed instead of this Verilog
   component BUFCE_ROW is
     generic (
       CE_TYPE : string := "SYNC";
@@ -214,6 +216,7 @@ package vcomponents is
   end component BUFG;
 
   -- BUFG_GT.v
+  -- vhdl: src/vhdl/BUFG_GT.vhd is analysed instead of this Verilog
   component BUFG_GT is
     generic (
       SIM_DEVICE : string := "ULTRASCALE";
@@ -231,6 +234,7 @@ package vcomponents is
   end component BUFG_GT;
 
   -- BUFG_GT_SYNC.v
+  -- vhdl: src/vhdl/BUFG_GT_SYNC.vhd is analysed instead of this Verilog
   component BUFG_GT_SYNC is
     port (
       CESYNC : out std_ulogic;
@@ -242,6 +246,7 @@ package vcomponents is
   end component BUFG_GT_SYNC;
 
   -- BUFG_PS.v
+  -- vhdl: src/vhdl/BUFG_PS.vhd is analysed instead of this Verilog
   component BUFG_PS is
     generic (
       SIM_DEVICE : string := "ULTRASCALE_PLUS";
@@ -254,6 +259,7 @@ package vcomponents is
   end component BUFG_PS;
 
   -- BUFGCE.v
+  -- vhdl: src/vhdl/BUFGCE.vhd is analysed instead of this Verilog
   component BUFGCE is
     generic (
       CE_TYPE : string := "SYNC";
@@ -270,6 +276,7 @@ package vcomponents is
   end component BUFGCE;
 
   -- BUFGCE_DIV.v
+  -- vhdl: src/vhdl/BUFGCE_DIV.vhd is analysed instead of this Verilog
   component BUFGCE_DIV is
     generic (
       BUFGCE_DIVIDE : integer := 1;
@@ -290,6 +297,7 @@ package vcomponents is
   end component BUFGCE_DIV;
 
   -- BUFGCTRL.v
+  -- vhdl: src/vhdl/BUFGCTRL.vhd is analysed instead of this Verilog
   component BUFGCTRL is
     generic (
       CE_TYPE_CE0 : string := "SYNC";
@@ -340,6 +348,7 @@ package vcomponents is
   end component BUFH;
 
   -- BUFHCE.v
+  -- vhdl: src/vhdl/BUFHCE.vhd is analysed instead of this Verilog
   component BUFHCE is
     generic (
       CE_TYPE : string := "SYNC";
@@ -354,6 +363,7 @@ package vcomponents is
   end component BUFHCE;
 
   -- BUFIO.v
+  -- vhdl: src/vhdl/BUFIO.vhd is analysed instead of this Verilog
   component BUFIO is
     port (
       O : out std_ulogic;
@@ -362,6 +372,7 @@ package vcomponents is
   end component BUFIO;
 
   -- BUFMR.v
+  -- vhdl: src/vhdl/BUFMR.vhd is analysed instead of this Verilog
   component BUFMR is
     port (
       O : out std_ulogic;
@@ -370,6 +381,7 @@ package vcomponents is
   end component BUFMR;
 
   -- BUFMRCE.v
+  -- vhdl: src/vhdl/BUFMRCE.vhd is analysed instead of this Verilog
   component BUFMRCE is
     generic (
       CE_TYPE : string := "SYNC";
@@ -384,6 +396,7 @@ package vcomponents is
   end component BUFMRCE;
 
   -- BUFR.v
+  -- vhdl: src/vhdl/BUFR.vhd is analysed instead of this Verilog
   component BUFR is
     generic (
       BUFR_DIVIDE : string := "BYPASS";

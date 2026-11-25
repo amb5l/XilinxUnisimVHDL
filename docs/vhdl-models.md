@@ -293,6 +293,56 @@ nets and are compared with the Verilog. The oscillator is self-checked.
 `DPHY_DIFFINBUF` calls `$sformat`, which this NVC does not implement, so
 that reference aborts and the cell is self-checked.
 
+## Eighth batch
+
+Clock buffers: `BUFCE_LEAF`, `BUFCE_ROW`, `BUFGCE`, `BUFGCE_DIV`,
+`BUFGCTRL`, `BUFG_GT`, `BUFG_GT_SYNC`, `BUFG_PS`, `BUFHCE`, `BUFIO`,
+`BUFMR`, `BUFMRCE`, and `BUFR`. `BUFIO` and `BUFMR` are a `buf`.
+`BUFG_GT_SYNC` drives `CESYNC` with rv 1 and `CLRSYNC` with rv 0.
+
+`BUFCE_LEAF` keeps an enable that GSR forces to 1. `ASYNC` copies `CE`
+whenever GSR is low. `SYNC` copies `CE` only while `I` is 0. `O` is
+that enable and `I`. `BUFCE_ROW` is the same cell with `HARDSYNC`
+accepted; `HARDSYNC` is not `ASYNC`, so it matches `SYNC`. The Verilog
+`$finish` is not in the model.
+
+`BUFGCE` starts with the enable at 0. `SYNC` samples `CE` while `I` is
+0, `ASYNC` follows `CE`, and `HARDSYNC` samples `ce_sync(2)` after three
+rising edges. `STARTUP_SYNC` uses that same shifter on `not GSR` and is
+honoured on every `SIM_DEVICE`. `BUFG_PS` latches `not GSR` while `I` is
+0 and forces `STARTUP_SYNC` off unless `SIM_DEVICE` is `VERSAL*`.
+
+`BUFGCTRL` is the mux those enables are built from. `CE`, `S`, and
+`IGNORE` are rv 0 of the optional invert, so `Z` is 0 and is not
+inverted. The `qb` latches and the `CE` delay into a `HARDSYNC` shifter
+are 1 ps. `HARDSYNC` and `STARTUP_SYNC` are forced off unless
+`SIM_DEVICE` is `VERSAL*`. `glbl.GRESTORE` is reproduced locally: low,
+high from 10 ns to 20 ns, then low. `BUFHCE` is two `BUFGCTRL` cells
+with `I1` tied to 0 and 1; `ASYNC` drives `IGNORE0`. `BUFMRCE` is the
+same structure with `IGNORE0` tied to 0, so `CE_TYPE` has no effect,
+and the second cell's `INIT_OUT` generic is 1.
+
+`BUFGCE_DIV` and `BUFG_GT` share the edge counter. Divide value 1 copies
+`I` gated by the enable. 2 through 8 (and `BUFG_GT` `DIV` `001` through
+`111`) toggle on the counts in the Verilog case. `GSR` holds the counter
+at 0. A non-versal `BUFG_GT` synchronises `CE` and `not CLR` for two
+rising edges and delays `O` by 1 ps. `VERSAL*` skips both. `BUFR`
+`BYPASS` is a `buf`. `"1"` through `"8"` count edges of `I` while `CE`
+is 1. `VIRTEX4` uses the four-stage `CE` pipeline; `7SERIES`, `VIRTEX5`,
+and `VIRTEX6` use `CE` directly.
+
+`tb_eq_bufg` compares the VHDL with the Verilog after the 100 ns ROC.
+`BUFCE_ROW` is the SIMPRIM `$finish` cell in this batch. Analysing it
+with `-D XIL_TIMING` is accepted, and the simulation runs, but `O` stays
+at X: the specify targets `I_delay` and `CE_delay` are not driven. Without
+the define the model executes `$finish`. `BUFCE_ROW` is checked against
+`BUFCE_LEAF` instead. `BUFHCE` uses `defparam`, which this NVC does not
+elaborate, so that cell is self-checked; `BUFMRCE` passes parameters in
+the instance and is compared with the Verilog. `BUFGCE_DIV` values other
+than 1 are self-checked: the Verilog chooses the toggle counts in an
+`always` that races `BUFGCE_DIVIDE_BIN`, and on this NVC the counts stay
+at 1.
+
 ## Conventions
 
 - One entity and one architecture per file. The entity name is the
@@ -357,9 +407,10 @@ NVC also presents a Verilog `X` on an output port to a VHDL signal as
    component in `vcomponents`.
 3. Set that row's `lang` to `vhdl` in `config/primitives.txt`
    (`python3 scripts/primitives.py --check` must pass).
-4. Extend `test/tb/tb_eq.vhd` (`EQ_PRIMS`), `test/tb/tb_eq_io.vhd`
-   (`EQ_IO_PRIMS`), `test/tb/tb_eq_ff.vhd` (`EQ_FF_PRIMS`), or
-   `test/tb/tb_eq_ram.vhd` (`EQ_RAM_PRIMS`) so the
+4. Extend    `test/tb/tb_eq.vhd` (`EQ_PRIMS`), `test/tb/tb_eq_io.vhd`
+   (`EQ_IO_PRIMS`), `test/tb/tb_eq_ff.vhd` (`EQ_FF_PRIMS`),
+   `test/tb/tb_eq_ram.vhd` (`EQ_RAM_PRIMS`), `test/tb/tb_eq_simprim.vhd`,
+   or `test/tb/tb_eq_bufg.vhd` so the
    VHDL model and the submodule Verilog see the same stimulus.
    Exhaustive for a small combinational cell. For a register, cover
    GSR, clock enable, reset priority, `INIT`, and `IS_*_INVERTED`.
