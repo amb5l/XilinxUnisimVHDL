@@ -140,7 +140,7 @@ IOBUF_ANALOG                    vhdl  std_logic inout; 'Z' when disabled; no dri
 IOBUF_DCIEN                     vhdl  std_logic inout; 'Z' when disabled; no drive strength
 IOBUF_INTERMDISABLE             vhdl  std_logic inout; 'Z' when disabled; no drive strength
 ISERDES                         vhdl  DDR/SDR; 300 ps flops not copied; tap delay 0; no $finish
-ISERDESE1                       vlog
+ISERDESE1                       vhdl  sync RST; CLKB samples; DDR4 rank2 inverts divider; no $finish
 ISERDESE2                       vlog
 ISERDESE3                       vlog
 ISERDES_NODELAY                 vhdl  CLKB is the falling edge; RST stores 0; no tap delay; no $finish
@@ -186,7 +186,7 @@ ODELAYE2_FINEDELAY              vlog
 ODELAYE3                        vlog
 OR2L                            vhdl
 OSERDES                         vhdl  DDR/SDR; 1 ps flops not copied; no $finish
-OSERDESE1                       vlog
+OSERDESE1                       vhdl  DEFAULT bypasses the DDR3 FIFO; 1 ps flops not copied; no $finish
 OSERDESE2                       vlog
 OSERDESE3                       vlog
 OUT_FIFO                        vlog

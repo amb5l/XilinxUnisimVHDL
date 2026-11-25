@@ -13043,6 +13043,7 @@ package vcomponents is
   end component ISERDES_NODELAY;
 
   -- ISERDESE1.v
+  -- vhdl: src/vhdl/ISERDESE1.vhd is analysed instead of this Verilog
   component ISERDESE1 is
     generic (
       DATA_RATE : string := "DDR";
@@ -14229,6 +14230,7 @@ package vcomponents is
   end component OSERDES;
 
   -- OSERDESE1.v
+  -- vhdl: src/vhdl/OSERDESE1.vhd is analysed instead of this Verilog
   component OSERDESE1 is
     generic (
       DATA_RATE_OQ : string := "DDR";
