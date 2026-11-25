@@ -243,6 +243,26 @@ stay Verilog. Each one executes `$finish` at time 0 when `XIL_TIMING`
 is undefined, so the functional body cannot be an equivalence
 reference. Block RAM (`RAMB*`) is not part of this batch.
 
+## Sixth batch
+
+`MUXCY`, `MUXF9`, and `CARRY8`. `MUXF7`, `MUXF8`, and `CARRY4` were
+already VHDL. `MUXF9` is the same select as `MUXF7`: `S` of 1 chooses
+`I1` and every other value, including `X` and `Z`, chooses `I0`.
+`MUXCY` chooses `CI` only when `S` is 1 and `DI` otherwise. `tb_eq`
+sweeps both with the `MUXF7` stimulus.
+
+`CARRY8` is the eight-bit form of `CARRY4`. `CI`, `CI_TOP`, `DI`, and
+`S` pass through `rv 0`, so `Z` becomes 0 and `X` stays `X`.
+`O = S xor CO_fb` and `CO = (S and CO_fb) or (not S and DI)`, with
+`CO_fb = {CO[6:4], CI_TOP_in, CO[2:0], CI}`. `SINGLE_CY8` (the
+default) uses `CO(3)` as `CI_TOP_in`, so `CI_TOP` is ignored.
+`DUAL_CY4` uses `CI_TOP` and the chain splits into two nibbles. Any
+other `CARRY_TYPE` makes the Verilog `$finish`; the model uses the
+single chain, which is also the parameter's fallback. The Verilog
+copies `CARRY_TYPE` into a reg 2 ps after time 0. `tb_eq` compares
+after that, over every binary `S`/`DI` word with `CI` and `CI_TOP` at
+0 and 1, then the `X` and `Z` cases.
+
 ## Conventions
 
 - One entity and one architecture per file. The entity name is the
