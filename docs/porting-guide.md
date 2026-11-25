@@ -79,8 +79,8 @@ sized Verilog parameter, and still elaborates `integer` and `string`. A
 build (`generic NAME should have type STRING`). VHDL entities in this
 tree use `boolean` for TRUE/FALSE parameters; a testbench that also
 instantiates the Verilog model passes the string `"TRUE"` / `"FALSE"` on
-that side. `real` generics (MMCM, PLL, DCM periods) analyse and do not
-elaborate yet.
+that side. `real` generics (MMCM, PLL, DCM periods) elaborate on
+`unisim/7-vhdl-types`.
 
 String generics have a second constraint. NVC only accepts the value
 when the generic map supplies a locally static string literal. A

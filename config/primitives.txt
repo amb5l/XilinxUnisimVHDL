@@ -156,12 +156,12 @@ LUT5                            vhdl
 LUT6                            vhdl
 LUT6_2                          vhdl
 MASTER_JTAG                     vlog
-MMCME2_ADV                      vlog  needs NVC unisim/6-mmcm ($realtime)
-MMCME2_BASE                     vlog  instantiates MMCME2_ADV; needs NVC unisim/6-mmcm ($realtime)
-MMCME3_ADV                      vlog  needs NVC unisim/6-mmcm ($realtime)
-MMCME3_BASE                     vlog  needs NVC unisim/6-mmcm ($realtime)
-MMCME4_ADV                      vlog  needs NVC unisim/6-mmcm ($realtime)
-MMCME4_BASE                     vlog  needs NVC unisim/6-mmcm ($realtime)
+MMCME2_ADV                      vhdl  integer multiply/divide; fractional, phase, fine PS, SS, DRP not compared
+MMCME2_BASE                     vhdl  instantiates MMCME2_ADV
+MMCME3_ADV                      vhdl  same integer path as MMCME2_ADV; CDDCDONE stays 0
+MMCME3_BASE                     vhdl  instantiates MMCME3_ADV
+MMCME4_ADV                      vhdl  same integer path as MMCME2_ADV; CDDCDONE stays 0
+MMCME4_BASE                     vhdl  instantiates MMCME4_ADV
 MUXCY                           vhdl  S=1 selects CI, otherwise DI
 MUXF7                           vhdl
 MUXF8                           vhdl

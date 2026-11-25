@@ -13350,6 +13350,7 @@ package vcomponents is
   end component MASTER_JTAG;
 
   -- MMCME2_ADV.v
+  -- vhdl: src/vhdl/MMCME2_ADV.vhd is analysed instead of this Verilog
   component MMCME2_ADV is
     generic (
       BANDWIDTH : string := "OPTIMIZED";
@@ -13439,6 +13440,7 @@ package vcomponents is
   end component MMCME2_ADV;
 
   -- MMCME2_BASE.v
+  -- vhdl: src/vhdl/MMCME2_BASE.vhd is analysed instead of this Verilog
   component MMCME2_BASE is
     generic (
       BANDWIDTH : string := "OPTIMIZED";
@@ -13494,6 +13496,7 @@ package vcomponents is
   end component MMCME2_BASE;
 
   -- MMCME3_ADV.v
+  -- vhdl: src/vhdl/MMCME3_ADV.vhd is analysed instead of this Verilog
   component MMCME3_ADV is
     generic (
       BANDWIDTH : string := "OPTIMIZED";
@@ -13588,6 +13591,7 @@ package vcomponents is
   end component MMCME3_ADV;
 
   -- MMCME3_BASE.v
+  -- vhdl: src/vhdl/MMCME3_BASE.vhd is analysed instead of this Verilog
   component MMCME3_BASE is
     generic (
       BANDWIDTH : string := "OPTIMIZED";
@@ -13647,6 +13651,7 @@ package vcomponents is
   end component MMCME3_BASE;
 
   -- MMCME4_ADV.v
+  -- vhdl: src/vhdl/MMCME4_ADV.vhd is analysed instead of this Verilog
   component MMCME4_ADV is
     generic (
       BANDWIDTH : string := "OPTIMIZED";
@@ -13741,6 +13746,7 @@ package vcomponents is
   end component MMCME4_ADV;
 
   -- MMCME4_BASE.v
+  -- vhdl: src/vhdl/MMCME4_BASE.vhd is analysed instead of this Verilog
   component MMCME4_BASE is
     generic (
       BANDWIDTH : string := "OPTIMIZED";

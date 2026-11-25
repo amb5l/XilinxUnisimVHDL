@@ -55,8 +55,8 @@ make test     # RAM32X1D, DSP48E1, RAMB18E1, VHDL/Verilog equivalence
 `make` prints how many Verilog files it analysed. `config/primitives.txt`
 is the index: `vlog` rows plus `glbl.v` are analysed, `vhdl` rows
 analyse `src/vhdl/<NAME>.vhd` instead, and `skip` rows are left out of
-the file list. This pin is 120 `vlog`, 129 `vhdl`, and `GTM_DUAL` `skip`
-(SystemVerilog), so the Verilog analyse list is 121 including `glbl.v`.
+the file list. This pin is 114 `vlog`, 135 `vhdl`, and `GTM_DUAL` `skip`
+(SystemVerilog), so the Verilog analyse list is 115 including `glbl.v`.
 `XIL_TIMING` and `XIL_DR` are left undefined.
 
 Other targets:
@@ -96,12 +96,13 @@ primitives. The per-primitive table is
 Sized parameters become `bit` (width 1) or `bit_vector`, and a
 `TRUE`/`FALSE` string parameter becomes `boolean`, matching Vivado's
 `unisim_VCOMP` conventions. `config/type_map.yaml` has no integer
-overrides. `real` generics (MMCM, PLL, DCM periods) analyse and do not
-elaborate yet. Details are in the porting guide.
+overrides. `real` generics (MMCM, PLL, DCM periods) elaborate on this NVC.
+Details are in the porting guide.
 
 [config/primitives.txt](config/primitives.txt) names every primitive in
-the submodule. Notes record the known NVC gaps: MMCM/PLL/DCM models that
-call `$realtime` need `unisim/6-mmcm`. `IOBUF*` and `BIBUF` are VHDL
+the submodule. Notes record the known NVC gaps: PLL and DCM models that
+call `$realtime` are still Verilog. The six `MMCME*` cells are VHDL for
+the integer clock path. `IOBUF*` and `BIBUF` are VHDL
 with `std_logic` `inout` ports; the note on `BIBUF` records that its
 weak driver is modeled strong. `GTM_DUAL` is `skip` because the source
 is SystemVerilog. A `skip` row is still given a component declaration

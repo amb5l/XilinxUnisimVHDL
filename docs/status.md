@@ -1,11 +1,11 @@
 # Primitive status
 
 Which source is analysed is `config/primitives.txt` (`vlog`, `vhdl`, or
-`skip`). One hundred and twenty-nine simple primitives are hand-written VHDL; see
+`skip`). One hundred and thirty-five simple primitives are hand-written VHDL; see
 [vhdl-models.md](vhdl-models.md). The rest of this table is still the
 Verilog model from the XilinxUnisimLibrary submodule. `GTM_DUAL` is the
 only `skip`: it is SystemVerilog and is not in this table. Notes in the
-index call out `$realtime` (MMCM, PLL, DCM). `BIBUF` is VHDL, and its
+index call out `$realtime` (PLL, DCM). `BIBUF` is VHDL, and its
 note records that the weak Verilog driver is modeled strong.
 
 | Primitive | Implementation |
@@ -155,12 +155,12 @@ note records that the weak Verilog driver is modeled strong.
 | `LUT6` | VHDL `src/vhdl/LUT6.vhd` |
 | `LUT6_2` | VHDL `src/vhdl/LUT6_2.vhd` |
 | `MASTER_JTAG` | Verilog only |
-| `MMCME2_ADV` | Verilog only |
-| `MMCME2_BASE` | Verilog only |
-| `MMCME3_ADV` | Verilog only |
-| `MMCME3_BASE` | Verilog only |
-| `MMCME4_ADV` | Verilog only |
-| `MMCME4_BASE` | Verilog only |
+| `MMCME2_ADV` | VHDL `src/vhdl/MMCME2_ADV.vhd` |
+| `MMCME2_BASE` | VHDL `src/vhdl/MMCME2_BASE.vhd` |
+| `MMCME3_ADV` | VHDL `src/vhdl/MMCME3_ADV.vhd` |
+| `MMCME3_BASE` | VHDL `src/vhdl/MMCME3_BASE.vhd` |
+| `MMCME4_ADV` | VHDL `src/vhdl/MMCME4_ADV.vhd` |
+| `MMCME4_BASE` | VHDL `src/vhdl/MMCME4_BASE.vhd` |
 | `MUXCY` | VHDL `src/vhdl/MUXCY.vhd` |
 | `MUXF7` | VHDL `src/vhdl/MUXF7.vhd` |
 | `MUXF8` | VHDL `src/vhdl/MUXF8.vhd` |

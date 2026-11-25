@@ -613,6 +613,38 @@ analyse `OSERDESE1.v` yet.
 `ISERDESE2`, `OSERDESE2`, `ISERDESE3` and `OSERDESE3` instantiate
 `B_` / `SIP_` modules that are not in the submodule.
 
+## Fourteenth batch
+
+`MMCME2_ADV` is the integer clock path of the mixed-mode clock manager.
+`mmcm_core` in that file is the shared model. `MMCME2_BASE` is the
+wrapper with DRP and phase-shift ports tied off. `MMCME3_ADV` and
+`MMCME4_ADV` use the same core; `CDDCDONE` stays 0. `MMCME3_BASE` and
+`MMCME4_BASE` are the same kind of wrapper, and they apply the
+`IS_CLKFBIN_INVERTED` and `IS_CLKIN1_INVERTED` pins.
+
+The comparison path is an integer `CLKFBOUT_MULT_F`, integer
+`CLKOUT0_DIVIDE_F`, `DIVCLK_DIVIDE`, 50 percent duty and zero phase,
+with `CLKFBOUT` looped to `CLKFBIN`. `RST` is held past the 100 ns GSR
+window. The VCO half-period is `Tin * DIVCLK_DIVIDE / MULT / 2`. The
+divider counts the VCO edge that lands on the input edge where the
+outputs turn on. `LOCKED` waits `Tin * DIVCLK_DIVIDE * MULT` after the
+Verilog lock threshold. Fractional multiply or divide, a duty other
+than 0.5, a non-zero phase, fine phase shift, spread spectrum, DRP,
+and the stopped-clock flags are not compared. `RST` and `PWRDWN` are
+checked only for clearing `LOCKED`: the Verilog restarts its VCO
+burst on the next input edge, and the free-running VCO does not
+reproduce that second-lock phase. With `DIVCLK_DIVIDE` 2, `CLKOUT*`
+matches and `CLKFBOUT` is half a period away, so that pin is not
+compared for that ratio. An illegal attribute does not `$finish`.
+
+`tb_eq_mmcm` compares all six cells with the submodule Verilog, one
+elaboration per cell. A second Verilog MMCM in the same simulation
+does not lock on this NVC; that is left as a possible NVC bug.
+`XIL_TIMING` stays undefined. The Verilog may report that
+`CLKIN1_PERIOD` does not match the period measured with `$time`, and
+that `%m` is an unknown format specifier. The locked clocks still
+match; those messages are left as printed.
+
 ## Adding another primitive
 
 1. Read the Verilog functional model (`XIL_TIMING` undefined). Reimplement
@@ -625,8 +657,9 @@ analyse `OSERDESE1.v` yet.
    (`EQ_IO_PRIMS`), `test/tb/tb_eq_ff.vhd` (`EQ_FF_PRIMS`),
    `test/tb/tb_eq_ram.vhd` (`EQ_RAM_PRIMS`), `test/tb/tb_eq_simprim.vhd`,
    `test/tb/tb_eq_bufg.vhd`, `test/tb/tb_eq_ddr.vhd`,
-   `test/tb/tb_eq_dsp.vhd`, `test/tb/tb_eq_dsp48.vhd`,
-   `test/tb/tb_eq_bram.vhd`, or `test/tb/tb_eq_serdes.vhd` so the
+   `test/tb/tb_eq_dsp.vhd`,    `test/tb/tb_eq_dsp48.vhd`,
+   `test/tb/tb_eq_bram.vhd`, `test/tb/tb_eq_serdes.vhd`, or
+   `test/tb/tb_eq_mmcm.vhd` so the
    VHDL model and the submodule Verilog see the same stimulus.
    Exhaustive for a small combinational cell. For a register, cover
    GSR, clock enable, reset priority, `INIT`, and `IS_*_INVERTED`.
