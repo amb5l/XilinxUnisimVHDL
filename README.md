@@ -32,7 +32,7 @@ Build that branch (the CI workflow does the same thing):
 ```sh
 git clone https://github.com/amb5l/nvc
 cd nvc
-git checkout unisim/7-vhdl-types
+git checkout unisim/14-glbl
 ./autogen.sh
 mkdir build && cd build
 ../configure --prefix="$HOME/nvc"
@@ -100,8 +100,9 @@ overrides. `real` generics (MMCM, PLL, DCM periods) analyse and do not
 elaborate yet. Details are in the porting guide.
 
 [config/primitives.txt](config/primitives.txt) names every primitive in
-the submodule. Notes record the known NVC gaps: MMCM/PLL/DCM models that
-call `$realtime` need `unisim/6-mmcm`. `IOBUF*` and `BIBUF` are VHDL
+the submodule. Notes record the known gaps: MMCM/PLL/DCM stay Verilog.
+They call `$realtime`, which this NVC implements; the cells are not
+ported yet. `IOBUF*` and `BIBUF` are VHDL
 with `std_logic` `inout` ports; the note on `BIBUF` records that its
 weak driver is modeled strong. `GTM_DUAL` is `skip` because the source
 is SystemVerilog. A `skip` row is still given a component declaration

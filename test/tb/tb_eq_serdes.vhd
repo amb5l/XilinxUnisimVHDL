@@ -367,12 +367,9 @@ begin
         check(eq6_h, eq6_v, "e1 q6");
         check(emo_h, emo_v, "e1 mem o");
         check(em1_h, em1_v, "e1 mem q1");
-        -- One memory Q2 sample is U on this NVC (the second word). The
-        -- other seven match. The U is reported with the NVC_REF bump
-        -- rather than copied into the model.
-        if em2_v /= 'U' then
-          check(em2_h, em2_v, "e1 mem q2");
-        end if;
+        -- Second word: Verilog stays U while VHDL is 0. Left asserted.
+        -- Later samples of this bit match. Possible NVC scheduling bug.
+        check(em2_h, em2_v, "e1 mem q2");
         check(em3_h, em3_v, "e1 mem q3");
         check(em4_h, em4_v, "e1 mem q4");
         clkdiv <= '0';

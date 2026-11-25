@@ -7,8 +7,7 @@
 -- mode is true only when both pins have Strong strength (%v = "S").
 -- std_ulogic has no strength, so LP mode is false and both LP bits are 0.
 -- DIFF_TERM and ISTANDARD are unused. glbl.GSR is unused.
--- NVC does not implement $sformat, so the Verilog model cannot be elaborated
--- as an equivalence reference.
+-- tb_eq_simprim compares this cell with the Verilog.
 
 library ieee;
 use ieee.std_logic_1164.all;

@@ -1,7 +1,7 @@
 -- Equivalence for the clock-buffer batch against the Apache-2.0 Verilog,
--- analysed into library work. BUFCE_ROW $finish without XIL_TIMING, and
--- with XIL_TIMING its delay nets are not driven, so it is checked against
--- the VHDL BUFCE_LEAF (HARDSYNC against SYNC).
+-- analysed into library work. BUFCE_ROW is analysed with XIL_TIMING.
+-- BUFHCE and BUFGCE_DIV divide 2 and 4 are compared too.
+-- unisim.GLBL is the second top.
 
 library ieee;
 use ieee.std_logic_1164.all;
@@ -29,11 +29,13 @@ architecture sim of tb_eq_bufg is
   signal ces_h, ces_v, clrs_h, clrs_v : std_ulogic;
   signal leaf_h, leaf_v, leafa_h, leafa_v, leafi_h, leafi_v : std_ulogic;
   signal row_s, row_a, row_h : std_ulogic;
+  signal row_sv, row_av, row_hv : std_ulogic;
   signal gce_h, gce_v, gcea_h, gcea_v, gceh_h, gceh_v, gcei_h, gcei_v : std_ulogic;
   signal gces_h, gces_v : std_ulogic;
   signal ps_h, ps_v, psv_h, psv_v : std_ulogic;
   signal ctl_h, ctl_v, ctl0_h, ctl0_v, ctl1_h, ctl1_v : std_ulogic;
   signal hce_h, hcea_h, hce1_h : std_ulogic;
+  signal hce_v, hcea_v, hce1_v : std_ulogic;
   signal mce_h, mce_v, mce1_h, mce1_v : std_ulogic;
   signal by_h, by_v, d2_h, d2_v, d1_h, d1_v, d8_h, d8_v, v4_h, v4_v : std_ulogic;
   signal div1_h, div1_v, div2_h, div2_v, div4_h, div4_v : std_ulogic;
@@ -50,6 +52,14 @@ architecture sim of tb_eq_bufg is
       CESYNC, CLRSYNC : out std_ulogic;
       CE, CLK, CLR : in std_ulogic
     );
+  end component;
+  component BUFCE_ROW is
+    generic (
+      CE_TYPE : string := "SYNC";
+      IS_CE_INVERTED : bit := '0';
+      IS_I_INVERTED : bit := '0'
+    );
+    port (O : out std_ulogic; CE, I : in std_ulogic);
   end component;
   component BUFCE_LEAF is
     generic (
@@ -114,6 +124,14 @@ architecture sim of tb_eq_bufg is
     );
     port (O : out std_ulogic; CE, CLR, I : in std_ulogic);
   end component;
+  component BUFHCE is
+    generic (
+      CE_TYPE : string := "SYNC";
+      INIT_OUT : integer := 0;
+      IS_CE_INVERTED : bit := '0'
+    );
+    port (O : out std_ulogic; CE, I : in std_ulogic);
+  end component;
   component BUFGCE_DIV is
     generic (
       BUFGCE_DIVIDE : integer := 1;
@@ -171,10 +189,15 @@ begin
     port map (O => leafi_v, CE => cel, I => il);
 
   u_row_s : entity unisim.BUFCE_ROW port map (O => row_s, CE => cel, I => il);
+  u_row_sv : BUFCE_ROW port map (O => row_sv, CE => cel, I => il);
   u_row_a : entity unisim.BUFCE_ROW generic map (CE_TYPE => "ASYNC")
     port map (O => row_a, CE => cel, I => il);
+  u_row_av : BUFCE_ROW generic map (CE_TYPE => "ASYNC")
+    port map (O => row_av, CE => cel, I => il);
   u_row_h : entity unisim.BUFCE_ROW generic map (CE_TYPE => "HARDSYNC")
     port map (O => row_h, CE => cel, I => il);
+  u_row_hv : BUFCE_ROW generic map (CE_TYPE => "HARDSYNC")
+    port map (O => row_hv, CE => cel, I => il);
 
   u_gce_h : entity unisim.BUFGCE port map (O => gce_h, CE => ceg, I => ig);
   u_gce_v : BUFGCE port map (O => gce_v, CE => ceg, I => ig);
@@ -223,15 +246,18 @@ begin
     generic map (PRESELECT_I1 => TRUE, INIT_OUT => 1, SIM_DEVICE => "7SERIES")
     port map (ctl1_v, ce0, ce1, i0, i1, ign0, ign1, s0, s1);
 
-  -- BUFHCE's Verilog uses defparam, which this NVC does not elaborate.
-  -- The cell is two BUFGCTRL instances; those are equivalence-tested,
-  -- and BUFHCE itself is self-checked.
   u_hce_h : entity unisim.BUFHCE port map (O => hce_h, CE => ceh, I => ih);
+  u_hce_v : BUFHCE port map (O => hce_v, CE => ceh, I => ih);
   u_hcea_h : entity unisim.BUFHCE generic map (CE_TYPE => "ASYNC")
     port map (O => hcea_h, CE => ceh, I => ih);
+  u_hcea_v : BUFHCE generic map (CE_TYPE => "ASYNC")
+    port map (O => hcea_v, CE => ceh, I => ih);
   u_hce1_h : entity unisim.BUFHCE
     generic map (INIT_OUT => 1, IS_CE_INVERTED => '1')
     port map (O => hce1_h, CE => ceh, I => ih);
+  u_hce1_v : BUFHCE
+    generic map (INIT_OUT => 1, IS_CE_INVERTED => '1')
+    port map (O => hce1_v, CE => ceh, I => ih);
 
   u_mce_h : entity unisim.BUFMRCE port map (O => mce_h, CE => cem, I => im);
   u_mce_v : BUFMRCE port map (O => mce_v, CE => cem, I => im);
@@ -327,9 +353,9 @@ begin
       eq(tag & " leaf", leaf_h, leaf_v);
       eq(tag & " leaf async", leafa_h, leafa_v);
       eq(tag & " leaf inv", leafi_h, leafi_v);
-      expect(tag & " row sync", row_s, leaf_h);
-      expect(tag & " row async", row_a, leafa_h);
-      expect(tag & " row hardsync", row_h, leaf_h);
+      eq(tag & " row sync", row_s, row_sv);
+      eq(tag & " row async", row_a, row_av);
+      eq(tag & " row hardsync", row_h, row_hv);
     end procedure;
 
     procedure eq_gce(tag : string; full : boolean := true) is
@@ -355,6 +381,9 @@ begin
 
     procedure eq_hce(tag : string) is
     begin
+      eq(tag & " hce", hce_h, hce_v);
+      eq(tag & " hce async", hcea_h, hcea_v);
+      eq(tag & " hce init1", hce1_h, hce1_v);
       eq(tag & " mrce", mce_h, mce_v);
       eq(tag & " mrce init1", mce1_h, mce1_v);
     end procedure;
@@ -370,10 +399,9 @@ begin
 
     procedure eq_div(tag : string) is
     begin
-      -- Divide values other than 1 are self-checked. On this NVC the
-      -- Verilog toggle-count always loses the race with BUFGCE_DIVIDE_BIN
-      -- and stays at 1, so it is not a divider reference.
       eq(tag & " /1", div1_h, div1_v);
+      eq(tag & " /2", div2_h, div2_v);
+      eq(tag & " /4", div4_h, div4_v);
     end procedure;
 
     procedure eq_gt(tag : string) is
