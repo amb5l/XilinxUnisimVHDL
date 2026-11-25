@@ -226,10 +226,10 @@ RAM64M8                         vhdl  write delayed 100 ps; WE of Z writes
 RAM64X1D                        vhdl  write delayed 100 ps; WE of Z writes; X address reads X
 RAM64X1S                        vhdl  write delayed 100 ps; WE of Z writes; X address reads X
 RAM64X8SW                       vhdl  O is X until A changes or 100 ps; WSEL writes one slice, no delay
-RAMB18E1                        vlog
-RAMB18E2                        vlog
-RAMB36E1                        vlog
-RAMB36E2                        vlog
+RAMB18E1                        vhdl  TDP/SDP 1..36; no collision; 100 ps paths not copied
+RAMB18E2                        vhdl  same memory; cascade and sleep not modelled
+RAMB36E1                        vhdl  1..72; no ECC; no collision
+RAMB36E2                        vhdl  same memory; cascade, ECC, and sleep not modelled
 RAMD32                          vhdl  no $finish; rv1(WE) write, zero delay; X address ignored
 RAMD32M64                       vhdl  no $finish; Verilog body is empty, O stays Z
 RAMD64E                         vhdl  no $finish; WADR7/6 must match space unless masked

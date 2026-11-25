@@ -137,6 +137,78 @@ package unisim_sim is
     signal mem : inout std_logic_vector;
     inv : in bit
   );
+
+  -- Block RAM. Memory is a flat bit vector. Address bit 14 is the top
+  -- index and the low log2(data width) bits sit inside the word. Parity
+  -- bit i belongs to data byte i. A non-binary word address returns -1.
+  function bram_dwidth(pw : integer) return integer;
+  function bram_pwidth(pw : integer) return integer;
+  function bram_pick_width(w, alt : integer) return integer;
+  -- 0 WRITE_FIRST, 1 READ_FIRST, 2 NO_CHANGE. Anything else is WRITE_FIRST.
+  function bram_mode(s : string) return integer;
+  function bram_base(addr : std_logic_vector; dwidth : integer) return integer;
+  -- True when NO_CHANGE must hold the output (a byte enable is not 0).
+  function bram_we_hold(we : std_logic_vector; pw : integer) return boolean;
+  procedure bram_load(
+    variable mem : inout std_logic_vector;
+    chunk : in bit_vector;
+    index : in integer
+  );
+  procedure bram_from_attr(
+    attr : in bit_vector;
+    pw : in integer;
+    variable data : out std_logic_vector;
+    variable parity : out std_logic_vector
+  );
+  procedure bram_write(
+    variable mem : inout std_logic_vector;
+    variable memp : inout std_logic_vector;
+    addr : in std_logic_vector;
+    di : in std_logic_vector;
+    dip : in std_logic_vector;
+    we : in std_logic_vector;
+    pw : in integer
+  );
+  procedure bram_read(
+    mem : in std_logic_vector;
+    memp : in std_logic_vector;
+    addr : in std_logic_vector;
+    pw : in integer;
+    variable data : out std_logic_vector;
+    variable parity : out std_logic_vector
+  );
+  -- One enabled port. RSTRAM forces the latch to SRVAL and still writes.
+  -- READ_FIRST latches the old word. WRITE_FIRST latches the new word.
+  -- NO_CHANGE leaves the latch alone while a byte enable is set.
+  procedure bram_access(
+    variable mem : inout std_logic_vector;
+    variable memp : inout std_logic_vector;
+    addr : in std_logic_vector;
+    di : in std_logic_vector;
+    dip : in std_logic_vector;
+    we : in std_logic_vector;
+    en : in std_ulogic;
+    rstram : in std_ulogic;
+    mode : in integer;
+    rpw : in integer;
+    wpw : in integer;
+    srval : in bit_vector;
+    variable latch_d : inout std_logic_vector;
+    variable latch_p : inout std_logic_vector
+  );
+  -- Output register. RSTREG priority loads SRVAL even when REGCE is 0.
+  -- REGCE priority loads SRVAL only when both are 1. An X holds.
+  procedure bram_take_reg(
+    variable reg_d : inout std_logic_vector;
+    variable reg_p : inout std_logic_vector;
+    latch_d : in std_logic_vector;
+    latch_p : in std_logic_vector;
+    regce : in std_ulogic;
+    rstreg : in std_ulogic;
+    priority : in string;
+    srval : in bit_vector;
+    pw : in integer
+  );
 end package unisim_sim;
 
 package body unisim_sim is
@@ -813,5 +885,318 @@ package body unisim_sim is
       end if;
       prev := curr;
     end loop;
+  end procedure;
+
+  function bram_dwidth(pw : integer) return integer is
+  begin
+    case pw is
+      when 1 => return 1;
+      when 2 => return 2;
+      when 4 => return 4;
+      when 9 => return 8;
+      when 18 => return 16;
+      when 36 => return 32;
+      when 72 => return 64;
+      when others => return 0;
+    end case;
+  end function;
+
+  function bram_pwidth(pw : integer) return integer is
+  begin
+    case pw is
+      when 9 => return 1;
+      when 18 => return 2;
+      when 36 => return 4;
+      when 72 => return 8;
+      when others => return 0;
+    end case;
+  end function;
+
+  function bram_pick_width(w, alt : integer) return integer is
+  begin
+    if w /= 0 then
+      return w;
+    elsif alt /= 0 then
+      return alt;
+    else
+      return 1;
+    end if;
+  end function;
+
+  function bram_mode(s : string) return integer is
+  begin
+    if s = "READ_FIRST" then
+      return 1;
+    elsif s = "NO_CHANGE" then
+      return 2;
+    else
+      return 0;
+    end if;
+  end function;
+
+  function bram_base(addr : std_logic_vector; dwidth : integer) return integer is
+    variable shift, hi, acc, w : integer;
+  begin
+    if dwidth <= 0 then
+      return -1;
+    end if;
+    shift := 0;
+    w := 1;
+    while w < dwidth loop
+      shift := shift + 1;
+      w := w * 2;
+    end loop;
+    hi := addr'high;
+    if hi > 14 then
+      hi := 14;
+    end if;
+    acc := 0;
+    for i in hi downto addr'low loop
+      if i >= shift then
+        acc := acc * 2;
+        if addr(i) = '1' then
+          acc := acc + 1;
+        elsif addr(i) /= '0' then
+          return -1;
+        end if;
+      end if;
+    end loop;
+    return acc * dwidth;
+  end function;
+
+  function bram_we_hold(we : std_logic_vector; pw : integer) return boolean is
+    variable n : integer;
+  begin
+    if pw <= 9 then
+      n := 1;
+    elsif pw = 18 then
+      n := 2;
+    elsif pw = 36 then
+      n := 4;
+    elsif pw = 72 then
+      n := 8;
+    else
+      n := 1;
+    end if;
+    for i in 0 to n - 1 loop
+      if we'low + i > we'high or we(we'low + i) /= '0' then
+        return true;
+      end if;
+    end loop;
+    return false;
+  end function;
+
+  procedure bram_load(
+    variable mem : inout std_logic_vector;
+    chunk : in bit_vector;
+    index : in integer
+  ) is
+    variable off : integer;
+  begin
+    off := index * 256;
+    for i in 0 to 255 loop
+      if off + i >= mem'low and off + i <= mem'high
+         and i >= chunk'low and i <= chunk'high then
+        mem(off + i) := to_sul(chunk(i));
+      end if;
+    end loop;
+  end procedure;
+
+  procedure bram_from_attr(
+    attr : in bit_vector;
+    pw : in integer;
+    variable data : out std_logic_vector;
+    variable parity : out std_logic_vector
+  ) is
+    variable nd, np : integer;
+  begin
+    for i in data'range loop
+      data(i) := 'X';
+    end loop;
+    for i in parity'range loop
+      parity(i) := 'X';
+    end loop;
+    nd := bram_dwidth(pw);
+    np := bram_pwidth(pw);
+    for i in 0 to nd - 1 loop
+      if i <= data'high and i >= attr'low and i <= attr'high then
+        data(i) := to_sul(attr(i));
+      end if;
+    end loop;
+    for i in 0 to np - 1 loop
+      if i <= parity'high and nd + i >= attr'low and nd + i <= attr'high then
+        parity(i) := to_sul(attr(nd + i));
+      end if;
+    end loop;
+  end procedure;
+
+  procedure bram_write(
+    variable mem : inout std_logic_vector;
+    variable memp : inout std_logic_vector;
+    addr : in std_logic_vector;
+    di : in std_logic_vector;
+    dip : in std_logic_vector;
+    we : in std_logic_vector;
+    pw : in integer
+  ) is
+    variable nd, np, base, nbyte : integer;
+  begin
+    nd := bram_dwidth(pw);
+    if nd = 0 then
+      return;
+    end if;
+    base := bram_base(addr, nd);
+    if base < 0 then
+      return;
+    end if;
+    np := bram_pwidth(pw);
+    if nd < 8 then
+      if we'length > 0 and we(we'low) = '1' then
+        for i in 0 to nd - 1 loop
+          if base + i >= mem'low and base + i <= mem'high
+             and di'low + i <= di'high then
+            mem(base + i) := di(di'low + i);
+          end if;
+        end loop;
+      end if;
+    else
+      nbyte := nd / 8;
+      for b in 0 to nbyte - 1 loop
+        if we'low + b <= we'high and we(we'low + b) = '1' then
+          for i in 0 to 7 loop
+            if base + b * 8 + i >= mem'low and base + b * 8 + i <= mem'high
+               and di'low + b * 8 + i <= di'high then
+              mem(base + b * 8 + i) := di(di'low + b * 8 + i);
+            end if;
+          end loop;
+          if b < np and base / 8 + b >= memp'low and base / 8 + b <= memp'high
+             and dip'low + b <= dip'high then
+            memp(base / 8 + b) := dip(dip'low + b);
+          end if;
+        end if;
+      end loop;
+    end if;
+  end procedure;
+
+  procedure bram_read(
+    mem : in std_logic_vector;
+    memp : in std_logic_vector;
+    addr : in std_logic_vector;
+    pw : in integer;
+    variable data : out std_logic_vector;
+    variable parity : out std_logic_vector
+  ) is
+    variable nd, np, base, pb : integer;
+  begin
+    for i in data'range loop
+      data(i) := 'X';
+    end loop;
+    for i in parity'range loop
+      parity(i) := 'X';
+    end loop;
+    nd := bram_dwidth(pw);
+    np := bram_pwidth(pw);
+    if nd = 0 then
+      return;
+    end if;
+    base := bram_base(addr, nd);
+    if base < 0 then
+      return;
+    end if;
+    for i in 0 to nd - 1 loop
+      if i <= data'high then
+        if base + i >= mem'low and base + i <= mem'high then
+          data(i) := mem(base + i);
+        else
+          data(i) := 'X';
+        end if;
+      end if;
+    end loop;
+    pb := base / 8;
+    for i in 0 to np - 1 loop
+      if i <= parity'high then
+        if pb + i >= memp'low and pb + i <= memp'high then
+          parity(i) := memp(pb + i);
+        else
+          parity(i) := 'X';
+        end if;
+      end if;
+    end loop;
+  end procedure;
+
+  procedure bram_access(
+    variable mem : inout std_logic_vector;
+    variable memp : inout std_logic_vector;
+    addr : in std_logic_vector;
+    di : in std_logic_vector;
+    dip : in std_logic_vector;
+    we : in std_logic_vector;
+    en : in std_ulogic;
+    rstram : in std_ulogic;
+    mode : in integer;
+    rpw : in integer;
+    wpw : in integer;
+    srval : in bit_vector;
+    variable latch_d : inout std_logic_vector;
+    variable latch_p : inout std_logic_vector
+  ) is
+    variable buf_d : std_logic_vector(latch_d'range);
+    variable buf_p : std_logic_vector(latch_p'range);
+  begin
+    if en /= '1' then
+      return;
+    end if;
+    if rstram = '1' then
+      bram_from_attr(srval, rpw, latch_d, latch_p);
+      bram_write(mem, memp, addr, di, dip, we, wpw);
+      return;
+    end if;
+    if mode = 1 then
+      bram_read(mem, memp, addr, rpw, buf_d, buf_p);
+    end if;
+    bram_write(mem, memp, addr, di, dip, we, wpw);
+    if mode /= 1 then
+      bram_read(mem, memp, addr, rpw, buf_d, buf_p);
+    end if;
+    if mode = 2 and bram_we_hold(we, wpw) then
+      return;
+    end if;
+    latch_d := buf_d;
+    latch_p := buf_p;
+  end procedure;
+
+  procedure bram_take_reg(
+    variable reg_d : inout std_logic_vector;
+    variable reg_p : inout std_logic_vector;
+    latch_d : in std_logic_vector;
+    latch_p : in std_logic_vector;
+    regce : in std_ulogic;
+    rstreg : in std_ulogic;
+    priority : in string;
+    srval : in bit_vector;
+    pw : in integer
+  ) is
+    variable sd : std_logic_vector(reg_d'range);
+    variable sp : std_logic_vector(reg_p'range);
+  begin
+    if priority /= "REGCE" then
+      if rstreg = '1' then
+        bram_from_attr(srval, pw, sd, sp);
+        reg_d := sd;
+        reg_p := sp;
+      elsif rstreg = '0' and regce = '1' then
+        reg_d := latch_d;
+        reg_p := latch_p;
+      end if;
+    else
+      if regce = '1' and rstreg = '1' then
+        bram_from_attr(srval, pw, sd, sp);
+        reg_d := sd;
+        reg_p := sp;
+      elsif regce = '1' and rstreg = '0' then
+        reg_d := latch_d;
+        reg_p := latch_p;
+      end if;
+    end if;
   end procedure;
 end package body unisim_sim;
