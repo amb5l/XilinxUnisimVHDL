@@ -185,7 +185,7 @@ ODELAYE2                        vlog
 ODELAYE2_FINEDELAY              vlog
 ODELAYE3                        vlog
 OR2L                            vhdl
-OSERDES                         vlog
+OSERDES                         vhdl  DDR/SDR; 1 ps flops not copied; no $finish
 OSERDESE1                       vlog
 OSERDESE2                       vlog
 OSERDESE3                       vlog

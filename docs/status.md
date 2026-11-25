@@ -1,7 +1,7 @@
 # Primitive status
 
 Which source is analysed is `config/primitives.txt` (`vlog`, `vhdl`, or
-`skip`). One hundred and twenty-five simple primitives are hand-written VHDL; see
+`skip`). One hundred and twenty-six simple primitives are hand-written VHDL; see
 [vhdl-models.md](vhdl-models.md). The rest of this table is still the
 Verilog model from the XilinxUnisimLibrary submodule. `GTM_DUAL` is the
 only `skip`: it is SystemVerilog and is not in this table. Notes in the
@@ -184,7 +184,7 @@ note records that the weak Verilog driver is modeled strong.
 | `ODELAYE2_FINEDELAY` | Verilog only |
 | `ODELAYE3` | Verilog only |
 | `OR2L` | VHDL `src/vhdl/OR2L.vhd` |
-| `OSERDES` | Verilog only |
+| `OSERDES` | VHDL `src/vhdl/OSERDES.vhd` |
 | `OSERDESE1` | Verilog only |
 | `OSERDESE2` | Verilog only |
 | `OSERDESE3` | Verilog only |

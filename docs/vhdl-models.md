@@ -571,12 +571,24 @@ with the submodule Verilog. `D` is changed before the clock: the
 Verilog sampler reads a nonblocking copy of `D`, so a same-timestep
 change loses the race. `OCLK` is driven with `CLK`, not through a
 delta. `SR` is pulsed first, because a Verilog instance created from
-VHDL does not see `glbl.GSR`. The bench records 80 checks.
+VHDL does not see `glbl.GSR`.
 
-`OSERDES`, `ISERDES_NODELAY`, `ISERDESE1` and `OSERDESE1` still have
-their behaviour in the open Verilog. `ISERDESE2`, `OSERDESE2`,
-`ISERDESE3` and `OSERDESE3` instantiate `B_` / `SIP_` modules that are
-not in the submodule.
+`OSERDES` is the output serializer. `XIL_TIMING` stays undefined. The
+specify paths are 100 ps and the rank flops are delayed 1 ps; neither
+is copied. `SAME_EDGE` is the DDR clocking: the high level of `CLK` is
+one rank and the low level is the rank captured on the falling edge.
+The load generator matches the `ISERDES` divider. `DATA_RATE_TQ`
+`"BUF"` with `TRISTATE_WIDTH` 1 passes `T1` through to `TQ`. DDR
+tristate width 4 shifts `T1` to `T4` on the same load pulse as the
+data word. An illegal width or tristate pairing does not `$finish`.
+
+The same bench compares both cells. `OSERDES` has its own clocks. It
+records 80 checks for `ISERDES` and 80 for `OSERDES`.
+
+`ISERDES_NODELAY`, `ISERDESE1` and `OSERDESE1` still have their
+behaviour in the open Verilog. `ISERDESE2`, `OSERDESE2`, `ISERDESE3`
+and `OSERDESE3` instantiate `B_` / `SIP_` modules that are not in the
+submodule.
 
 ## Adding another primitive
 

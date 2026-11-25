@@ -14188,6 +14188,7 @@ package vcomponents is
   end component OR2L;
 
   -- OSERDES.v
+  -- vhdl: src/vhdl/OSERDES.vhd is analysed instead of this Verilog
   component OSERDES is
     generic (
       DATA_RATE_OQ : string := "DDR";
