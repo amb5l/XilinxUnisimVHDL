@@ -32,7 +32,7 @@ Build that branch (the CI workflow does the same thing):
 ```sh
 git clone https://github.com/amb5l/nvc
 cd nvc
-git checkout unisim/14-glbl
+git checkout unisim/16-percent-m
 ./autogen.sh
 mkdir build && cd build
 ../configure --prefix="$HOME/nvc"

@@ -47,10 +47,23 @@ VREF_DSP_SRCS := $(addprefix $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/,$(
 
 all: $(Benches)
 
-$(filter-out tb_eq tb_eq_io tb_eq_ff tb_eq_ram tb_eq_simprim tb_eq_bufg tb_eq_ddr tb_eq_dsp tb_eq_dsp48 tb_eq_bram tb_eq_serdes,$(Benches)):
+$(filter-out tb_eq tb_eq_io tb_eq_ff tb_iobuf tb_eq_ram tb_eq_simprim tb_eq_bufg tb_eq_ddr tb_eq_dsp tb_eq_dsp48 tb_eq_bram tb_eq_serdes,$(Benches)):
 	$(NVC) --std=2008 --work=work:$(WORK) -L $(BUILD) -M $(NVC_M) \
 	  -a $(CURDIR)/tb/$@.vhd \
 	  -e $@ unisim.GLBL -r
+
+# IOBUF and BIBUF are VHDL in unisim. The Verilog, plus PULLUP,
+# PULLDOWN and KEEPER, is analysed into work for the strength check.
+tb_iobuf:
+	$(NVC) --std=2008 --work=work:$(WORK) -M $(NVC_M) \
+	  -a $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/IOBUF.v \
+	    $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/BIBUF.v \
+	    $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/PULLUP.v \
+	    $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/PULLDOWN.v \
+	    $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/KEEPER.v
+	$(NVC) --std=2008 --work=work:$(WORK) -L $(BUILD) -M $(NVC_M) \
+	  -a $(CURDIR)/tb/tb_iobuf.vhd \
+	  -e tb_iobuf unisim.GLBL -r
 
 tb_eq:
 	$(NVC) --std=2008 --work=work:$(WORK) -M $(NVC_M) \

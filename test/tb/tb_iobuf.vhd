@@ -1,9 +1,11 @@
 -- Self-checking bench for the IOBUF* family and BIBUF.
--- The Verilog models cannot elaborate under NVC (inout), so this bench
--- does not instantiate them. Expected values are the equations in
--- docs/vhdl-models.md, evaluated here independently of unisim_sim.
--- Stimulus waits 1 ns so the local GTS has fallen. Drive strength is
--- not represented: two drivers resolve with std_logic.
+-- Expected values are the equations in docs/vhdl-models.md, evaluated
+-- here independently of unisim_sim. Stimulus waits 1 ns so the local
+-- GTS has fallen. The VHDL models are unchanged: drive strength is not
+-- represented, and two drivers resolve with std_logic.
+-- The tail of the bench also elaborates the Verilog IOBUF, BIBUF,
+-- PULLUP, PULLDOWN and KEEPER and compares them. A mismatch is left
+-- in the log as a possible NVC bug.
 
 library ieee;
 use ieee.std_logic_1164.all;
@@ -50,6 +52,58 @@ architecture sim of tb_iobuf is
 
   signal b_io, b_pad : std_logic := 'Z';
   signal b_ext_io, b_ext_pad : std_logic := 'Z';
+
+  -- Verilog reference nets. Separate from the equation checks above.
+  signal vi, vt : std_ulogic := '0';
+  signal vext_h, vext_v : std_logic := 'Z';
+  signal vio_h, vio_v : std_logic := 'Z';
+  signal vo_h, vo_v : std_ulogic;
+  signal bvio_h, bvpad_h, bvio_v, bvpad_v : std_logic := 'Z';
+  signal bext_io_h, bext_pad_h, bext_io_v, bext_pad_v : std_logic := 'Z';
+  signal pvio_h, pvpad_h, pvio_v, pvpad_v : std_logic := 'Z';
+  signal pext_io_h, pext_pad_h, pext_io_v, pext_pad_v : std_logic := 'Z';
+  signal ovio_h, ovpad_h, ovio_v, ovpad_v : std_logic := 'Z';
+  signal oext_io_h, oext_io_v : std_logic := '1';
+  signal oext_pad_h, oext_pad_v : std_logic := '0';
+  signal pu, pd, keep : std_logic := 'Z';
+  signal kdrv : std_logic := 'Z';
+  signal pu_io_h, pu_io_v : std_logic := 'Z';
+  signal piext_h, piext_v : std_logic := 'Z';
+  signal puo_h, puo_v : std_ulogic;
+
+  component IOBUF is
+    generic (
+      DRIVE : integer := 12;
+      IBUF_LOW_PWR : string := "TRUE";
+      IOSTANDARD : string := "DEFAULT";
+      SLEW : string := "SLOW"
+    );
+    port (
+      O : out std_ulogic;
+      IO : inout std_logic;
+      I : in std_ulogic;
+      T : in std_ulogic
+    );
+  end component;
+
+  component BIBUF is
+    port (
+      IO : inout std_logic;
+      PAD : inout std_logic
+    );
+  end component;
+
+  component PULLUP is
+    port (O : out std_ulogic);
+  end component;
+
+  component PULLDOWN is
+    port (O : out std_ulogic);
+  end component;
+
+  component KEEPER is
+    port (O : inout std_logic);
+  end component;
 
   function res2(a, b : std_ulogic) return std_ulogic is
     variable v : std_ulogic_vector(1 downto 0);
@@ -380,6 +434,53 @@ begin
   u_bibuf : entity unisim.BIBUF
     port map (IO => b_io, PAD => b_pad);
 
+  vio_h <= vext_h;
+  vio_v <= vext_v;
+  bvio_h <= bext_io_h;
+  bvpad_h <= bext_pad_h;
+  bvio_v <= bext_io_v;
+  bvpad_v <= bext_pad_v;
+  pvio_h <= pext_io_h;
+  pvpad_h <= pext_pad_h;
+  pvio_v <= pext_io_v;
+  pvpad_v <= pext_pad_v;
+  ovio_h <= oext_io_h;
+  ovpad_h <= oext_pad_h;
+  ovio_v <= oext_io_v;
+  ovpad_v <= oext_pad_v;
+  keep <= kdrv;
+  pu_io_h <= piext_h;
+  pu_io_v <= piext_v;
+
+  u_vio_h : entity unisim.IOBUF
+    port map (O => vo_h, IO => vio_h, I => vi, T => vt);
+  u_vio_v : IOBUF
+    port map (O => vo_v, IO => vio_v, I => vi, T => vt);
+
+  u_biv_h : entity unisim.BIBUF
+    port map (IO => bvio_h, PAD => bvpad_h);
+  u_biv_v : BIBUF
+    port map (IO => bvio_v, PAD => bvpad_v);
+  u_bp_h : entity unisim.BIBUF
+    port map (IO => pvio_h, PAD => pvpad_h);
+  u_bp_v : BIBUF
+    port map (IO => pvio_v, PAD => pvpad_v);
+  u_bo_h : entity unisim.BIBUF
+    port map (IO => ovio_h, PAD => ovpad_h);
+  u_bo_v : BIBUF
+    port map (IO => ovio_v, PAD => ovpad_v);
+
+  u_pu : PULLUP port map (O => pu);
+  u_pd : PULLDOWN port map (O => pd);
+  u_keep : KEEPER port map (O => keep);
+
+  u_pi_h : entity unisim.IOBUF
+    port map (O => puo_h, IO => pu_io_h, I => vi, T => vt);
+  u_pi_v : IOBUF
+    port map (O => puo_v, IO => pu_io_v, I => vi, T => vt);
+  u_pi_pu_h : PULLUP port map (O => pu_io_h);
+  u_pi_pu_v : PULLUP port map (O => pu_io_v);
+
   run : process
     variable n : natural := 0;
     variable q_ds, q_dsb, q_dd, q_dd_off, q_dd_us, q_di : std_ulogic := 'X';
@@ -416,6 +517,31 @@ begin
         report name & " got " & std_ulogic'image(got)
           & " expected " & std_ulogic'image(exp)
         severity failure;
+    end procedure;
+
+    -- Verilog X arrives as U. The VHDL model drives a weak copy as a
+    -- strong value, so H/L compare equal to 1/0. A different logic
+    -- level is a possible NVC bug.
+    function logic_bit(s : std_ulogic) return std_ulogic is
+    begin
+      if s = 'H' then
+        return '1';
+      elsif s = 'L' then
+        return '0';
+      elsif s = 'U' or s = 'W' then
+        return 'X';
+      else
+        return s;
+      end if;
+    end function;
+
+    procedure vcmp(h, v : std_ulogic; what : string) is
+    begin
+      n := n + 1;
+      if logic_bit(h) /= logic_bit(v) then
+        report what & " vhdl=" & to_string(h) & " vlog=" & to_string(v)
+          & " (possible NVC bug)" severity failure;
+      end if;
     end procedure;
 
     procedure check_se is
@@ -797,6 +923,127 @@ begin
     extb <= '0';
     wait for 1 ns;
     expect("dse3 en 00 receiver", o_e3d_off, '1');
+
+    -- Verilog IOBUF, BIBUF, PULLUP, PULLDOWN, KEEPER. NVC presents a
+    -- Verilog X as U. The VHDL models stay as they are.
+    vi <= '0';
+    vt <= '0';
+    vext_h <= 'Z';
+    vext_v <= 'Z';
+    wait for 1 ns;
+    vcmp(vio_h, vio_v, "vlog iobuf drive 0 pad");
+    vcmp(vo_h, vo_v, "vlog iobuf drive 0 o");
+    vi <= '1';
+    wait for 1 ns;
+    vcmp(vio_h, vio_v, "vlog iobuf drive 1 pad");
+    vcmp(vo_h, vo_v, "vlog iobuf drive 1 o");
+    vi <= 'X';
+    wait for 1 ns;
+    vcmp(vio_h, vio_v, "vlog iobuf drive X pad");
+    vcmp(vo_h, vo_v, "vlog iobuf drive X o");
+    vi <= 'Z';
+    wait for 1 ns;
+    vcmp(vio_h, vio_v, "vlog iobuf drive Z pad");
+    vcmp(vo_h, vo_v, "vlog iobuf drive Z o");
+    vt <= '1';
+    vext_h <= '0';
+    vext_v <= '0';
+    wait for 1 ns;
+    vcmp(vio_h, vio_v, "vlog iobuf release pad");
+    vcmp(vo_h, vo_v, "vlog iobuf release o");
+    vt <= '0';
+    vi <= '1';
+    wait for 1 ns;
+    vcmp(vio_h, vio_v, "vlog iobuf fight pad");
+    vcmp(vo_h, vo_v, "vlog iobuf fight o");
+
+    -- Each BIBUF starts undriven. A strong copy fights a later opposite
+    -- value and sticks at X, so the pad-driven case is a second pair.
+    bext_io_h <= '1';
+    bext_pad_h <= 'Z';
+    bext_io_v <= '1';
+    bext_pad_v <= 'Z';
+    pext_io_h <= 'Z';
+    pext_pad_h <= '0';
+    pext_io_v <= 'Z';
+    pext_pad_v <= '0';
+    wait for 1 ns;
+    vcmp(bvio_h, bvio_v, "vlog bibuf io");
+    vcmp(bvpad_h, bvpad_v, "vlog bibuf pad");
+    vcmp(pvio_h, pvio_v, "vlog bibuf from pad io");
+    vcmp(pvpad_h, pvpad_v, "vlog bibuf from pad");
+    -- Opposite strong drivers from time 0. The VHDL copy is strong, so
+    -- both pins are X. Verilog's copy is weak and leaves the strong values.
+    if ovio_h /= 'X' or ovpad_h /= 'X' then
+      report "bibuf vhdl opposite io=" & to_string(ovio_h)
+        & " pad=" & to_string(ovpad_h) severity failure;
+    end if;
+    n := n + 2;
+    if not (ovio_v = '1' or ovio_v = 'X' or ovio_v = 'U')
+      or not (ovpad_v = '0' or ovpad_v = 'X' or ovpad_v = 'U') then
+      report "bibuf vlog opposite io=" & to_string(ovio_v)
+        & " pad=" & to_string(ovpad_v)
+        & " (possible NVC bug)" severity failure;
+    end if;
+    if ovio_h /= ovio_v or ovpad_h /= ovpad_v then
+      report "bibuf opposite vhdl io=" & to_string(ovio_h)
+        & " pad=" & to_string(ovpad_h)
+        & " vlog io=" & to_string(ovio_v)
+        & " pad=" & to_string(ovpad_v)
+        & " (vhdl copy is strong)"
+        severity note;
+    end if;
+
+    wait for 1 ns;
+    if pu /= '1' and pu /= 'H' then
+      report "pullup vlog=" & to_string(pu) & " (possible NVC bug)"
+        severity failure;
+    end if;
+    n := n + 1;
+    if pd /= '0' and pd /= 'L' then
+      report "pulldown vlog=" & to_string(pd) & " (possible NVC bug)"
+        severity failure;
+    end if;
+    n := n + 1;
+    kdrv <= '1';
+    wait for 1 ns;
+    kdrv <= 'Z';
+    wait for 1 ns;
+    if keep /= '1' and keep /= 'H' then
+      report "keeper high vlog=" & to_string(keep) & " (possible NVC bug)"
+        severity failure;
+    end if;
+    n := n + 1;
+    kdrv <= '0';
+    wait for 1 ns;
+    kdrv <= 'Z';
+    wait for 1 ns;
+    if keep /= '0' and keep /= 'L' then
+      report "keeper low vlog=" & to_string(keep) & " (possible NVC bug)"
+        severity failure;
+    end if;
+    n := n + 1;
+
+    piext_h <= 'Z';
+    piext_v <= 'Z';
+    vt <= '1';
+    wait for 1 ns;
+    vcmp(pu_io_h, pu_io_v, "vlog iobuf pullup released");
+    -- buf of a weak 1 is X in the VHDL model and 1 in Verilog buf.
+    if puo_h /= 'X' then
+      report "pullup released vhdl O=" & to_string(puo_h) severity failure;
+    end if;
+    n := n + 1;
+    if puo_v /= '1' and puo_v /= 'H' then
+      report "pullup released vlog O=" & to_string(puo_v)
+        & " (possible NVC bug)" severity failure;
+    end if;
+    n := n + 1;
+    vt <= '0';
+    vi <= '0';
+    wait for 1 ns;
+    vcmp(pu_io_h, pu_io_v, "vlog iobuf pullup strong 0");
+    vcmp(puo_h, puo_v, "vlog iobuf pullup strong 0 o");
 
     report "tb_iobuf PASS checks=" & integer'image(n) severity note;
     wait;

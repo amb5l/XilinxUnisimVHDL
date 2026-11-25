@@ -11,9 +11,10 @@ on:
 
 env:
   NVC_REPO: https://github.com/amb5l/nvc
-  # unisim/14-glbl: delay nets, $sformat, defparam, divider order,
-  # event queue, NBA/port visibility, and glbl as a second top.
-  NVC_REF: unisim/14-glbl
+  # unisim/16-percent-m: delay nets, $sformat, defparam, divider order,
+  # event queue, NBA/port visibility, glbl as a second top, drive
+  # strengths across inout ports, and %m.
+  NVC_REF: unisim/16-percent-m
 
 jobs:
   unisim:

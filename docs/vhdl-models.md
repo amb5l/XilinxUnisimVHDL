@@ -66,9 +66,14 @@ has elapsed and `GTS` has fallen.
 
 Left as Verilog this batch, and why:
 
-- `IOBUF*` and `BIBUF` are native VHDL in the fourth batch. Their
-  Verilog models are not an equivalence reference: NVC will not
-  elaborate an `inout` port.
+- `IOBUF*` and `BIBUF` are native VHDL in the fourth batch. From
+  `unisim/16-percent-m`, `tb_iobuf` also elaborates the Verilog
+  `IOBUF`, `BIBUF`, `PULLUP`, `PULLDOWN`, and `KEEPER`. The VHDL
+  models are unchanged. A Verilog weak 1/0 is compared as 1/0. `buf`
+  of that weak value is X in the VHDL model and 1 or 0 in the Verilog
+  `buf`. Opposite `BIBUF` drivers resolve to X in the VHDL model; the
+  Verilog weak copy leaves the strong values. Any other logic-level
+  mismatch is a possible NVC bug.
 - `PULLUP`, `PULLDOWN`, and `KEEPER` drive weak or pull strengths.
   `std_ulogic` cannot represent them.
 - `OBUFDS_DPHY` is a supply-strength LP/HS state machine.
@@ -621,9 +626,9 @@ VHDL. `tb_eq_serdes` fails on that assertion.
    VHDL model and the submodule Verilog see the same stimulus.
    Exhaustive for a small combinational cell. For a register, cover
    GSR, clock enable, reset priority, `INIT`, and `IS_*_INVERTED`.
-   An `inout` model that NVC cannot elaborate from Verilog is checked
-   by `test/tb/tb_iobuf.vhd` instead, against the equations in this
-   file.
+   `test/tb/tb_iobuf.vhd` checks the `IOBUF*` family and `BIBUF`
+   against the equations in this file, and also compares `IOBUF`,
+   `BIBUF`, `PULLUP`, `PULLDOWN`, and `KEEPER` with the Verilog.
 5. `make test`.
 
 `make` rebuilds library `unisim` without that Verilog file. The
