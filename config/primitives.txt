@@ -34,7 +34,7 @@ BUFMRCE                         vlog
 BUFR                            vlog
 CAPTUREE2                       vlog
 CARRY4                          vhdl
-CARRY8                          vlog
+CARRY8                          vhdl  rv0 on inputs; DUAL_CY4 splits at CI_TOP; other CARRY_TYPE $finish
 CFGLUT5                         vhdl
 CMAC                            vlog
 CMACE4                          vlog
@@ -162,10 +162,10 @@ MMCME3_ADV                      vlog  needs NVC unisim/6-mmcm ($realtime)
 MMCME3_BASE                     vlog  needs NVC unisim/6-mmcm ($realtime)
 MMCME4_ADV                      vlog  needs NVC unisim/6-mmcm ($realtime)
 MMCME4_BASE                     vlog  needs NVC unisim/6-mmcm ($realtime)
-MUXCY                           vlog
+MUXCY                           vhdl  S=1 selects CI, otherwise DI
 MUXF7                           vhdl
 MUXF8                           vhdl
-MUXF9                           vlog
+MUXF9                           vhdl  S=1 selects I1, otherwise I0
 OBUF                            vhdl
 OBUFDS                          vhdl
 OBUFDS_DPHY                     vlog

@@ -422,6 +422,7 @@ package vcomponents is
   end component CARRY4;
 
   -- CARRY8.v
+  -- vhdl: src/vhdl/CARRY8.vhd is analysed instead of this Verilog
   component CARRY8 is
     generic (
       CARRY_TYPE : string := "SINGLE_CY8"
@@ -13766,6 +13767,7 @@ package vcomponents is
   end component MMCME4_BASE;
 
   -- MUXCY.v
+  -- vhdl: src/vhdl/MUXCY.vhd is analysed instead of this Verilog
   component MUXCY is
     port (
       O : out std_ulogic;
@@ -13798,6 +13800,7 @@ package vcomponents is
   end component MUXF8;
 
   -- MUXF9.v
+  -- vhdl: src/vhdl/MUXF9.vhd is analysed instead of this Verilog
   component MUXF9 is
     port (
       O : out std_ulogic;

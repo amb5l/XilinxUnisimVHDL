@@ -27,6 +27,11 @@ architecture sim of tb_eq is
   signal ibuf_h, ibuf_v, obuf_h, obuf_v, obuft_h, obuft_v : std_ulogic;
   signal vcc_h, vcc_v, gnd_h, gnd_v : std_ulogic;
   signal xor_h, xor_v, mux7_h, mux7_v, mux8_h, mux8_v : std_ulogic;
+  signal mux9_h, mux9_v, muxc_h, muxc_v : std_ulogic;
+  signal ci8, cit : std_ulogic := '0';
+  signal d8, s8 : std_logic_vector(7 downto 0) := (others => '0');
+  signal co8_h, co8_v, o8_h, o8_v : std_logic_vector(7 downto 0);
+  signal co8d_h, co8d_v, o8d_h, o8d_v : std_logic_vector(7 downto 0);
   signal and_h, and_v, andi_h, andi_v : std_ulogic;
   signal or_h, or_v, ori_h, ori_v : std_ulogic;
   signal l1_h, l1_v, l1z_h, l1z_v : std_ulogic;
@@ -75,6 +80,21 @@ architecture sim of tb_eq is
   end component;
   component MUXF8 is
     port (O : out std_ulogic; I0, I1, S : in std_ulogic);
+  end component;
+  component MUXF9 is
+    port (O : out std_ulogic; I0, I1, S : in std_ulogic);
+  end component;
+  component MUXCY is
+    port (O : out std_ulogic; CI, DI, S : in std_ulogic);
+  end component;
+  component CARRY8 is
+    generic (CARRY_TYPE : string := "SINGLE_CY8");
+    port (
+      CO : out std_logic_vector(7 downto 0);
+      O : out std_logic_vector(7 downto 0);
+      CI, CI_TOP : in std_ulogic;
+      DI, S : in std_logic_vector(7 downto 0)
+    );
   end component;
   component IBUF is
     generic (
@@ -238,6 +258,10 @@ begin
   u_m7_v : MUXF7 port map (O => mux7_v, I0 => a, I1 => b, S => s);
   u_m8_h : entity unisim.MUXF8 port map (O => mux8_h, I0 => a, I1 => b, S => s);
   u_m8_v : MUXF8 port map (O => mux8_v, I0 => a, I1 => b, S => s);
+  u_m9_h : entity unisim.MUXF9 port map (O => mux9_h, I0 => a, I1 => b, S => s);
+  u_m9_v : MUXF9 port map (O => mux9_v, I0 => a, I1 => b, S => s);
+  u_mc_h : entity unisim.MUXCY port map (O => muxc_h, CI => b, DI => a, S => s);
+  u_mc_v : MUXCY port map (O => muxc_v, CI => b, DI => a, S => s);
 
   u_ibuf_h : entity unisim.IBUF
     generic map (
@@ -328,6 +352,14 @@ begin
 
   u_cy_h : entity unisim.CARRY4 port map (co_h, o_h, ci, cy, di, sel);
   u_cy_v : CARRY4 port map (co_v, o_v, ci, cy, di, sel);
+  u_cy8_h : entity unisim.CARRY8 generic map (CARRY_TYPE => "SINGLE_CY8")
+    port map (CO => co8_h, O => o8_h, CI => ci8, CI_TOP => cit, DI => d8, S => s8);
+  u_cy8_v : CARRY8 generic map (CARRY_TYPE => "SINGLE_CY8")
+    port map (CO => co8_v, O => o8_v, CI => ci8, CI_TOP => cit, DI => d8, S => s8);
+  u_cy8d_h : entity unisim.CARRY8 generic map (CARRY_TYPE => "DUAL_CY4")
+    port map (CO => co8d_h, O => o8d_h, CI => ci8, CI_TOP => cit, DI => d8, S => s8);
+  u_cy8d_v : CARRY8 generic map (CARRY_TYPE => "DUAL_CY4")
+    port map (CO => co8d_v, O => o8d_v, CI => ci8, CI_TOP => cit, DI => d8, S => s8);
 
   u_fd_h : entity unisim.FDRE port map (Q => fd_h, C => c, CE => ce, D => d, R => r);
   u_fd_v : FDRE port map (Q => fd_v, C => c, CE => ce, D => d, R => r);
@@ -428,6 +460,8 @@ begin
           step;
           eq("MUXF7", mux7_h, mux7_v);
           eq("MUXF8", mux8_h, mux8_v);
+          eq("MUXF9", mux9_h, mux9_v);
+          eq("MUXCY", muxc_h, muxc_v);
         end loop;
       end loop;
     end loop;
@@ -504,6 +538,70 @@ begin
     step;
     eqv("CARRY4 X", co_h, co_v);
     eqv("CARRY4 X O", o_h, o_v);
+
+    -- CARRY8. The Verilog CARRY_TYPE reg settles 2 ps after time 0.
+    for ci_i in 0 to 1 loop
+      if ci_i = 0 then
+        ci8 <= '0';
+      else
+        ci8 <= '1';
+      end if;
+      for top_i in 0 to 1 loop
+        if top_i = 0 then
+          cit <= '0';
+        else
+          cit <= '1';
+        end if;
+        for n in 0 to 65535 loop
+          for b in 0 to 7 loop
+            s8(b) <= bitat(n, b);
+            d8(b) <= bitat(n, b + 8);
+          end loop;
+          step(1 ps);
+          eqv("CARRY8 CO", co8_h, co8_v);
+          eqv("CARRY8 O", o8_h, o8_v);
+          eqv("CARRY8 dual CO", co8d_h, co8d_v);
+          eqv("CARRY8 dual O", o8d_h, o8d_v);
+        end loop;
+      end loop;
+    end loop;
+    ci8 <= 'Z';
+    cit <= '0';
+    s8 <= (others => '1');
+    d8 <= (others => '0');
+    step;
+    eqv("CARRY8 Z CO", co8_h, co8_v);
+    eqv("CARRY8 Z O", o8_h, o8_v);
+    ci8 <= 'X';
+    step;
+    eqv("CARRY8 X CO", co8_h, co8_v);
+    eqv("CARRY8 X O", o8_h, o8_v);
+    ci8 <= '1';
+    s8 <= (others => 'Z');
+    d8 <= (others => '1');
+    step;
+    eqv("CARRY8 SZ CO", co8_h, co8_v);
+    eqv("CARRY8 SZ O", o8_h, o8_v);
+    cit <= 'Z';
+    ci8 <= '0';
+    s8 <= "11110000";
+    d8 <= (others => '0');
+    step;
+    eqv("CARRY8 topZ CO", co8d_h, co8d_v);
+    eqv("CARRY8 topZ O", o8d_h, o8d_v);
+    cit <= 'X';
+    step;
+    eqv("CARRY8 topX CO", co8d_h, co8d_v);
+    eqv("CARRY8 topX O", o8d_h, o8d_v);
+    -- SINGLE_CY8 ignores CI_TOP. Both values of cit must match.
+    cit <= '0';
+    ci8 <= '1';
+    s8 <= (others => '1');
+    step;
+    eqv("CARRY8 cit0 CO", co8_h, co8_v);
+    cit <= '1';
+    step;
+    eqv("CARRY8 cit1 CO", co8_h, co8_v);
 
     -- Flops, after GSR. The Verilog side did not see GSR, so its Q is
     -- still X until the first capturing clock. Compare after that.

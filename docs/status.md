@@ -1,7 +1,7 @@
 # Primitive status
 
 Which source is analysed is `config/primitives.txt` (`vlog`, `vhdl`, or
-`skip`). Seventy-nine simple primitives are hand-written VHDL; see
+`skip`). Eighty-two simple primitives are hand-written VHDL; see
 [vhdl-models.md](vhdl-models.md). The rest of this table is still the
 Verilog model from the XilinxUnisimLibrary submodule. `GTM_DUAL` is the
 only `skip`: it is SystemVerilog and is not in this table. Notes in the
@@ -34,7 +34,7 @@ note records that the weak Verilog driver is modeled strong.
 | `BUFR` | Verilog only |
 | `CAPTUREE2` | Verilog only |
 | `CARRY4` | VHDL `src/vhdl/CARRY4.vhd` |
-| `CARRY8` | Verilog only |
+| `CARRY8` | VHDL `src/vhdl/CARRY8.vhd` |
 | `CFGLUT5` | VHDL `src/vhdl/CFGLUT5.vhd` |
 | `CMAC` | Verilog only |
 | `CMACE4` | Verilog only |
@@ -161,10 +161,10 @@ note records that the weak Verilog driver is modeled strong.
 | `MMCME3_BASE` | Verilog only |
 | `MMCME4_ADV` | Verilog only |
 | `MMCME4_BASE` | Verilog only |
-| `MUXCY` | Verilog only |
+| `MUXCY` | VHDL `src/vhdl/MUXCY.vhd` |
 | `MUXF7` | VHDL `src/vhdl/MUXF7.vhd` |
 | `MUXF8` | VHDL `src/vhdl/MUXF8.vhd` |
-| `MUXF9` | Verilog only |
+| `MUXF9` | VHDL `src/vhdl/MUXF9.vhd` |
 | `OBUF` | VHDL `src/vhdl/OBUF.vhd` |
 | `OBUFDS` | VHDL `src/vhdl/OBUFDS.vhd` |
 | `OBUFDS_DPHY` | Verilog only |
