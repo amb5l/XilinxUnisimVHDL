@@ -32,7 +32,7 @@ Build that branch (the CI workflow does the same thing):
 ```sh
 git clone https://github.com/amb5l/nvc
 cd nvc
-git checkout unisim/5-generics
+git checkout unisim/7-vhdl-types
 ./autogen.sh
 mkdir build && cd build
 ../configure --prefix="$HOME/nvc"
@@ -49,14 +49,14 @@ Then, in this repository (the submodule has to be checked out):
 ```sh
 git submodule update --init
 make          # analyse glbl.v and every unisim into build/unisim
-make test     # RAM32X1D, DSP48E1, RAMB18E1
+make test     # RAM32X1D, DSP48E1, RAMB18E1, VHDL/Verilog equivalence
 ```
 
 `make` prints how many Verilog files it analysed. `config/primitives.txt`
 is the index: `vlog` rows plus `glbl.v` are analysed, `vhdl` rows
 analyse `src/vhdl/<NAME>.vhd` instead, and `skip` rows are left out of
-the file list. This pin is 249 `vlog`, no `vhdl`, and `GTM_DUAL` `skip`
-(SystemVerilog), so the Verilog analyse list is 250 including `glbl.v`.
+the file list. This pin is 204 `vlog`, 45 `vhdl`, and `GTM_DUAL` `skip`
+(SystemVerilog), so the Verilog analyse list is 205 including `glbl.v`.
 `XIL_TIMING` and `XIL_DR` are left undefined.
 
 Other targets:
@@ -85,7 +85,7 @@ Note that `GSR` is high for the first 100 ns.
 
 ## Status
 
-Twenty-four simple primitives are hand-written VHDL
+Forty-five simple primitives are hand-written VHDL
 ([docs/vhdl-models.md](docs/vhdl-models.md)); the rest are still the
 Verilog models. Self-checking benches cover RAM32X1D, DSP48E1,
 RAMB18E1, and a VHDL-versus-Verilog equivalence bench for the converted

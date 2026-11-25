@@ -22,6 +22,16 @@ package unisim_sim is
   function verilog_negedge(prev, curr : std_ulogic) return boolean;
   function rv0(s : std_ulogic) return std_ulogic;
   function bufif0_val(d, en : std_ulogic) return std_ulogic;
+  function notif0_val(d, en : std_ulogic) return std_ulogic;
+  function sim_device_ok(s : string) return boolean;
+  function disabled_val(sim_device : string) return std_ulogic;
+  function disabled_b_val(sim_device : string) return std_ulogic;
+  procedure diff_recv(
+    signal q : inout std_ulogic;
+    i, ib : in std_ulogic;
+    dqs_bias : in boolean;
+    x_exact : in boolean
+  );
   function lut_eval(init : bit_vector; sel : std_ulogic_vector) return std_ulogic;
   function gate_in(clr : std_ulogic; inv : bit) return std_ulogic;
   function sync_ff(
@@ -122,6 +132,74 @@ package body unisim_sim is
     end if;
     return 'Z';
   end function;
+
+  -- notif0 as NVC simulates it. Enable 0 inverts (Z and X become X).
+  -- Any other enable drives Z.
+  function notif0_val(d, en : std_ulogic) return std_ulogic is
+  begin
+    if en = '0' then
+      return inv1(d);
+    end if;
+    return 'Z';
+  end function;
+
+  function sim_device_ok(s : string) return boolean is
+  begin
+    return s = "7SERIES" or s = "ULTRASCALE"
+      or s = "VERSAL_AI_CORE" or s = "VERSAL_AI_CORE_ES1" or s = "VERSAL_AI_CORE_ES2"
+      or s = "VERSAL_AI_EDGE" or s = "VERSAL_AI_EDGE_ES1" or s = "VERSAL_AI_EDGE_ES2"
+      or s = "VERSAL_AI_RF" or s = "VERSAL_AI_RF_ES1" or s = "VERSAL_AI_RF_ES2"
+      or s = "VERSAL_HBM" or s = "VERSAL_HBM_ES1" or s = "VERSAL_HBM_ES2"
+      or s = "VERSAL_PREMIUM" or s = "VERSAL_PREMIUM_ES1" or s = "VERSAL_PREMIUM_ES2"
+      or s = "VERSAL_PRIME" or s = "VERSAL_PRIME_ES1" or s = "VERSAL_PRIME_ES2";
+  end function;
+
+  -- Value forced onto O when IBUFDISABLE is 1. 7SERIES is 1, anything else is 0.
+  function disabled_val(sim_device : string) return std_ulogic is
+  begin
+    if sim_device = "7SERIES" then
+      return '1';
+    end if;
+    return '0';
+  end function;
+
+  -- Companion value forced onto OB. 7SERIES is 1, ULTRASCALE is X, else 0.
+  function disabled_b_val(sim_device : string) return std_ulogic is
+  begin
+    if sim_device = "7SERIES" then
+      return '1';
+    elsif sim_device = "ULTRASCALE" then
+      return 'X';
+    end if;
+    return '0';
+  end function;
+
+  -- IBUFDS differential receiver. Complementary 0/1 resolves to that value.
+  -- (I is Z or 0) and (IB is Z or 1) yields 0 when DQS_BIAS is set, else X.
+  -- An X on either pin yields X when x_exact is true (the === test in
+  -- IBUFDS). IBUFDS_DIFF_OUT uses ==, which does not match X, so the
+  -- output holds. Any other combination holds the previous value.
+  procedure diff_recv(
+    signal q : inout std_ulogic;
+    i, ib : in std_ulogic;
+    dqs_bias : in boolean;
+    x_exact : in boolean
+  ) is
+  begin
+    if i = '1' and ib = '0' then
+      q <= '1';
+    elsif i = '0' and ib = '1' then
+      q <= '0';
+    elsif (i = 'Z' or i = '0') and (ib = 'Z' or ib = '1') then
+      if dqs_bias then
+        q <= '0';
+      else
+        q <= 'X';
+      end if;
+    elsif x_exact and (i = 'X' or ib = 'X') then
+      q <= 'X';
+    end if;
+  end procedure;
 
   -- LUT UDP over a bit INIT. I0 is sel'low. A 'Z' (or other non 0/1/X)
   -- input yields 'X', because the Verilog UDP rows match 'x' and not 'z'.

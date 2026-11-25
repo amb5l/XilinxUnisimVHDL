@@ -36,6 +36,7 @@ package vcomponents is
   end component AND2B1L;
 
   -- AUTOBUF.v
+  -- vhdl: src/vhdl/AUTOBUF.vhd is analysed instead of this Verilog
   component AUTOBUF is
     generic (
       BUFFER_TYPE : string := "AUTO"
@@ -319,6 +320,7 @@ package vcomponents is
   end component BUFGCTRL;
 
   -- BUFGP.v
+  -- vhdl: src/vhdl/BUFGP.vhd is analysed instead of this Verilog
   component BUFGP is
     port (
       O : out std_ulogic;
@@ -327,6 +329,7 @@ package vcomponents is
   end component BUFGP;
 
   -- BUFH.v
+  -- vhdl: src/vhdl/BUFH.vhd is analysed instead of this Verilog
   component BUFH is
     port (
       O : out std_ulogic;
@@ -11554,6 +11557,7 @@ package vcomponents is
   end component IBUF;
 
   -- IBUF_ANALOG.v
+  -- vhdl: src/vhdl/IBUF_ANALOG.vhd is analysed instead of this Verilog
   component IBUF_ANALOG is
     port (
       O : out std_ulogic;
@@ -11562,6 +11566,7 @@ package vcomponents is
   end component IBUF_ANALOG;
 
   -- IBUF_IBUFDISABLE.v
+  -- vhdl: src/vhdl/IBUF_IBUFDISABLE.vhd is analysed instead of this Verilog
   component IBUF_IBUFDISABLE is
     generic (
       IBUF_LOW_PWR : boolean := TRUE;
@@ -11577,6 +11582,7 @@ package vcomponents is
   end component IBUF_IBUFDISABLE;
 
   -- IBUF_INTERMDISABLE.v
+  -- vhdl: src/vhdl/IBUF_INTERMDISABLE.vhd is analysed instead of this Verilog
   component IBUF_INTERMDISABLE is
     generic (
       IBUF_LOW_PWR : boolean := TRUE;
@@ -11608,6 +11614,7 @@ package vcomponents is
   end component IBUFCTRL;
 
   -- IBUFDS.v
+  -- vhdl: src/vhdl/IBUFDS.vhd is analysed instead of this Verilog
   component IBUFDS is
     generic (
       CAPACITANCE : string := "DONT_CARE";
@@ -11626,6 +11633,7 @@ package vcomponents is
   end component IBUFDS;
 
   -- IBUFDS_DIFF_OUT.v
+  -- vhdl: src/vhdl/IBUFDS_DIFF_OUT.vhd is analysed instead of this Verilog
   component IBUFDS_DIFF_OUT is
     generic (
       DIFF_TERM : boolean := FALSE;
@@ -11642,6 +11650,7 @@ package vcomponents is
   end component IBUFDS_DIFF_OUT;
 
   -- IBUFDS_DIFF_OUT_IBUFDISABLE.v
+  -- vhdl: src/vhdl/IBUFDS_DIFF_OUT_IBUFDISABLE.vhd is analysed instead of this Verilog
   component IBUFDS_DIFF_OUT_IBUFDISABLE is
     generic (
       DIFF_TERM : boolean := FALSE;
@@ -11661,6 +11670,7 @@ package vcomponents is
   end component IBUFDS_DIFF_OUT_IBUFDISABLE;
 
   -- IBUFDS_DIFF_OUT_INTERMDISABLE.v
+  -- vhdl: src/vhdl/IBUFDS_DIFF_OUT_INTERMDISABLE.vhd is analysed instead of this Verilog
   component IBUFDS_DIFF_OUT_INTERMDISABLE is
     generic (
       DIFF_TERM : boolean := FALSE;
@@ -11763,6 +11773,7 @@ package vcomponents is
   end component IBUFDS_GTM;
 
   -- IBUFDS_IBUFDISABLE.v
+  -- vhdl: src/vhdl/IBUFDS_IBUFDISABLE.vhd is analysed instead of this Verilog
   component IBUFDS_IBUFDISABLE is
     generic (
       DIFF_TERM : boolean := FALSE;
@@ -11781,6 +11792,7 @@ package vcomponents is
   end component IBUFDS_IBUFDISABLE;
 
   -- IBUFDS_IBUFDISABLE_INT.v
+  -- vhdl: src/vhdl/IBUFDS_IBUFDISABLE_INT.vhd is analysed instead of this Verilog
   component IBUFDS_IBUFDISABLE_INT is
     generic (
       DIFF_TERM : boolean := FALSE;
@@ -11798,6 +11810,7 @@ package vcomponents is
   end component IBUFDS_IBUFDISABLE_INT;
 
   -- IBUFDS_INTERMDISABLE.v
+  -- vhdl: src/vhdl/IBUFDS_INTERMDISABLE.vhd is analysed instead of this Verilog
   component IBUFDS_INTERMDISABLE is
     generic (
       DIFF_TERM : boolean := FALSE;
@@ -11817,6 +11830,7 @@ package vcomponents is
   end component IBUFDS_INTERMDISABLE;
 
   -- IBUFDS_INTERMDISABLE_INT.v
+  -- vhdl: src/vhdl/IBUFDS_INTERMDISABLE_INT.vhd is analysed instead of this Verilog
   component IBUFDS_INTERMDISABLE_INT is
     generic (
       DIFF_TERM : boolean := FALSE;
@@ -13257,6 +13271,7 @@ package vcomponents is
   end component LUT6;
 
   -- LUT6_2.v
+  -- vhdl: src/vhdl/LUT6_2.vhd is analysed instead of this Verilog
   component LUT6_2 is
     generic (
       INIT : bit_vector(63 downto 0) := X"0000000000000000"
@@ -13791,6 +13806,7 @@ package vcomponents is
   end component OBUF;
 
   -- OBUFDS.v
+  -- vhdl: src/vhdl/OBUFDS.vhd is analysed instead of this Verilog
   component OBUFDS is
     generic (
       CAPACITANCE : string := "DONT_CARE";
@@ -13821,6 +13837,7 @@ package vcomponents is
   end component OBUFDS_DPHY;
 
   -- OBUFDS_GTE3.v
+  -- vhdl: src/vhdl/OBUFDS_GTE3.vhd is analysed instead of this Verilog
   component OBUFDS_GTE3 is
     generic (
       REFCLK_EN_TX_PATH : bit := '0';
@@ -13850,6 +13867,7 @@ package vcomponents is
   end component OBUFDS_GTE3_ADV;
 
   -- OBUFDS_GTE4.v
+  -- vhdl: src/vhdl/OBUFDS_GTE4.vhd is analysed instead of this Verilog
   component OBUFDS_GTE4 is
     generic (
       REFCLK_EN_TX_PATH : bit := '0';
@@ -13924,6 +13942,7 @@ package vcomponents is
   end component OBUFT;
 
   -- OBUFT_DCIEN.v
+  -- vhdl: src/vhdl/OBUFT_DCIEN.vhd is analysed instead of this Verilog
   component OBUFT_DCIEN is
     generic (
       DRIVE : integer := 12;
@@ -13939,6 +13958,7 @@ package vcomponents is
   end component OBUFT_DCIEN;
 
   -- OBUFTDS.v
+  -- vhdl: src/vhdl/OBUFTDS.vhd is analysed instead of this Verilog
   component OBUFTDS is
     generic (
       CAPACITANCE : string := "DONT_CARE";
@@ -13954,6 +13974,7 @@ package vcomponents is
   end component OBUFTDS;
 
   -- OBUFTDS_DCIEN.v
+  -- vhdl: src/vhdl/OBUFTDS_DCIEN.vhd is analysed instead of this Verilog
   component OBUFTDS_DCIEN is
     generic (
       IOSTANDARD : string := "DEFAULT";

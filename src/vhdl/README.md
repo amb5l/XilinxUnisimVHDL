@@ -3,7 +3,7 @@
 A source here is analysed into the same `unisim` library as the Verilog
 primitives and `vcomponents`, after the generated package, when
 `config/primitives.txt` marks that primitive `vhdl`. The file name is
-`src/vhdl/<NAME>.vhd`. The first batch and the conventions are
+`src/vhdl/<NAME>.vhd`. The batches and the conventions are
 [docs/vhdl-models.md](../../docs/vhdl-models.md).
 
 ## Conventions
