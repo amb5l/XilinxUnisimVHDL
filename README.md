@@ -1,11 +1,16 @@
 # XilinxUnisimVHDL
 
-VHDL companion to [XilinxUnisimLibrary](https://github.com/Xilinx/XilinxUnisimLibrary).
-It builds a `unisim` library that [NVC](https://github.com/nickg/nvc) can
+Support for VHDL projects that use the AMD/Xilinx Unisim library when
+Vivado is not available, for example in GitHub workflows. It is a
+companion to [XilinxUnisimLibrary](https://github.com/Xilinx/XilinxUnisimLibrary)
+and builds a `unisim` library that [NVC](https://github.com/nickg/nvc) can
 simulate: the upstream Verilog primitives, a generated
 `unisim.vcomponents` package, and native VHDL primitives as they are
-ported. [jarv](https://github.com/amb5l/jarv) consumes this repository
-as a submodule.
+ported.
+
+Primitives are currently the Verilog models from XilinxUnisimLibrary, so
+a mixed-language simulator is required. Native VHDL models are planned
+for every primitive except encrypted IP.
 
 The Verilog sources live in the `XilinxUnisimLibrary` submodule, pinned
 at `1c8e05fd1e9a79ceb8b996a0996674122eed086f`. That tree is not modified.
@@ -72,7 +77,7 @@ use unisim.vcomponents.all;
 ```
 
 `glbl` must be elaborated as a second top (`nvc -e tb unisim.GLBL -r`).
-`GSR` is high for the first 100 ns.
+Note that `GSR` is high for the first 100 ns.
 
 ## Status
 
