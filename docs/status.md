@@ -1,23 +1,24 @@
 # Primitive status
 
-Every row below is still the Verilog model from the XilinxUnisimLibrary
-submodule. Nothing under `src/vhdl` replaces a primitive yet. Which
-source is analysed is `config/primitives.txt` (`vlog`, `vhdl`, or
-`skip`). `GTM_DUAL` is the only `skip`: it is SystemVerilog and is not
-in this table. Notes in the index call out `$realtime` (MMCM, PLL, DCM)
-and the `IOBUF` `inout` strength caveat.
+Which source is analysed is `config/primitives.txt` (`vlog`, `vhdl`, or
+`skip`). Twenty-four simple primitives are hand-written VHDL; see
+[vhdl-models.md](vhdl-models.md). The rest of this table is still the
+Verilog model from the XilinxUnisimLibrary submodule. `GTM_DUAL` is the
+only `skip`: it is SystemVerilog and is not in this table. Notes in the
+index call out `$realtime` (MMCM, PLL, DCM) and the `IOBUF` `inout`
+strength caveat.
 
 | Primitive | Implementation |
 | --- | --- |
-| `AND2B1L` | Verilog only |
+| `AND2B1L` | VHDL `src/vhdl/AND2B1L.vhd` |
 | `AUTOBUF` | Verilog only |
 | `BIBUF` | Verilog only |
 | `BITSLICE_CONTROL` | Verilog only |
 | `BSCANE2` | Verilog only |
-| `BUF` | Verilog only |
+| `BUF` | VHDL `src/vhdl/BUF.vhd` |
 | `BUFCE_LEAF` | Verilog only |
 | `BUFCE_ROW` | Verilog only |
-| `BUFG` | Verilog only |
+| `BUFG` | VHDL `src/vhdl/BUFG.vhd` |
 | `BUFG_GT` | Verilog only |
 | `BUFG_GT_SYNC` | Verilog only |
 | `BUFG_PS` | Verilog only |
@@ -32,7 +33,7 @@ and the `IOBUF` `inout` strength caveat.
 | `BUFMRCE` | Verilog only |
 | `BUFR` | Verilog only |
 | `CAPTUREE2` | Verilog only |
-| `CARRY4` | Verilog only |
+| `CARRY4` | VHDL `src/vhdl/CARRY4.vhd` |
 | `CARRY8` | Verilog only |
 | `CFGLUT5` | Verilog only |
 | `CMAC` | Verilog only |
@@ -55,10 +56,10 @@ and the `IOBUF` `inout` strength caveat.
 | `DSP_PREADD` | Verilog only |
 | `DSP_PREADD_DATA` | Verilog only |
 | `EFUSE_USR` | Verilog only |
-| `FDCE` | Verilog only |
-| `FDPE` | Verilog only |
-| `FDRE` | Verilog only |
-| `FDSE` | Verilog only |
+| `FDCE` | VHDL `src/vhdl/FDCE.vhd` |
+| `FDPE` | VHDL `src/vhdl/FDPE.vhd` |
+| `FDRE` | VHDL `src/vhdl/FDRE.vhd` |
+| `FDSE` | VHDL `src/vhdl/FDSE.vhd` |
 | `FE` | Verilog only |
 | `FIFO18E1` | Verilog only |
 | `FIFO18E2` | Verilog only |
@@ -67,7 +68,7 @@ and the `IOBUF` `inout` strength caveat.
 | `FRAME_ECCE2` | Verilog only |
 | `FRAME_ECCE3` | Verilog only |
 | `FRAME_ECCE4` | Verilog only |
-| `GND` | Verilog only |
+| `GND` | VHDL `src/vhdl/GND.vhd` |
 | `GTHE2_CHANNEL` | Verilog only |
 | `GTHE2_COMMON` | Verilog only |
 | `GTHE3_CHANNEL` | Verilog only |
@@ -91,7 +92,7 @@ and the `IOBUF` `inout` strength caveat.
 | `HPIO_VREF` | Verilog only |
 | `HSADC` | Verilog only |
 | `HSDAC` | Verilog only |
-| `IBUF` | Verilog only |
+| `IBUF` | VHDL `src/vhdl/IBUF.vhd` |
 | `IBUF_ANALOG` | Verilog only |
 | `IBUF_IBUFDISABLE` | Verilog only |
 | `IBUF_INTERMDISABLE` | Verilog only |
@@ -124,7 +125,7 @@ and the `IOBUF` `inout` strength caveat.
 | `ILKNE4` | Verilog only |
 | `IN_FIFO` | Verilog only |
 | `INBUF` | Verilog only |
-| `INV` | Verilog only |
+| `INV` | VHDL `src/vhdl/INV.vhd` |
 | `IOBUF` | Verilog only |
 | `IOBUF_ANALOG` | Verilog only |
 | `IOBUF_DCIEN` | Verilog only |
@@ -146,12 +147,12 @@ and the `IOBUF` `inout` strength caveat.
 | `KEEPER` | Verilog only |
 | `LDCE` | Verilog only |
 | `LDPE` | Verilog only |
-| `LUT1` | Verilog only |
-| `LUT2` | Verilog only |
-| `LUT3` | Verilog only |
-| `LUT4` | Verilog only |
-| `LUT5` | Verilog only |
-| `LUT6` | Verilog only |
+| `LUT1` | VHDL `src/vhdl/LUT1.vhd` |
+| `LUT2` | VHDL `src/vhdl/LUT2.vhd` |
+| `LUT3` | VHDL `src/vhdl/LUT3.vhd` |
+| `LUT4` | VHDL `src/vhdl/LUT4.vhd` |
+| `LUT5` | VHDL `src/vhdl/LUT5.vhd` |
+| `LUT6` | VHDL `src/vhdl/LUT6.vhd` |
 | `LUT6_2` | Verilog only |
 | `MASTER_JTAG` | Verilog only |
 | `MMCME2_ADV` | Verilog only |
@@ -161,10 +162,10 @@ and the `IOBUF` `inout` strength caveat.
 | `MMCME4_ADV` | Verilog only |
 | `MMCME4_BASE` | Verilog only |
 | `MUXCY` | Verilog only |
-| `MUXF7` | Verilog only |
-| `MUXF8` | Verilog only |
+| `MUXF7` | VHDL `src/vhdl/MUXF7.vhd` |
+| `MUXF8` | VHDL `src/vhdl/MUXF8.vhd` |
 | `MUXF9` | Verilog only |
-| `OBUF` | Verilog only |
+| `OBUF` | VHDL `src/vhdl/OBUF.vhd` |
 | `OBUFDS` | Verilog only |
 | `OBUFDS_DPHY` | Verilog only |
 | `OBUFDS_GTE3` | Verilog only |
@@ -173,7 +174,7 @@ and the `IOBUF` `inout` strength caveat.
 | `OBUFDS_GTE4_ADV` | Verilog only |
 | `OBUFDS_GTM` | Verilog only |
 | `OBUFDS_GTM_ADV` | Verilog only |
-| `OBUFT` | Verilog only |
+| `OBUFT` | VHDL `src/vhdl/OBUFT.vhd` |
 | `OBUFT_DCIEN` | Verilog only |
 | `OBUFTDS` | Verilog only |
 | `OBUFTDS_DCIEN` | Verilog only |
@@ -182,7 +183,7 @@ and the `IOBUF` `inout` strength caveat.
 | `ODELAYE2` | Verilog only |
 | `ODELAYE2_FINEDELAY` | Verilog only |
 | `ODELAYE3` | Verilog only |
-| `OR2L` | Verilog only |
+| `OR2L` | VHDL `src/vhdl/OR2L.vhd` |
 | `OSERDES` | Verilog only |
 | `OSERDESE1` | Verilog only |
 | `OSERDESE2` | Verilog only |
@@ -253,10 +254,10 @@ and the `IOBUF` `inout` strength caveat.
 | `URAM288` | Verilog only |
 | `URAM288_BASE` | Verilog only |
 | `USR_ACCESSE2` | Verilog only |
-| `VCC` | Verilog only |
+| `VCC` | VHDL `src/vhdl/VCC.vhd` |
 | `VCU` | Verilog only |
 | `XADC` | Verilog only |
-| `XORCY` | Verilog only |
+| `XORCY` | VHDL `src/vhdl/XORCY.vhd` |
 | `ZHOLD_DELAY` | Verilog only |
 
 250 component declarations, including `GTM_DUAL` (`skip` in

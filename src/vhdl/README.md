@@ -3,8 +3,8 @@
 A source here is analysed into the same `unisim` library as the Verilog
 primitives and `vcomponents`, after the generated package, when
 `config/primitives.txt` marks that primitive `vhdl`. The file name is
-`src/vhdl/<NAME>.vhd`. There are none yet: every Verilog primitive is
-still `vlog`.
+`src/vhdl/<NAME>.vhd`. The first batch and the conventions are
+[docs/vhdl-models.md](../../docs/vhdl-models.md).
 
 ## Conventions
 
@@ -19,8 +19,10 @@ still `vlog`.
   `bit_vector`, `boolean`, `integer`, `real`, or `string`.
 - Prefer VHDL-2008. No vendor packages, and no copies of Vivado's VHDL
   unisim sources.
-- Behaviour that must survive `GSR` should wait until `glbl.GSR` has
-  fallen. In these models that is 100 ns from time 0.
+- A model that needs `glbl.GSR` or `glbl.GTS` uses the local ROC/TOC in
+  `unisim_sim` (GSR high for 100 ns, GTS high for 0 ns). NVC cannot read
+  the Verilog `glbl` net through an external name. See
+  [docs/vhdl-models.md](../../docs/vhdl-models.md).
 - When a VHDL entity replaces a Verilog primitive, set its `lang` to
   `vhdl` in `config/primitives.txt`. `make` then analyses this file and
   not the Verilog, so the two definitions of the same name are not both
