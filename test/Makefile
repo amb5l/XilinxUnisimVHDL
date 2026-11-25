@@ -39,114 +39,129 @@ EQ_BUF_PRIMS := BUFCE_LEAF BUFGCE BUFGCE_DIV BUFGCTRL BUFG_GT BUFG_GT_SYNC \
 VREF_BUF_SRCS := $(addprefix $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/,$(addsuffix .v,$(EQ_BUF_PRIMS)))
 EQ_DDR_PRIMS := IDDR IDDR_2CLK IDDRE1 ODDR ODDRE1
 VREF_DDR_SRCS := $(addprefix $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/,$(addsuffix .v,$(EQ_DDR_PRIMS)))
-EQ_DSP_PRIMS := DSP_MULTIPLIER DSP_PREADD
+EQ_DSP_PRIMS := DSP_A_B_DATA DSP_ALU DSP_C_DATA DSP_M_DATA DSP_MULTIPLIER \
+	DSP_OUTPUT DSP_PREADD DSP_PREADD_DATA
 VREF_DSP_SRCS := $(addprefix $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/,$(addsuffix .v,$(EQ_DSP_PRIMS)))
 
 .PHONY: all clean $(Benches)
 
 all: $(Benches)
 
-$(filter-out tb_eq tb_eq_io tb_eq_ff tb_eq_ram tb_eq_simprim tb_eq_bufg tb_eq_ddr tb_eq_dsp tb_eq_dsp48 tb_eq_bram tb_eq_serdes,$(Benches)):
+$(filter-out tb_eq tb_eq_io tb_eq_ff tb_iobuf tb_eq_ram tb_eq_simprim tb_eq_bufg tb_eq_ddr tb_eq_dsp tb_eq_dsp48 tb_eq_bram tb_eq_serdes,$(Benches)):
 	$(NVC) --std=2008 --work=work:$(WORK) -L $(BUILD) -M $(NVC_M) \
 	  -a $(CURDIR)/tb/$@.vhd \
 	  -e $@ unisim.GLBL -r
 
+# IOBUF and BIBUF are VHDL in unisim. The Verilog, plus PULLUP,
+# PULLDOWN and KEEPER, is analysed into work for the strength check.
+tb_iobuf:
+	$(NVC) --std=2008 --work=work:$(WORK) -M $(NVC_M) \
+	  -a $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/IOBUF.v \
+	    $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/BIBUF.v \
+	    $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/PULLUP.v \
+	    $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/PULLDOWN.v \
+	    $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/KEEPER.v
+	$(NVC) --std=2008 --work=work:$(WORK) -L $(BUILD) -M $(NVC_M) \
+	  -a $(CURDIR)/tb/tb_iobuf.vhd \
+	  -e tb_iobuf unisim.GLBL -r
+
 tb_eq:
 	$(NVC) --std=2008 --work=work:$(WORK) -M $(NVC_M) \
-	  -a $(ROOT)/XilinxUnisimLibrary/verilog/src/glbl.v $(VREF_SRCS)
+	  -a $(VREF_SRCS)
 	$(NVC) --std=2008 --work=work:$(WORK) -L $(BUILD) -M $(NVC_M) \
 	  -a $(CURDIR)/tb/tb_eq.vhd \
-	  -e tb_eq GLBL -r
+	  -e tb_eq unisim.GLBL -r
 
 tb_eq_io:
 	$(NVC) --std=2008 --work=work:$(WORK) -M $(NVC_M) \
-	  -a $(ROOT)/XilinxUnisimLibrary/verilog/src/glbl.v $(VREF_IO_SRCS)
+	  -a $(VREF_IO_SRCS)
 	$(NVC) --std=2008 --work=work:$(WORK) -L $(BUILD) -M $(NVC_M) \
 	  -a $(CURDIR)/tb/tb_eq_io.vhd \
-	  -e tb_eq_io GLBL -r
+	  -e tb_eq_io unisim.GLBL -r
 
 tb_eq_ff:
 	$(NVC) --std=2008 --work=work:$(WORK) -M $(NVC_M) \
-	  -a $(ROOT)/XilinxUnisimLibrary/verilog/src/glbl.v $(VREF_FF_SRCS)
+	  -a $(VREF_FF_SRCS)
 	$(NVC) --std=2008 --work=work:$(WORK) -L $(BUILD) -M $(NVC_M) \
 	  -a $(CURDIR)/tb/tb_eq_ff.vhd \
-	  -e tb_eq_ff GLBL -r
+	  -e tb_eq_ff unisim.GLBL -r
 
 tb_eq_ram:
 	$(NVC) --std=2008 --work=work:$(WORK) -M $(NVC_M) \
-	  -a $(ROOT)/XilinxUnisimLibrary/verilog/src/glbl.v $(VREF_RAM_SRCS)
+	  -a $(VREF_RAM_SRCS)
 	$(NVC) --std=2008 --work=work:$(WORK) -L $(BUILD) -M $(NVC_M) \
 	  -a $(CURDIR)/tb/tb_eq_ram.vhd \
-	  -e tb_eq_ram GLBL -r
+	  -e tb_eq_ram unisim.GLBL -r
 
 tb_eq_simprim:
 	$(NVC) --std=2008 --work=work:$(WORK) -M $(NVC_M) \
-	  -a -D XIL_TIMING $(ROOT)/XilinxUnisimLibrary/verilog/src/glbl.v $(VREF_SIM_SRCS)
+	  -a -D XIL_TIMING $(VREF_SIM_SRCS)
 	$(NVC) --std=2008 --work=work:$(WORK) -L $(BUILD) -M $(NVC_M) \
 	  -a $(CURDIR)/tb/tb_eq_simprim.vhd \
-	  -e tb_eq_simprim GLBL -r
+	  -e tb_eq_simprim unisim.GLBL -r
 
 tb_eq_bufg:
 	$(NVC) --std=2008 --work=work:$(WORK) -M $(NVC_M) \
-	  -a $(ROOT)/XilinxUnisimLibrary/verilog/src/glbl.v $(VREF_BUF_SRCS)
+	  -a $(VREF_BUF_SRCS)
+	$(NVC) --std=2008 --work=work:$(WORK) -M $(NVC_M) \
+	  -a -D XIL_TIMING $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/BUFCE_ROW.v
+	$(NVC) --std=2008 --work=work:$(WORK) -M $(NVC_M) \
+	  -a $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/BUFHCE.v
 	$(NVC) --std=2008 --work=work:$(WORK) -L $(BUILD) -M $(NVC_M) \
 	  -a $(CURDIR)/tb/tb_eq_bufg.vhd \
-	  -e tb_eq_bufg GLBL -r
+	  -e tb_eq_bufg unisim.GLBL -r
 
 tb_eq_ddr:
 	$(NVC) --std=2008 --work=work:$(WORK) -M $(NVC_M) \
-	  -a $(ROOT)/XilinxUnisimLibrary/verilog/src/glbl.v $(VREF_DDR_SRCS)
+	  -a $(VREF_DDR_SRCS)
 	$(NVC) --std=2008 --work=work:$(WORK) -L $(BUILD) -M $(NVC_M) \
 	  -a $(CURDIR)/tb/tb_eq_ddr.vhd \
-	  -e tb_eq_ddr GLBL -r
+	  -e tb_eq_ddr unisim.GLBL -r
 
 tb_eq_dsp:
 	$(NVC) --std=2008 --work=work:$(WORK) -M $(NVC_M) \
-	  -a -D XIL_TIMING $(ROOT)/XilinxUnisimLibrary/verilog/src/glbl.v $(VREF_DSP_SRCS)
+	  -a -D XIL_TIMING $(VREF_DSP_SRCS)
 	$(NVC) --std=2008 --work=work:$(WORK) -L $(BUILD) -M $(NVC_M) \
 	  -a $(CURDIR)/tb/tb_eq_dsp.vhd \
-	  -e tb_eq_dsp GLBL -r
+	  -e tb_eq_dsp unisim.GLBL -r
 
-# DSP48E1 and DSP48E2 elaborate with XIL_TIMING undefined. E1's specify
-# paths are already (0:0:0). Defining XIL_TIMING would undrive the delay
-# nets the behavioural model reads, so this bench does not.
+# DSP48E1 and DSP48E2 are analysed with XIL_TIMING. Delay nets are
+# zero-delay copies, so the behavioural paths stay driven.
 tb_eq_dsp48:
 	$(NVC) --std=2008 --work=work:$(WORK) -M $(NVC_M) \
-	  -a $(ROOT)/XilinxUnisimLibrary/verilog/src/glbl.v \
+	  -a -D XIL_TIMING \
 	    $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/DSP48E1.v \
 	    $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/DSP48E2.v
 	$(NVC) --std=2008 --work=work:$(WORK) -L $(BUILD) -M $(NVC_M) \
 	  -a $(CURDIR)/tb/tb_eq_dsp48.vhd \
-	  -e tb_eq_dsp48 GLBL -r
+	  -e tb_eq_dsp48 unisim.GLBL -r
 
 # RAMB* elaborate with XIL_TIMING undefined. The specify paths are 100 ps
 # and collision checking is off (SIM_COLLISION_CHECK NONE), so the bench
 # does not define XIL_TIMING.
 tb_eq_bram:
 	$(NVC) --std=2008 --work=work:$(WORK) -M $(NVC_M) \
-	  -a $(ROOT)/XilinxUnisimLibrary/verilog/src/glbl.v \
-	    $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/RAMB18E1.v \
+	  -a $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/RAMB18E1.v \
 	    $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/RAMB18E2.v \
 	    $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/RAMB36E1.v \
 	    $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/RAMB36E2.v
 	$(NVC) --std=2008 --work=work:$(WORK) -L $(BUILD) -M $(NVC_M) \
 	  -a $(CURDIR)/tb/tb_eq_bram.vhd \
-	  -e tb_eq_bram GLBL -r
+	  -e tb_eq_bram unisim.GLBL -r
 
 # ISERDES, ISERDES_NODELAY, ISERDESE1 and OSERDES elaborate with
-# XIL_TIMING undefined. OSERDESE1.v uses defparam, which this NVC does
-# not elaborate, so it is not analysed here. The ISERDES flop delays
-# are 300 ps and the OSERDES paths are 100 ps.
+# XIL_TIMING undefined. The ISERDES flop delays are 300 ps and the
+# OSERDES paths are 100 ps. One ISERDESE1 memory Q2 sample is U in
+# the Verilog and 0 in the VHDL; the bench reports that mismatch.
 tb_eq_serdes:
 	$(NVC) --std=2008 --work=work:$(WORK) -M $(NVC_M) \
-	  -a $(ROOT)/XilinxUnisimLibrary/verilog/src/glbl.v \
-	    $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/ISERDES.v \
+	  -a $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/ISERDES.v \
 	    $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/ISERDES_NODELAY.v \
 	    $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/ISERDESE1.v \
 	    $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/OSERDES.v
 	$(NVC) --std=2008 --work=work:$(WORK) -L $(BUILD) -M $(NVC_M) \
 	  -a $(CURDIR)/tb/tb_eq_serdes.vhd \
-	  -e tb_eq_serdes GLBL -r
+	  -e tb_eq_serdes unisim.GLBL -r
 
 clean:
 	rm -rf work

@@ -11,8 +11,10 @@ on:
 
 env:
   NVC_REPO: https://github.com/amb5l/nvc
-  # bit, bit_vector, and boolean generics, matching unisim_VCOMP.
-  NVC_REF: unisim/7-vhdl-types
+  # unisim/16-percent-m: delay nets, $sformat, defparam, divider order,
+  # event queue, NBA/port visibility, glbl as a second top, drive
+  # strengths across inout ports, and %m.
+  NVC_REF: unisim/16-percent-m
 
 jobs:
   unisim:

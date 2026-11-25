@@ -1,8 +1,9 @@
--- DSP48E1 and DSP48E2 against the submodule Verilog. Both elaborate
--- with XIL_TIMING left undefined: E1's specify paths are (0:0:0) and
--- E2 has no specify block. The Verilog always @(input) copies do not
--- run for a value that never changes, so stimulus changes A, B, and
--- OPMODE before the first compare.
+-- DSP48E1 and DSP48E2 against the submodule Verilog, analysed with
+-- XIL_TIMING. Delay nets are zero-delay copies. The Verilog always
+-- @(input) copies do not run for a value that never changes, so
+-- stimulus changes A, B, and OPMODE before the first compare.
+-- %m in the OPMODE warning is not formatted by this NVC; the values
+-- still match.
 
 library ieee;
 use ieee.std_logic_1164.all;

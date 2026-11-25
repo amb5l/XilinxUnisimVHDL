@@ -1,10 +1,8 @@
 -- Equivalence for IDDR, IDDR_2CLK, IDDRE1, ODDR, and ODDRE1 against
--- the Apache-2.0 Verilog analysed into library work. GLBL is elaborated
--- so the Verilog side has a glbl net; on this NVC that net stays 0 when
--- the module is instantiated from VHDL. GSR is therefore checked on the
--- VHDL model only. Comparisons start after GSR has fallen, and after a
--- reset has written the pipeline so the Verilog X left by a missing GSR
--- is gone.
+-- the Apache-2.0 Verilog analysed into library work. unisim.GLBL is
+-- the second top, so glbl.GSR is the library copy. Comparisons start
+-- after GSR has fallen. A clock edge still needs two 5 ns steps before
+-- the port is compared: one step leaves the Verilog value behind.
 
 library ieee;
 use ieee.std_logic_1164.all;
@@ -235,9 +233,8 @@ begin
 
   stim : process
     variable n : natural := 0;
-    -- NVC applies a Verilog NBA, then the continuous assign to the
-    -- port, on successive resumes of this process. rise and fall wait
-    -- twice so a following comparison sees the port.
+    -- unisim/14-glbl still needs a second step. One step leaves the
+    -- Verilog port on the previous value.
     constant step : time := 5 ns;
 
     procedure eq(name : string; got, exp : std_ulogic) is

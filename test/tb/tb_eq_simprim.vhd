@@ -1,12 +1,8 @@
 -- SIMPRIM RAMs and input buffers.
--- The Verilog is analysed with XIL_TIMING defined. NVC accepts the specify
--- blocks, but $setuphold does not drive the delayed data and clock nets,
--- so a RAM write under XIL_TIMING never happens. Those cells are
--- self-checked against the functional equations. IBUFCTRL, the DIFFINBUF
--- receiver, INBUF's PAD path, and the empty RAMD32M64 do not depend on
--- those nets and are compared with the Verilog. DPHY_DIFFINBUF calls
--- $sformat, which this NVC does not implement, so it is self-checked.
--- Its LP mode needs a Strong strength, which std_ulogic does not have.
+-- The Verilog is analysed with XIL_TIMING defined. Delayed nets are
+-- zero-delay copies, so the RAM writes are compared with the Verilog.
+-- DPHY_DIFFINBUF is compared too. Its LP mode needs a Strong strength,
+-- which std_ulogic does not have, so both sides stay out of LP mode.
 
 library ieee;
 use ieee.std_logic_1164.all;
@@ -46,6 +42,7 @@ architecture sim of tb_eq_simprim is
 
   signal hsdis, ldis, di, dib : std_ulogic := '0';
   signal hs, lpp, lpn : std_ulogic;
+  signal hs_v, lpp_v, lpn_v : std_ulogic;
 
   constant init32 : bit_vector(31 downto 0) := X"00000001";
   constant init64 : bit_vector(63 downto 0) := X"0000000000000001";
@@ -166,6 +163,16 @@ architecture sim of tb_eq_simprim is
       VREF : in std_ulogic
     );
   end component;
+  component DPHY_DIFFINBUF is
+    generic (
+      DIFF_TERM : boolean := TRUE;
+      ISTANDARD : string := "DEFAULT"
+    );
+    port (
+      HSRX_O, LPRX_O_N, LPRX_O_P : out std_ulogic;
+      HSRX_DISABLE, I, IB, LPRX_DISABLE : in std_ulogic
+    );
+  end component;
 
   function from_vlog(v : std_ulogic) return std_ulogic is
   begin
@@ -187,16 +194,30 @@ begin
     port map (d32_h, clk, din,
       radr(0), radr(1), radr(2), radr(3), radr(4),
       wadr(0), wadr(1), wadr(2), wadr(3), wadr(4), we);
+  u_d32_v : RAMD32 generic map (INIT => init32)
+    port map (d32_v, clk, din,
+      radr(0), radr(1), radr(2), radr(3), radr(4),
+      wadr(0), wadr(1), wadr(2), wadr(3), wadr(4), we);
   u_d32i_h : entity unisim.RAMD32 generic map (INIT => init32, IS_CLK_INVERTED => '1')
     port map (d32i_h, iclk, din,
+      radr(0), radr(1), radr(2), radr(3), radr(4),
+      wadr(0), wadr(1), wadr(2), wadr(3), wadr(4), we);
+  u_d32i_v : RAMD32 generic map (INIT => init32, IS_CLK_INVERTED => '1')
+    port map (d32i_v, iclk, din,
       radr(0), radr(1), radr(2), radr(3), radr(4),
       wadr(0), wadr(1), wadr(2), wadr(3), wadr(4), we);
 
   u_s32_h : entity unisim.RAMS32 generic map (INIT => init32)
     port map (s32_h, wadr(0), wadr(1), wadr(2), wadr(3), wadr(4), clk, din, we);
+  u_s32_v : RAMS32 generic map (INIT => init32)
+    port map (s32_v, wadr(0), wadr(1), wadr(2), wadr(3), wadr(4), clk, din, we);
 
   u_d64_h : entity unisim.RAMD64E generic map (INIT => init64)
     port map (d64_h, clk, din,
+      radr(0), radr(1), radr(2), radr(3), radr(4), radr(5),
+      wadr(0), wadr(1), wadr(2), wadr(3), wadr(4), wadr(5), hi(0), hi(1), we);
+  u_d64_v : RAMD64E generic map (INIT => init64)
+    port map (d64_v, clk, din,
       radr(0), radr(1), radr(2), radr(3), radr(4), radr(5),
       wadr(0), wadr(1), wadr(2), wadr(3), wadr(4), wadr(5), hi(0), hi(1), we);
   u_d64m_h : entity unisim.RAMD64E
@@ -204,12 +225,23 @@ begin
     port map (d64m_h, clk, din,
       radr(0), radr(1), radr(2), radr(3), radr(4), radr(5),
       wadr(0), wadr(1), wadr(2), wadr(3), wadr(4), wadr(5), hi(0), hi(1), we);
+  u_d64m_v : RAMD64E
+    generic map (INIT => init64, RAM_ADDRESS_MASK => "11")
+    port map (d64m_v, clk, din,
+      radr(0), radr(1), radr(2), radr(3), radr(4), radr(5),
+      wadr(0), wadr(1), wadr(2), wadr(3), wadr(4), wadr(5), hi(0), hi(1), we);
 
   u_s64_h : entity unisim.RAMS64E generic map (INIT => init64)
     port map (s64_h, wadr(0), wadr(1), wadr(2), wadr(3), wadr(4), wadr(5),
       clk, din, hi(0), hi(1), we);
+  u_s64_v : RAMS64E generic map (INIT => init64)
+    port map (s64_v, wadr(0), wadr(1), wadr(2), wadr(3), wadr(4), wadr(5),
+      clk, din, hi(0), hi(1), we);
   u_s64i_h : entity unisim.RAMS64E1 generic map (INIT => init64)
     port map (s64i_h, wadr(0), wadr(1), wadr(2), wadr(3), wadr(4), wadr(5),
+      clk, din, hi(0), hi(1), hi(2), we);
+  u_s64i_v : RAMS64E1 generic map (INIT => init64)
+    port map (s64i_v, wadr(0), wadr(1), wadr(2), wadr(3), wadr(4), wadr(5),
       clk, din, hi(0), hi(1), hi(2), we);
 
   u_m64_h : entity unisim.RAMD32M64 generic map (INIT => init64)
@@ -252,6 +284,8 @@ begin
 
   u_dp : entity unisim.DPHY_DIFFINBUF
     port map (hs, lpn, lpp, hsdis, di, dib, ldis);
+  u_dp_v : DPHY_DIFFINBUF
+    port map (hs_v, lpn_v, lpp_v, hsdis, di, dib, ldis);
 
   stim : process is
     variable n : natural := 0;
@@ -296,10 +330,15 @@ begin
   begin
     step;
     expect("RAMD32 init 1", d32_h, '1');
+    eq("RAMD32 init 1", d32_h, d32_v);
     expect("RAMS32 init 1", s32_h, '1');
+    eq("RAMS32 init 1", s32_h, s32_v);
     expect("RAMD64E init 1", d64_h, '1');
+    eq("RAMD64E init 1", d64_h, d64_v);
     expect("RAMS64E init 1", s64_h, '1');
+    eq("RAMS64E init 1", s64_h, s64_v);
     expect("RAMS64E1 init 1", s64i_h, '1');
+    eq("RAMS64E1 init 1", s64i_h, s64i_v);
     eq("RAMD32M64 Z", m64_h, m64_v);
     expect("RAMD32M64 Z", m64_h, 'Z');
 
@@ -307,6 +346,7 @@ begin
     din <= '0';
     rise;
     expect("RAMD32 WE0 holds", d32_h, '1');
+    eq("RAMD32 WE0 holds", d32_h, d32_v);
 
     -- Address-space bits block the write unless the mask opens them.
     -- RAMD32 and RAMS32 ignore those pins, so this edge does write them.
@@ -315,26 +355,35 @@ begin
     we <= '1';
     rise;
     expect("RAMD64E masked holds", d64_h, '1');
+    eq("RAMD64E masked holds", d64_h, d64_v);
     expect("RAMD64E open wrote", d64m_h, '0');
+    eq("RAMD64E open wrote", d64m_h, d64m_v);
     expect("RAMS64E masked holds", s64_h, '1');
+    eq("RAMS64E masked holds", s64_h, s64_v);
     expect("RAMS64E1 masked holds", s64i_h, '1');
+    eq("RAMS64E1 masked holds", s64i_h, s64i_v);
     hi <= "000";
 
     we <= '1';
     din <= '1';
     rise;
     expect("RAMD32 reload", d32_h, '1');
+    eq("RAMD32 reload", d32_h, d32_v);
     we <= 'Z';
     din <= '0';
     rise;
     expect("RAMD32 WEZ wrote", d32_h, '0');
+    eq("RAMD32 WEZ wrote", d32_h, d32_v);
     expect("RAMS32 WEZ wrote", s32_h, '0');
+    eq("RAMS32 WEZ wrote", s32_h, s32_v);
     expect("RAMD64E WEZ wrote", d64_h, '0');
+    eq("RAMD64E WEZ wrote", d64_h, d64_v);
 
     we <= 'X';
     din <= '1';
     rise;
     expect("RAMD32 WEX holds", d32_h, '0');
+    eq("RAMD32 WEX holds", d32_h, d32_v);
 
     we <= '1';
     wadr(0) <= 'X';
@@ -343,10 +392,12 @@ begin
     wadr(0) <= '0';
     step;
     expect("RAMD32 WADR X holds", d32_h, '0');
+    eq("RAMD32 WADR X holds", d32_h, d32_v);
 
     radr(0) <= 'X';
     step;
     expect("RAMD32 RADR X", d32_h, 'X');
+    eq("RAMD32 RADR X", d32_h, d32_v);
     radr <= (others => '0');
 
     for i in 0 to 31 loop
@@ -356,14 +407,18 @@ begin
       we <= '1';
       rise;
       expect("RAMD32 data", d32_h, bitat(i, 0));
+      eq("RAMD32 data", d32_h, d32_v);
       expect("RAMS32 data", s32_h, bitat(i, 0));
+      eq("RAMS32 data", s32_h, s32_v);
     end loop;
     -- Read port stays on the last write while the write port moves.
     put_addr(wadr, 0);
     din <= '1';
     rise;
     expect("RAMD32 read holds", d32_h, '1');
+    eq("RAMD32 read holds", d32_h, d32_v);
     expect("RAMS32 moved", s32_h, '1');
+    eq("RAMS32 moved", s32_h, s32_v);
 
     for i in 0 to 63 loop
       put_addr(wadr, i);
@@ -371,6 +426,7 @@ begin
       din <= bitat(i, 1);
       rise;
       expect("RAMD64E data", d64_h, bitat(i, 1));
+      eq("RAMD64E data", d64_h, d64_v);
       eq("RAMD32M64 stays Z", m64_h, m64_v);
       expect("RAMD32M64 stays Z", m64_h, 'Z');
     end loop;
@@ -384,9 +440,11 @@ begin
     iclk <= '1';
     step;
     expect("RAMD32 inv rise holds", d32i_h, '1');
+    eq("RAMD32 inv rise holds", d32i_h, d32i_v);
     iclk <= '0';
     step;
     expect("RAMD32 inv fall wrote", d32i_h, '0');
+    eq("RAMD32 inv fall wrote", d32i_h, d32i_v);
 
     for a in 0 to 3 loop
       ii <= bitat(a, 0);
@@ -517,42 +575,56 @@ begin
 
     step(2 ps);
     expect("DPHY lp0", lpp, '0');
+    eq("DPHY lp0", lpp, lpp_v);
     expect("DPHY lpn0", lpn, '0');
+    eq("DPHY lpn0", lpn, lpn_v);
     expect("DPHY hs init", hs, 'X');
+    eq("DPHY hs init", hs, hs_v);
     di <= '1';
     dib <= '0';
     step;
     expect("DPHY 10", hs, '1');
+    eq("DPHY 10", hs, hs_v);
     di <= '0';
     dib <= '1';
     step;
     expect("DPHY 01", hs, '0');
+    eq("DPHY 01", hs, hs_v);
     di <= '1';
     dib <= '1';
     step;
     expect("DPHY hold", hs, '0');
+    eq("DPHY hold", hs, hs_v);
     di <= 'X';
     step;
     expect("DPHY X", hs, 'X');
+    eq("DPHY X", hs, hs_v);
     di <= '1';
     dib <= '0';
     step;
     expect("DPHY restored", hs, '1');
+    eq("DPHY restored", hs, hs_v);
     hsdis <= '1';
     step;
     expect("DPHY dis", hs, '0');
+    eq("DPHY dis", hs, hs_v);
     hsdis <= 'Z';
     step;
     expect("DPHY disZ", hs, 'X');
+    eq("DPHY disZ", hs, hs_v);
     hsdis <= '0';
     ldis <= '1';
     step;
     expect("DPHY lp dis", lpp, '0');
+    eq("DPHY lp dis", lpp, lpp_v);
     expect("DPHY lpn dis", lpn, '0');
+    eq("DPHY lpn dis", lpn, lpn_v);
     ldis <= 'X';
     step;
     expect("DPHY lp X", lpp, 'X');
+    eq("DPHY lp X", lpp, lpp_v);
     expect("DPHY lpn X", lpn, 'X');
+    eq("DPHY lpn X", lpn, lpn_v);
 
     report "tb_eq_simprim PASS checks=" & integer'image(n) severity note;
     finish;

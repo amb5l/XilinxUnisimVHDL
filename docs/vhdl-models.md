@@ -66,9 +66,14 @@ has elapsed and `GTS` has fallen.
 
 Left as Verilog this batch, and why:
 
-- `IOBUF*` and `BIBUF` are native VHDL in the fourth batch. Their
-  Verilog models are not an equivalence reference: NVC will not
-  elaborate an `inout` port.
+- `IOBUF*` and `BIBUF` are native VHDL in the fourth batch. From
+  `unisim/16-percent-m`, `tb_iobuf` also elaborates the Verilog
+  `IOBUF`, `BIBUF`, `PULLUP`, `PULLDOWN`, and `KEEPER`. The VHDL
+  models are unchanged. A Verilog weak 1/0 is compared as 1/0. `buf`
+  of that weak value is X in the VHDL model and 1 or 0 in the Verilog
+  `buf`. Opposite `BIBUF` drivers resolve to X in the VHDL model; the
+  Verilog weak copy leaves the strong values. Any other logic-level
+  mismatch is a possible NVC bug.
 - `PULLUP`, `PULLDOWN`, and `KEEPER` drive weak or pull strengths.
   `std_ulogic` cannot represent them.
 - `OBUFDS_DPHY` is a supply-strength LP/HS state machine.
@@ -283,15 +288,12 @@ receiver. `DPHY_DIFFINBUF` resolves the HS pair the same way. Its LP
 outputs are 0: the Verilog enables them only for Strong strength, and
 `std_ulogic` has no strength.
 
-`tb_eq_simprim` analyses the Verilog with `-D XIL_TIMING`. NVC accepts
-the specify blocks and the simulation runs. `$setuphold` does not drive
-the delayed data and clock nets, so a RAM write in that elaboration
-never happens and it is not a functional reference. The RAM checks are
-self-checking. `IBUFCTRL`, the `DIFFINBUF` receiver, `INBUF` with
-`OSC_EN` held at 0, and the empty `RAMD32M64` do not depend on those
-nets and are compared with the Verilog. The oscillator is self-checked.
-`DPHY_DIFFINBUF` calls `$sformat`, which this NVC does not implement, so
-that reference aborts and the cell is self-checked.
+`tb_eq_simprim` analyses the Verilog with `-D XIL_TIMING` and elaborates
+`unisim.GLBL`. Delayed nets are zero-delay copies, so the RAM writes are
+compared with the Verilog, including `RAMD32`, `RAMS32`, `RAMD64E`,
+`RAMS64E` and `RAMS64E1`. `DPHY_DIFFINBUF` is compared too. Its LP mode
+needs a Strong strength, which `std_ulogic` does not have, so both sides
+stay out of LP mode. The `INBUF` oscillator is still self-checked.
 
 ## Eighth batch
 
@@ -331,17 +333,11 @@ rising edges and delays `O` by 1 ps. `VERSAL*` skips both. `BUFR`
 is 1. `VIRTEX4` uses the four-stage `CE` pipeline; `7SERIES`, `VIRTEX5`,
 and `VIRTEX6` use `CE` directly.
 
-`tb_eq_bufg` compares the VHDL with the Verilog after the 100 ns ROC.
-`BUFCE_ROW` is the SIMPRIM `$finish` cell in this batch. Analysing it
-with `-D XIL_TIMING` is accepted, and the simulation runs, but `O` stays
-at X: the specify targets `I_delay` and `CE_delay` are not driven. Without
-the define the model executes `$finish`. `BUFCE_ROW` is checked against
-`BUFCE_LEAF` instead. `BUFHCE` uses `defparam`, which this NVC does not
-elaborate, so that cell is self-checked; `BUFMRCE` passes parameters in
-the instance and is compared with the Verilog. `BUFGCE_DIV` values other
-than 1 are self-checked: the Verilog chooses the toggle counts in an
-`always` that races `BUFGCE_DIVIDE_BIN`, and on this NVC the counts stay
-at 1.
+`tb_eq_bufg` compares the VHDL with the Verilog after the 100 ns ROC,
+elaborated as `unisim.GLBL`. `BUFCE_ROW` is analysed with `-D XIL_TIMING`
+and compared, including `HARDSYNC`. `BUFHCE` is compared (its Verilog
+uses `defparam`). `BUFGCE_DIV` divide 2 and 4 are compared as well as
+divide 1.
 
 ## Conventions
 
@@ -440,13 +436,13 @@ defined. The VHDL models are the functional behaviour, with no kill
 switch and no attribute `$finish`. `DSP48E1` and `DSP48E2` stay Verilog
 for the next batch.
 
-`XIL_TIMING` is a usable reference for `DSP_PREADD` and
-`DSP_MULTIPLIER`. Their behavioural assigns read the ports, so the
-specify paths do not hide the result. `tb_eq_dsp` analyses those two
-with `-D XIL_TIMING` and compares them directly. The same netlist does
-not work for the registered cells: `C_delay` and the other delay nets
-stay undriven, and the reference output stays 0. Those six are
-self-checked from the Verilog equations.
+`tb_eq_dsp` analyses every `DSP_*` sub-block with `-D XIL_TIMING` and
+elaborates `unisim.GLBL`. Delayed nets are zero-delay copies, so
+`DSP_C_DATA`, `DSP_M_DATA`, `DSP_A_B_DATA`, `DSP_PREADD_DATA`,
+`DSP_ALU` and `DSP_OUTPUT` are compared with the Verilog as well as
+`DSP_PREADD` and `DSP_MULTIPLIER`. One `DSP_A_B_DATA` instance keeps
+`AREG` 0 and the default `ACASCREG` 1. The Verilog `$finish`es on that
+pair; the VHDL does not, so that instance stays self-checked.
 
 `DSP_PREADD` adds or subtracts a 27-bit value and wraps. `INMODE2`
 selects `D_DATA`; 0 selects zero; `X` makes the sum `X`.
@@ -481,10 +477,10 @@ attribute falls back to `NO_RESET`, `RESET`, `MASK`, `PATTERN`, or
 
 `DSP48E1` and `DSP48E2` are the DSP slices. Neither is a SIMPRIM
 `$finish` cell, so `XIL_TIMING` is left undefined. `DSP48E1` still has
-a specify block, and those paths are `(0:0:0)`; `$setuphold` is inside
-the ifdef. Defining `XIL_TIMING` would undrive the delay nets the
-behavioural model reads. `DSP48E2` has no specify block. `tb_eq_dsp48`
-compares both with the submodule Verilog.
+a specify block. `tb_eq_dsp48` analyses both with `-D XIL_TIMING`.
+The delay nets are zero-delay copies and the values match. NVC prints
+`unknown format specifier 'm'` for the `%m` in the OPMODE warning; the
+comparison still passes.
 
 `DSP48E2` is a structural wrapper of the eight `DSP_*` models. The
 wrapper does not replace `U` and `V` itself: `DSP_ALU` does that once.
@@ -598,17 +594,17 @@ drives `O` and the sampler from `D`. `OFB_USED` false leaves `OFB`
 unused. Networking DDR width 4 clocks rank 2 from the inverted
 divider; memory clocks it from `CLKDIV`. The 300 ps flop delays are
 not copied. The bench compares networking and memory, both DDR and
-width 4, on the same clocks as `ISERDES_NODELAY`. Seven of the eight
-memory `Q2` samples match. The second word is `U` in the Verilog and
-0 in the VHDL; that one sample is not compared. `tb_eq_serdes` records
-255 input checks and 80 `OSERDES` checks.
+width 4, on the same clocks as `ISERDES_NODELAY`. The second memory
+`Q2` sample is `U` in the Verilog and 0 in the VHDL, at 198 ns. The
+first sample and the later samples match. The check is left in place:
+the `U` is a possible NVC scheduling bug, not a reason to change the
+VHDL. `tb_eq_serdes` fails on that assertion.
 
 `OSERDESE1` in `INTERFACE_TYPE` `"DEFAULT"` bypasses the DDR3 FIFO, so
 `OQ` and `TQ` follow the `OSERDES` shift. `OFB` is `OQ` when
 `ODELAY_USED` is 0. The 1 ps flop delays are not copied.
 `MEMORY_DDR3` keeps the FIFO and is not compared. The Verilog uses
-`defparam`, which this NVC does not elaborate, so the bench does not
-analyse `OSERDESE1.v` yet.
+`defparam` and is not in this bench yet.
 
 `ISERDESE2`, `OSERDESE2`, `ISERDESE3` and `OSERDESE3` instantiate
 `B_` / `SIP_` modules that are not in the submodule.
@@ -630,9 +626,9 @@ analyse `OSERDESE1.v` yet.
    VHDL model and the submodule Verilog see the same stimulus.
    Exhaustive for a small combinational cell. For a register, cover
    GSR, clock enable, reset priority, `INIT`, and `IS_*_INVERTED`.
-   An `inout` model that NVC cannot elaborate from Verilog is checked
-   by `test/tb/tb_iobuf.vhd` instead, against the equations in this
-   file.
+   `test/tb/tb_iobuf.vhd` checks the `IOBUF*` family and `BIBUF`
+   against the equations in this file, and also compares `IOBUF`,
+   `BIBUF`, `PULLUP`, `PULLDOWN`, and `KEEPER` with the Verilog.
 5. `make test`.
 
 `make` rebuilds library `unisim` without that Verilog file. The
