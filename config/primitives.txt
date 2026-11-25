@@ -211,31 +211,31 @@ PS7                             vlog
 PS8                             vlog
 PULLDOWN                        vlog
 PULLUP                          vlog
-RAM128X1D                       vlog
-RAM128X1S                       vlog
-RAM256X1D                       vlog
-RAM256X1S                       vlog
-RAM32M                          vlog
-RAM32M16                        vlog
-RAM32X16DR8                     vlog
-RAM32X1D                        vlog
-RAM32X1S                        vlog
-RAM512X1S                       vlog
-RAM64M                          vlog
-RAM64M8                         vlog
-RAM64X1D                        vlog
-RAM64X1S                        vlog
-RAM64X8SW                       vlog
+RAM128X1D                       vhdl  write delayed 100 ps; WE of Z writes; X address reads X
+RAM128X1S                       vhdl  write delayed 100 ps; WE of Z writes; X address reads X
+RAM256X1D                       vhdl  write delayed 100 ps; WE of Z writes; X address reads X
+RAM256X1S                       vhdl  write delayed 100 ps; WE of Z writes; X address reads X
+RAM32M                          vhdl  pair write, even bit is DI(0); 100 ps; write address arms on change
+RAM32M16                        vhdl  pair write, even bit is DI(0); 100 ps; write address arms on change
+RAM32X16DR8                     vhdl  no INIT, memory starts X; pair write; 100 ps; write address arms on change
+RAM32X1D                        vhdl  write delayed 100 ps; WE of Z writes; X address reads X
+RAM32X1S                        vhdl  write delayed 100 ps; WE of Z writes; X address reads X
+RAM512X1S                       vhdl  write delayed 100 ps; WE of Z writes; X address reads X
+RAM64M                          vhdl  write delayed 100 ps; WE of Z writes
+RAM64M8                         vhdl  write delayed 100 ps; WE of Z writes
+RAM64X1D                        vhdl  write delayed 100 ps; WE of Z writes; X address reads X
+RAM64X1S                        vhdl  write delayed 100 ps; WE of Z writes; X address reads X
+RAM64X8SW                       vhdl  O is X until A changes or 100 ps; WSEL writes one slice, no delay
 RAMB18E1                        vlog
 RAMB18E2                        vlog
 RAMB36E1                        vlog
 RAMB36E2                        vlog
-RAMD32                          vlog
-RAMD32M64                       vlog
-RAMD64E                         vlog
-RAMS32                          vlog
-RAMS64E                         vlog
-RAMS64E1                        vlog
+RAMD32                          vlog  $finish when XIL_TIMING is undefined
+RAMD32M64                       vlog  $finish when XIL_TIMING is undefined
+RAMD64E                         vlog  $finish when XIL_TIMING is undefined
+RAMS32                          vlog  $finish when XIL_TIMING is undefined
+RAMS64E                         vlog  $finish when XIL_TIMING is undefined
+RAMS64E1                        vlog  $finish when XIL_TIMING is undefined
 RFADC                           vlog
 RFDAC                           vlog
 RIU_OR                          vlog
@@ -243,9 +243,9 @@ RXTX_BITSLICE                   vlog
 RX_BITSLICE                     vlog
 SIM_CONFIGE2                    vlog
 SIM_CONFIGE3                    vlog
-SRL16E                          vlog
-SRLC16E                         vlog
-SRLC32E                         vlog
+SRL16E                          vhdl  INIT forced until CLK is idle; CE of Z shifts
+SRLC16E                         vhdl  INIT forced until CLK is idle; CE of Z shifts; Q15 is data(15)
+SRLC32E                         vhdl  INIT forced until CLK is idle; CE of Z shifts; Q31 is data(31)
 STARTUPE2                       vlog
 STARTUPE3                       vlog
 SYSMONE1                        vlog

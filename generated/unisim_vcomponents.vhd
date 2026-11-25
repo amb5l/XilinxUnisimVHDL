@@ -21987,6 +21987,7 @@ package vcomponents is
   end component PULLUP;
 
   -- RAM128X1D.v
+  -- vhdl: src/vhdl/RAM128X1D.vhd is analysed instead of this Verilog
   component RAM128X1D is
     generic (
       INIT : bit_vector(127 downto 0) := X"00000000000000000000000000000000";
@@ -22004,6 +22005,7 @@ package vcomponents is
   end component RAM128X1D;
 
   -- RAM128X1S.v
+  -- vhdl: src/vhdl/RAM128X1S.vhd is analysed instead of this Verilog
   component RAM128X1S is
     generic (
       INIT : bit_vector(127 downto 0) := X"00000000000000000000000000000000";
@@ -22025,6 +22027,7 @@ package vcomponents is
   end component RAM128X1S;
 
   -- RAM256X1D.v
+  -- vhdl: src/vhdl/RAM256X1D.vhd is analysed instead of this Verilog
   component RAM256X1D is
     generic (
       INIT : bit_vector(255 downto 0) := X"0000000000000000000000000000000000000000000000000000000000000000";
@@ -22042,6 +22045,7 @@ package vcomponents is
   end component RAM256X1D;
 
   -- RAM256X1S.v
+  -- vhdl: src/vhdl/RAM256X1S.vhd is analysed instead of this Verilog
   component RAM256X1S is
     generic (
       INIT : bit_vector(255 downto 0) := X"0000000000000000000000000000000000000000000000000000000000000000";
@@ -22057,6 +22061,7 @@ package vcomponents is
   end component RAM256X1S;
 
   -- RAM32M.v
+  -- vhdl: src/vhdl/RAM32M.vhd is analysed instead of this Verilog
   component RAM32M is
     generic (
       INIT_A : bit_vector(63 downto 0) := X"0000000000000000";
@@ -22084,6 +22089,7 @@ package vcomponents is
   end component RAM32M;
 
   -- RAM32M16.v
+  -- vhdl: src/vhdl/RAM32M16.vhd is analysed instead of this Verilog
   component RAM32M16 is
     generic (
       INIT_A : bit_vector(63 downto 0) := X"0000000000000000";
@@ -22127,6 +22133,7 @@ package vcomponents is
   end component RAM32M16;
 
   -- RAM32X16DR8.v
+  -- vhdl: src/vhdl/RAM32X16DR8.vhd is analysed instead of this Verilog
   component RAM32X16DR8 is
     generic (
       IS_WCLK_INVERTED : bit := '0'
@@ -22162,6 +22169,7 @@ package vcomponents is
   end component RAM32X16DR8;
 
   -- RAM32X1D.v
+  -- vhdl: src/vhdl/RAM32X1D.vhd is analysed instead of this Verilog
   component RAM32X1D is
     generic (
       INIT : bit_vector(31 downto 0) := X"00000000";
@@ -22187,6 +22195,7 @@ package vcomponents is
   end component RAM32X1D;
 
   -- RAM32X1S.v
+  -- vhdl: src/vhdl/RAM32X1S.vhd is analysed instead of this Verilog
   component RAM32X1S is
     generic (
       INIT : bit_vector(31 downto 0) := X"00000000";
@@ -22206,6 +22215,7 @@ package vcomponents is
   end component RAM32X1S;
 
   -- RAM512X1S.v
+  -- vhdl: src/vhdl/RAM512X1S.vhd is analysed instead of this Verilog
   component RAM512X1S is
     generic (
       INIT : bit_vector(511 downto 0) := X"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
@@ -22221,6 +22231,7 @@ package vcomponents is
   end component RAM512X1S;
 
   -- RAM64M.v
+  -- vhdl: src/vhdl/RAM64M.vhd is analysed instead of this Verilog
   component RAM64M is
     generic (
       INIT_A : bit_vector(63 downto 0) := X"0000000000000000";
@@ -22248,6 +22259,7 @@ package vcomponents is
   end component RAM64M;
 
   -- RAM64M8.v
+  -- vhdl: src/vhdl/RAM64M8.vhd is analysed instead of this Verilog
   component RAM64M8 is
     generic (
       INIT_A : bit_vector(63 downto 0) := X"0000000000000000";
@@ -22291,6 +22303,7 @@ package vcomponents is
   end component RAM64M8;
 
   -- RAM64X1D.v
+  -- vhdl: src/vhdl/RAM64X1D.vhd is analysed instead of this Verilog
   component RAM64X1D is
     generic (
       INIT : bit_vector(63 downto 0) := X"0000000000000000";
@@ -22318,6 +22331,7 @@ package vcomponents is
   end component RAM64X1D;
 
   -- RAM64X1S.v
+  -- vhdl: src/vhdl/RAM64X1S.vhd is analysed instead of this Verilog
   component RAM64X1S is
     generic (
       INIT : bit_vector(63 downto 0) := X"0000000000000000";
@@ -22338,6 +22352,7 @@ package vcomponents is
   end component RAM64X1S;
 
   -- RAM64X8SW.v
+  -- vhdl: src/vhdl/RAM64X8SW.vhd is analysed instead of this Verilog
   component RAM64X8SW is
     generic (
       INIT_A : bit_vector(63 downto 0) := X"0000000000000000";
@@ -23570,6 +23585,7 @@ package vcomponents is
   end component SIM_CONFIGE3;
 
   -- SRL16E.v
+  -- vhdl: src/vhdl/SRL16E.vhd is analysed instead of this Verilog
   component SRL16E is
     generic (
       INIT : bit_vector(15 downto 0) := X"0000";
@@ -23588,6 +23604,7 @@ package vcomponents is
   end component SRL16E;
 
   -- SRLC16E.v
+  -- vhdl: src/vhdl/SRLC16E.vhd is analysed instead of this Verilog
   component SRLC16E is
     generic (
       INIT : bit_vector(15 downto 0) := X"0000";
@@ -23607,6 +23624,7 @@ package vcomponents is
   end component SRLC16E;
 
   -- SRLC32E.v
+  -- vhdl: src/vhdl/SRLC32E.vhd is analysed instead of this Verilog
   component SRLC32E is
     generic (
       INIT : bit_vector(31 downto 0) := X"00000000";

@@ -70,6 +70,44 @@ package unisim_sim is
     inv_d, inv_rst : bit;
     set_value : std_ulogic
   ) return std_ulogic;
+  -- Address as an integer, or -1 when any bit is not 0 or 1.
+  -- sel is downto with the rightmost bit as the LSB.
+  function bit_addr(sel : std_ulogic_vector) return integer;
+  -- mem(addr), or X when the address is not a binary index in range.
+  function mem_read(mem : std_logic_vector; sel : std_ulogic_vector) return std_ulogic;
+  -- mem(2*addr) in bit 0 and mem(2*addr+1) in bit 1. X when the address is not binary.
+  function mem_pair(mem : std_logic_vector; sel : std_ulogic_vector) return std_logic_vector;
+  procedure ram_write_at(
+    signal mem : inout std_logic_vector;
+    addr : in integer;
+    d : in std_ulogic;
+    dly : in time
+  );
+  procedure ram_write(
+    signal mem : inout std_logic_vector;
+    sel : in std_ulogic_vector;
+    d : in std_ulogic;
+    dly : in time
+  );
+  -- posedge of (clk xor inv). rv1(we) = 1 samples sel and d. Does not return.
+  procedure ram_clocked(
+    signal clk : in std_ulogic;
+    signal we : in std_ulogic;
+    signal d : in std_ulogic;
+    signal sel : in std_ulogic_vector;
+    signal mem : inout std_logic_vector;
+    inv : in bit;
+    dly : in time
+  );
+  -- INIT stays until clk has been idle (0, or 1 when inv is 1) on a 1 ns
+  -- poll, or until 101 ns. Then rv1(ce) = 1 shifts D into mem(0).
+  procedure srl_run(
+    signal clk : in std_ulogic;
+    signal ce : in std_ulogic;
+    signal d : in std_ulogic;
+    signal mem : inout std_logic_vector;
+    inv : in bit
+  );
 end package unisim_sim;
 
 package body unisim_sim is
@@ -525,4 +563,124 @@ package body unisim_sim is
       return q;
     end if;
   end function;
+
+  function bit_addr(sel : std_ulogic_vector) return integer is
+    variable acc : integer := 0;
+    variable weight : integer := 1;
+  begin
+    for i in sel'reverse_range loop
+      if sel(i) /= '0' and sel(i) /= '1' then
+        return -1;
+      end if;
+    end loop;
+    for i in sel'reverse_range loop
+      if sel(i) = '1' then
+        acc := acc + weight;
+      end if;
+      weight := weight * 2;
+    end loop;
+    return acc;
+  end function;
+
+  function mem_read(mem : std_logic_vector; sel : std_ulogic_vector) return std_ulogic is
+    variable a : integer;
+  begin
+    a := bit_addr(sel);
+    if a < mem'low or a > mem'high then
+      return 'X';
+    end if;
+    return mem(a);
+  end function;
+
+  function mem_pair(mem : std_logic_vector; sel : std_ulogic_vector) return std_logic_vector is
+    variable a : integer;
+    variable r : std_logic_vector(1 downto 0);
+  begin
+    a := bit_addr(sel);
+    if a < 0 or (2 * a) < mem'low or (2 * a + 1) > mem'high then
+      return "XX";
+    end if;
+    r(0) := mem(2 * a);
+    r(1) := mem(2 * a + 1);
+    return r;
+  end function;
+
+  procedure ram_write_at(
+    signal mem : inout std_logic_vector;
+    addr : in integer;
+    d : in std_ulogic;
+    dly : in time
+  ) is
+  begin
+    if addr >= mem'low and addr <= mem'high then
+      mem(addr) <= transport d after dly;
+    end if;
+  end procedure;
+
+  procedure ram_write(
+    signal mem : inout std_logic_vector;
+    sel : in std_ulogic_vector;
+    d : in std_ulogic;
+    dly : in time
+  ) is
+  begin
+    ram_write_at(mem, bit_addr(sel), d, dly);
+  end procedure;
+
+  procedure ram_clocked(
+    signal clk : in std_ulogic;
+    signal we : in std_ulogic;
+    signal d : in std_ulogic;
+    signal sel : in std_ulogic_vector;
+    signal mem : inout std_logic_vector;
+    inv : in bit;
+    dly : in time
+  ) is
+    variable prev : std_ulogic := 'U';
+    variable curr : std_ulogic;
+  begin
+    loop
+      curr := clk xor to_sul(inv);
+      if verilog_posedge(prev, curr) and rv1(we) = '1' then
+        ram_write(mem, sel, d, dly);
+      end if;
+      prev := curr;
+      wait on clk;
+    end loop;
+  end procedure;
+
+  procedure srl_run(
+    signal clk : in std_ulogic;
+    signal ce : in std_ulogic;
+    signal d : in std_ulogic;
+    signal mem : inout std_logic_vector;
+    inv : in bit
+  ) is
+    variable idle : std_ulogic;
+    variable ticks : natural := 0;
+    variable prev : std_ulogic;
+    variable curr : std_ulogic;
+    variable m : std_logic_vector(mem'length - 1 downto 0);
+  begin
+    if inv = '0' then
+      idle := '0';
+    else
+      idle := '1';
+    end if;
+    m := mem;
+    while clk /= idle and ticks < 101 loop
+      wait for 1 ns;
+      ticks := ticks + 1;
+    end loop;
+    prev := clk xor to_sul(inv);
+    loop
+      wait on clk;
+      curr := clk xor to_sul(inv);
+      if verilog_posedge(prev, curr) and rv1(ce) = '1' then
+        m := m(m'high - 1 downto 0) & d;
+        mem <= m;
+      end if;
+      prev := curr;
+    end loop;
+  end procedure;
 end package body unisim_sim;
