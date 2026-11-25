@@ -21,6 +21,10 @@ architecture sim of tb_ram32x1d is
   signal dpo  : std_ulogic;
 begin
   dut : RAM32X1D
+    generic map (
+      INIT             => x"00000000",
+      IS_WCLK_INVERTED => "0"
+    )
     port map (
       DPO   => dpo,
       SPO   => spo,

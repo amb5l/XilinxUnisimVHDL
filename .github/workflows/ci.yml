@@ -11,8 +11,9 @@ on:
 
 env:
   NVC_REPO: https://github.com/amb5l/nvc
-  # Branch tip. Integer overrides in config/type_map.yaml stay; this NVC
-  # zero-extends an integer generic onto a sized Verilog parameter.
+  # Accepts std_logic_vector and real generics. An integer association
+  # for a sized parameter is still legal; config/type_map.yaml does not
+  # use that to rewrite any parameter.
   NVC_REF: unisim/5-generics
 
 jobs:

@@ -86,9 +86,8 @@ self-checking benches. The per-primitive table is
 [docs/status.md](docs/status.md). How to replace a model with VHDL is
 [docs/porting-guide.md](docs/porting-guide.md).
 
-Sized bit-vector parameters become `std_logic_vector` generics. NVC
-currently elaborates only `integer` and `string` generics, so the
-primitives under test override those vectors in
-[config/type_map.yaml](config/type_map.yaml). `real` generics (MMCM, PLL,
-DCM periods) analyse and do not elaborate yet. Details are in the
-porting guide.
+Sized bit-vector parameters become `std_logic_vector` generics, including
+`DSP48E1.MASK`. NVC `unisim/5-generics` elaborates `integer`, `string`,
+`real`, and `std_logic_vector` generics. [config/type_map.yaml](config/type_map.yaml)
+can still override a parameter, and currently does not. `inout` ports
+analyse and do not elaborate yet. Details are in the porting guide.

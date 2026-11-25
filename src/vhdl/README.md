@@ -14,10 +14,9 @@ is still the Verilog model from XilinxUnisimLibrary.
   do not add a second unit that differs only by case.
 - Use `std_ulogic` for scalar ports and `std_logic_vector(N-1 downto 0)`
   for vectors, the same mapping as `scripts/gen_vcomponents.py`.
-- Generics use the types in the generated component. Where
-  `config/type_map.yaml` overrides a sized bit-vector to `integer`, the
-  entity generic is `integer` too, so a component instantiation still
-  binds.
+- Generics use the types in the generated component. Sized Verilog
+  parameters are `std_logic_vector` unless `config/type_map.yaml`
+  overrides that parameter. The override file is empty.
 - Prefer VHDL-2008. No vendor packages, and no copies of Vivado's VHDL
   unisim sources.
 - Behaviour that must survive `GSR` should wait until `glbl.GSR` has

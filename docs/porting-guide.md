@@ -64,36 +64,28 @@ when the literal would suggest another one.
 
 ### Type-mapping exceptions
 
-The mixed-language elaborator accepts a VHDL generic only when it is
-`integer` or `string`. A `std_logic_vector` or `real` generic analyses
-with the package and is rejected when that component is elaborated
-(`generic NAME should have type INTEGER` or `STRING`).
+`config/type_map.yaml` is empty. NVC `unisim/5-generics` elaborates
+`integer`, `string`, `real`, and `std_logic_vector` generics, so the
+sized parameters on `RAM32X1D`, `DSP48E1`, and `RAMB18E1` keep the
+vector type of the Verilog literal. `DSP48E1.MASK` is
+`std_logic_vector(47 downto 0)` with default `X"3FFFFFFFFFFF"`; it is
+not omitted. An integer association is still accepted for a sized
+parameter (zero-extended to the parameter width). The benches pass
+vector literals instead, for example `x"3FFFFFFFFFFF"` and
+`(others => '0')`.
 
-`config/type_map.yaml` records the overrides required by the primitives
-under `test/tb`:
-
-- `RAM32X1D.INIT` and `IS_WCLK_INVERTED` are `integer`. Both defaults
-  are zero and fit in `INTEGER`.
-- `DSP48E1` mask-style vectors whose default fits (`IS_*_INVERTED`,
-  `PATTERN`) are `integer`. `MASK` is `48'h3FFFFFFFFFFF`, which does not
-  fit in VHDL `INTEGER`, so the generic is omitted (`skip: true`) and
-  the Verilog default is kept.
-- Every sized init / invert / `SRVAL` parameter on `RAMB18E1` is
-  `integer`. Each default is zero.
-
-Other primitives keep `std_logic_vector` for sized literals. Extending a
-test to a new primitive means either mapping that primitive's vectors
-the same way, or teaching NVC to pass `std_logic_vector` and `real`
-generics through. `real` parameters (MMCM/PLL/DCM periods and phases)
-are the same kind of gap: they are `real` in the package and cannot be
-elaborated until NVC grows a real generic mapping.
+`real` parameters (MMCM/PLL/DCM periods and phases) are `real` in the
+package. Elaborating one of those primitives still depends on Verilog
+`$realtime`, which this NVC branch does not provide.
 
 String generics have a second constraint. NVC only accepts the value
 when the generic map supplies a locally static string literal. A
 component default such as `string := "TDP"` analyses, and elaboration
 reports `generic NAME value is not a locally static string` if the
 instantiation leaves that generic unmapped. Map every `string` generic
-in the instance. Integer defaults may be left to the component.
+in the instance. Integer and vector defaults may be left to the
+component; the benches map the vectors that used to be integer
+overrides so the association itself is what gets elaborated.
 
 ## Replacing a Verilog model
 
