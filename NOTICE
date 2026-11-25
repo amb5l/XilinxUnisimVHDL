@@ -1,0 +1,11 @@
+XilinxUnisimVHDL
+Copyright 2026 Adam Barnes
+
+This product includes Verilog simulation models from XilinxUnisimLibrary,
+Copyright Xilinx, Inc. and Advanced Micro Devices, Inc.,
+https://github.com/Xilinx/XilinxUnisimLibrary
+licensed under the Apache License, Version 2.0.
+
+The generated VHDL package unisim.vcomponents is derived from the module
+headers of those Verilog models. Vivado's VHDL unisim sources are not
+included in this repository.

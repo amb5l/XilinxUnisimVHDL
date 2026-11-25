@@ -1,0 +1,7 @@
+build/
+work/
+test/work/
+*.ncdb
+*.fst
+*.vcd
+*.ghw
