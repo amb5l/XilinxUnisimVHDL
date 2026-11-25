@@ -11944,6 +11944,7 @@ package vcomponents is
   end component ICAPE3;
 
   -- IDDR.v
+  -- vhdl: src/vhdl/IDDR.vhd is analysed instead of this Verilog
   component IDDR is
     generic (
       DDR_CLK_EDGE : string := "OPPOSITE_EDGE";
@@ -11965,6 +11966,7 @@ package vcomponents is
   end component IDDR;
 
   -- IDDR_2CLK.v
+  -- vhdl: src/vhdl/IDDR_2CLK.vhd is analysed instead of this Verilog
   component IDDR_2CLK is
     generic (
       DDR_CLK_EDGE : string := "OPPOSITE_EDGE";
@@ -11988,6 +11990,7 @@ package vcomponents is
   end component IDDR_2CLK;
 
   -- IDDRE1.v
+  -- vhdl: src/vhdl/IDDRE1.vhd is analysed instead of this Verilog
   component IDDRE1 is
     generic (
       DDR_CLK_EDGE : string := "OPPOSITE_EDGE";
@@ -14027,6 +14030,7 @@ package vcomponents is
   end component OBUFTDS_DCIEN;
 
   -- ODDR.v
+  -- vhdl: src/vhdl/ODDR.vhd is analysed instead of this Verilog
   component ODDR is
     generic (
       DDR_CLK_EDGE : string := "OPPOSITE_EDGE";
@@ -14048,6 +14052,7 @@ package vcomponents is
   end component ODDR;
 
   -- ODDRE1.v
+  -- vhdl: src/vhdl/ODDRE1.vhd is analysed instead of this Verilog
   component ODDRE1 is
     generic (
       IS_C_INVERTED : bit := '0';

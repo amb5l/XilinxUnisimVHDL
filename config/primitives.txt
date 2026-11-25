@@ -115,9 +115,9 @@ IBUF_IBUFDISABLE                vhdl
 IBUF_INTERMDISABLE              vhdl
 ICAPE2                          vlog
 ICAPE3                          vlog
-IDDR                            vlog
-IDDRE1                          vlog
-IDDR_2CLK                       vlog
+IDDR                            vhdl  OPPOSITE/SAME/PIPE; R pulldown; ASYNC forces
+IDDRE1                          vhdl  R is async clear; CB is rv 1
+IDDR_2CLK                       vhdl  Q2 clocks on CB; R and S are buf
 IDELAYCTRL                      vlog
 IDELAYE2                        vlog
 IDELAYE2_FINEDELAY              vlog
@@ -179,8 +179,8 @@ OBUFT                           vhdl
 OBUFTDS                         vhdl
 OBUFTDS_DCIEN                   vhdl
 OBUFT_DCIEN                     vhdl
-ODDR                            vlog
-ODDRE1                          vlog
+ODDR                            vhdl  SAME_EDGE replays the posedge D2; R pulldown
+ODDRE1                          vhdl  ULTRASCALE* holds SR for 3 clocks; else level SR
 ODELAYE2                        vlog
 ODELAYE2_FINEDELAY              vlog
 ODELAYE3                        vlog

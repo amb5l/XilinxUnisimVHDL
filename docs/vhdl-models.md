@@ -399,6 +399,38 @@ NVC also presents a Verilog `X` on an output port to a VHDL signal as
 `'U'`. `tb_eq` treats that `'U'` as `'X'` when it compares. `0`, `1`, and
 `Z` cross the language boundary unchanged.
 
+## Ninth batch
+
+`IDDR`, `IDDR_2CLK`, `IDDRE1`, `ODDR`, and `ODDRE1` are the DDR input and
+output registers. `Q1` samples on the rising edge. `IDDR` samples `Q2`
+on the falling edge; `IDDR_2CLK` and `IDDRE1` sample `Q2` on the rising
+edge of `CB`. `OPPOSITE_EDGE` presents each sample on its own edge.
+`SAME_EDGE` presents `Q2` on the following rising edge.
+`SAME_EDGE_PIPELINED` delays `Q1` by one more rising edge. An unknown
+`DDR_CLK_EDGE` holds the outputs. The Verilog `$finish` on a bad
+attribute is not implemented.
+
+`IDDR` and `ODDR` pull `R` and `S` down, so `Z` is 0. `ASYNC` forces 0
+on `R` and 1 on `S` with `R` clear. `SYNC` applies that on the clock.
+`GSR` forces `INIT_Q1` / `INIT_Q2` or `INIT`. `IDDR_2CLK` buffers `CE`,
+`R`, and `S`, so `Z` is `X`, and `CB` is rv 1. `IDDRE1` has no clock
+enable and no set; `R` is always an async clear to 0. `ODDR` with
+`CE` = 0 remembers the current `Q` instead of `D2`. `SAME_EDGE` replays
+that remembered value on the falling edge; `OPPOSITE_EDGE` takes `D2`.
+
+`ODDRE1` has no clock enable. `SR` is rv 0 and forces `SRVAL`. On
+`ULTRASCALE`, `ULTRASCALE_PLUS`, `ULTRASCALE_PLUS_ES1`, and
+`ULTRASCALE_PLUS_ES2` the reset also stays asserted for three rising
+edges after `SR` falls. Every other device, including `VERSAL_PRIME`,
+treats `SR` as a level. An unknown `SIM_DEVICE` follows the Verilog
+`SIM_DEVICE_BIN` fallback and behaves as `ULTRASCALE`.
+
+The specify `(C => Q)` paths are 100 ps. The VHDL models are the
+functional value, with no path delay. `tb_eq_ddr` waits two steps after
+a clock before comparing: on this NVC a Verilog nonblocking assignment
+and the continuous assign to the port each become visible to the VHDL
+testbench on the next resume of the stimulus process.
+
 ## Adding another primitive
 
 1. Read the Verilog functional model (`XIL_TIMING` undefined). Reimplement
@@ -410,7 +442,7 @@ NVC also presents a Verilog `X` on an output port to a VHDL signal as
 4. Extend    `test/tb/tb_eq.vhd` (`EQ_PRIMS`), `test/tb/tb_eq_io.vhd`
    (`EQ_IO_PRIMS`), `test/tb/tb_eq_ff.vhd` (`EQ_FF_PRIMS`),
    `test/tb/tb_eq_ram.vhd` (`EQ_RAM_PRIMS`), `test/tb/tb_eq_simprim.vhd`,
-   or `test/tb/tb_eq_bufg.vhd` so the
+   `test/tb/tb_eq_bufg.vhd`, or `test/tb/tb_eq_ddr.vhd` so the
    VHDL model and the submodule Verilog see the same stimulus.
    Exhaustive for a small combinational cell. For a register, cover
    GSR, clock enable, reset priority, `INIT`, and `IS_*_INVERTED`.

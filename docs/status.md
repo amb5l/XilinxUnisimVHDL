@@ -1,7 +1,7 @@
 # Primitive status
 
 Which source is analysed is `config/primitives.txt` (`vlog`, `vhdl`, or
-`skip`). One hundred and five simple primitives are hand-written VHDL; see
+`skip`). One hundred and ten simple primitives are hand-written VHDL; see
 [vhdl-models.md](vhdl-models.md). The rest of this table is still the
 Verilog model from the XilinxUnisimLibrary submodule. `GTM_DUAL` is the
 only `skip`: it is SystemVerilog and is not in this table. Notes in the
@@ -114,9 +114,9 @@ note records that the weak Verilog driver is modeled strong.
 | `IBUFE3` | Verilog only |
 | `ICAPE2` | Verilog only |
 | `ICAPE3` | Verilog only |
-| `IDDR` | Verilog only |
-| `IDDR_2CLK` | Verilog only |
-| `IDDRE1` | Verilog only |
+| `IDDR` | VHDL `src/vhdl/IDDR.vhd` |
+| `IDDR_2CLK` | VHDL `src/vhdl/IDDR_2CLK.vhd` |
+| `IDDRE1` | VHDL `src/vhdl/IDDRE1.vhd` |
 | `IDELAYCTRL` | Verilog only |
 | `IDELAYE2` | Verilog only |
 | `IDELAYE2_FINEDELAY` | Verilog only |
@@ -178,8 +178,8 @@ note records that the weak Verilog driver is modeled strong.
 | `OBUFT_DCIEN` | VHDL `src/vhdl/OBUFT_DCIEN.vhd` |
 | `OBUFTDS` | VHDL `src/vhdl/OBUFTDS.vhd` |
 | `OBUFTDS_DCIEN` | VHDL `src/vhdl/OBUFTDS_DCIEN.vhd` |
-| `ODDR` | Verilog only |
-| `ODDRE1` | Verilog only |
+| `ODDR` | VHDL `src/vhdl/ODDR.vhd` |
+| `ODDRE1` | VHDL `src/vhdl/ODDRE1.vhd` |
 | `ODELAYE2` | Verilog only |
 | `ODELAYE2_FINEDELAY` | Verilog only |
 | `ODELAYE3` | Verilog only |
