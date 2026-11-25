@@ -11,7 +11,7 @@ NVC_M ?= 1g
 BUILD ?= $(ROOT)/build
 WORK := $(abspath work)
 
-Benches := tb_ram32x1d tb_dsp48e1 tb_ramb18e1 tb_eq tb_eq_io tb_eq_ff tb_iobuf tb_eq_ram tb_eq_simprim tb_eq_bufg tb_eq_ddr tb_eq_dsp tb_eq_dsp48 tb_eq_bram tb_eq_serdes
+Benches := tb_ram32x1d tb_dsp48e1 tb_ramb18e1 tb_eq tb_eq_io tb_eq_ff tb_iobuf tb_eq_ram tb_eq_simprim tb_eq_bufg tb_eq_ddr tb_eq_dsp tb_eq_dsp48 tb_eq_bram tb_eq_serdes tb_eq_mmcm
 
 # Verilog reference for the primitives that now have a VHDL model.
 # Analysed into work, not unisim: unisim already has the VHDL entity.
@@ -46,7 +46,7 @@ VREF_DSP_SRCS := $(addprefix $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/,$(
 
 all: $(Benches)
 
-$(filter-out tb_eq tb_eq_io tb_eq_ff tb_eq_ram tb_eq_simprim tb_eq_bufg tb_eq_ddr tb_eq_dsp tb_eq_dsp48 tb_eq_bram tb_eq_serdes,$(Benches)):
+$(filter-out tb_eq tb_eq_io tb_eq_ff tb_eq_ram tb_eq_simprim tb_eq_bufg tb_eq_ddr tb_eq_dsp tb_eq_dsp48 tb_eq_bram tb_eq_serdes tb_eq_mmcm,$(Benches)):
 	$(NVC) --std=2008 --work=work:$(WORK) -L $(BUILD) -M $(NVC_M) \
 	  -a $(CURDIR)/tb/$@.vhd \
 	  -e $@ unisim.GLBL -r
@@ -147,6 +147,25 @@ tb_eq_serdes:
 	$(NVC) --std=2008 --work=work:$(WORK) -L $(BUILD) -M $(NVC_M) \
 	  -a $(CURDIR)/tb/tb_eq_serdes.vhd \
 	  -e tb_eq_serdes GLBL -r
+
+# MMCM integer path. XIL_TIMING stays undefined. One cell per
+# elaboration: after one Verilog MMCM has run, a second one in the
+# same simulation does not lock on this NVC.
+tb_eq_mmcm:
+	$(NVC) --std=2008 --work=work:$(WORK) -M $(NVC_M) \
+	  -a $(ROOT)/XilinxUnisimLibrary/verilog/src/glbl.v \
+	    $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/MMCME2_ADV.v \
+	    $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/MMCME2_BASE.v \
+	    $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/MMCME3_ADV.v \
+	    $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/MMCME3_BASE.v \
+	    $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/MMCME4_ADV.v \
+	    $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/MMCME4_BASE.v
+	$(NVC) --std=2008 --work=work:$(WORK) -L $(BUILD) -M $(NVC_M) \
+	  -a $(CURDIR)/tb/tb_eq_mmcm.vhd
+	@for c in 1 2 3 4 5 6 7; do \
+	  $(NVC) --std=2008 --work=work:$(WORK) -L $(BUILD) -M $(NVC_M) \
+	    -e -g cell=$$c tb_eq_mmcm GLBL -r || exit $$?; \
+	done
 
 clean:
 	rm -rf work
