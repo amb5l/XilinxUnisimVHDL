@@ -45,8 +45,8 @@ DIFFINBUF                       vhdl  no $finish; IBUFDS receiver plus INBUF osc
 DNA_PORT                        vlog
 DNA_PORTE2                      vlog
 DPHY_DIFFINBUF                  vhdl  no $finish; HS pair; LP strength is 0 on std_ulogic
-DSP48E1                         vlog
-DSP48E2                         vlog
+DSP48E1                         vhdl  25x18; PREG 0 delays P 1 ps; AREG 1 loads both stages
+DSP48E2                         vhdl  structural DSP_*; ALU_OUT delayed 1 ps; no $finish
 DSP_ALU                         vhdl  W/X/Y/Z mux; ALU_OUT delayed 1 ps; SIMD ONE48/TWO24/FOUR12
 DSP_A_B_DATA                    vhdl  AREG/BREG 0..2; A and B are rv 1
 DSP_C_DATA                      vhdl  CREG 1 registers C; no $finish
