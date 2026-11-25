@@ -26,12 +26,37 @@ package unisim_sim is
   function sim_device_ok(s : string) return boolean;
   function disabled_val(sim_device : string) return std_ulogic;
   function disabled_b_val(sim_device : string) return std_ulogic;
+  -- en = 0 drives data (Z passes). en = 1 drives Z.
+  -- en X/Z is the Verilog ternary: both sides Z yields Z, otherwise X.
+  function tri_en(data, en : std_ulogic) return std_ulogic;
+  -- en ? when1 : when0, including the X/Z merge.
+  function tri_mux(en, when1, when0 : std_ulogic) return std_ulogic;
+  -- sel == 1 ? when1 : sel == 0 ? when0 : X. Same for === on 0/1/X/Z.
+  function mux01(sel, when1, when0 : std_ulogic) return std_ulogic;
+  -- Next differential-receiver value. x_i / x_ib select a === X test on
+  -- that pin. else_x drives X when no row matches; otherwise the previous
+  -- value is held. IOBUFDS tests === only on IO (x_ib false).
+  function diff_next(
+    prev, i, ib : std_ulogic;
+    dqs_bias : boolean;
+    x_i, x_ib, else_x : boolean
+  ) return std_ulogic;
   procedure diff_recv(
     signal q : inout std_ulogic;
     i, ib : in std_ulogic;
     dqs_bias : in boolean;
     x_exact : in boolean
   );
+  function e3_sim_ok(s : string) return boolean;
+  -- True for ULTRASCALE and ULTRASCALE_PLUS, where IOBUF*E3 uses OSC.
+  function e3_ultra(s : string) return boolean;
+  function osc_init(offset : integer) return std_ulogic;
+  function osc_step(
+    prev : std_ulogic;
+    osc : std_logic_vector(3 downto 0);
+    update : boolean;
+    offset : integer
+  ) return std_ulogic;
   function lut_eval(init : bit_vector; sel : std_ulogic_vector) return std_ulogic;
   function gate_in(clr : std_ulogic; inv : bit) return std_ulogic;
   function rv1(s : std_ulogic) return std_ulogic;
@@ -179,6 +204,68 @@ package body unisim_sim is
     return '0';
   end function;
 
+  function tri_en(data, en : std_ulogic) return std_ulogic is
+  begin
+    if en = '0' then
+      return data;
+    elsif en = '1' then
+      return 'Z';
+    elsif data = 'Z' then
+      return 'Z';
+    else
+      return 'X';
+    end if;
+  end function;
+
+  function tri_mux(en, when1, when0 : std_ulogic) return std_ulogic is
+  begin
+    if en = '1' then
+      return when1;
+    elsif en = '0' then
+      return when0;
+    elsif when1 = when0 then
+      return when1;
+    else
+      return 'X';
+    end if;
+  end function;
+
+  function mux01(sel, when1, when0 : std_ulogic) return std_ulogic is
+  begin
+    if sel = '1' then
+      return when1;
+    elsif sel = '0' then
+      return when0;
+    else
+      return 'X';
+    end if;
+  end function;
+
+  function diff_next(
+    prev, i, ib : std_ulogic;
+    dqs_bias : boolean;
+    x_i, x_ib, else_x : boolean
+  ) return std_ulogic is
+  begin
+    if i = '1' and ib = '0' then
+      return '1';
+    elsif i = '0' and ib = '1' then
+      return '0';
+    elsif (i = 'Z' or i = '0') and (ib = 'Z' or ib = '1') then
+      if dqs_bias then
+        return '0';
+      else
+        return 'X';
+      end if;
+    elsif (x_i and i = 'X') or (x_ib and ib = 'X') then
+      return 'X';
+    elsif else_x then
+      return 'X';
+    else
+      return prev;
+    end if;
+  end function;
+
   -- IBUFDS differential receiver. Complementary 0/1 resolves to that value.
   -- (I is Z or 0) and (IB is Z or 1) yields 0 when DQS_BIAS is set, else X.
   -- An X on either pin yields X when x_exact is true (the === test in
@@ -190,21 +277,85 @@ package body unisim_sim is
     dqs_bias : in boolean;
     x_exact : in boolean
   ) is
+    variable n : std_ulogic;
   begin
-    if i = '1' and ib = '0' then
-      q <= '1';
-    elsif i = '0' and ib = '1' then
-      q <= '0';
-    elsif (i = 'Z' or i = '0') and (ib = 'Z' or ib = '1') then
-      if dqs_bias then
-        q <= '0';
-      else
-        q <= 'X';
-      end if;
-    elsif x_exact and (i = 'X' or ib = 'X') then
-      q <= 'X';
+    n := diff_next(q, i, ib, dqs_bias, x_exact, x_exact, false);
+    if n /= q then
+      q <= n;
     end if;
   end procedure;
+
+  function e3_sim_ok(s : string) return boolean is
+  begin
+    return s = "ULTRASCALE" or s = "ULTRASCALE_PLUS"
+      or (sim_device_ok(s) and s /= "7SERIES");
+  end function;
+
+  function e3_ultra(s : string) return boolean is
+  begin
+    return s = "ULTRASCALE" or s = "ULTRASCALE_PLUS";
+  end function;
+
+  function osc_init(offset : integer) return std_ulogic is
+  begin
+    if offset < 0 then
+      return '0';
+    elsif offset > 0 then
+      return '1';
+    else
+      return 'X';
+    end if;
+  end function;
+
+  -- OSC[2:0] * 5, negated when OSC[3] is 0. A non-binary magnitude holds
+  -- (return -1000). OSC[3] of X or Z does not negate: Verilog == 0 is not true.
+  function osc_code(osc : std_logic_vector(3 downto 0)) return integer is
+    variable mag : integer := 0;
+  begin
+    if (osc(0) /= '0' and osc(0) /= '1')
+      or (osc(1) /= '0' and osc(1) /= '1')
+      or (osc(2) /= '0' and osc(2) /= '1') then
+      return -1000;
+    end if;
+    if osc(0) = '1' then
+      mag := mag + 5;
+    end if;
+    if osc(1) = '1' then
+      mag := mag + 10;
+    end if;
+    if osc(2) = '1' then
+      mag := mag + 20;
+    end if;
+    if osc(3) = '0' then
+      return -mag;
+    end if;
+    return mag;
+  end function;
+
+  function osc_step(
+    prev : std_ulogic;
+    osc : std_logic_vector(3 downto 0);
+    update : boolean;
+    offset : integer
+  ) return std_ulogic is
+    variable code, diff : integer;
+  begin
+    if not update then
+      return prev;
+    end if;
+    code := osc_code(osc);
+    if code = -1000 then
+      return prev;
+    end if;
+    diff := offset - code;
+    if diff < 0 then
+      return '0';
+    elsif diff > 0 then
+      return '1';
+    else
+      return inv1(prev);
+    end if;
+  end function;
 
   -- LUT UDP over a bit INIT. I0 is sel'low. A 'Z' (or other non 0/1/X)
   -- input yields 'X', because the Verilog UDP rows match 'x' and not 'z'.

@@ -18,7 +18,8 @@ Parameter defaults map to VHDL generics as follows:
 
 config/type_map.yaml overrides the heuristic per module and parameter.
 Ports become std_ulogic, or std_logic_vector(N-1 downto 0) when the Verilog
-port is a vector.
+port is a vector. A scalar inout is std_logic so an external driver resolves
+with the model.
 
 Pure Python 3 (stdlib only).
 """
@@ -479,9 +480,11 @@ def _eval_int(expr: str, env: dict[str, int]) -> int | None:
     return None
 
 
-def _port_type(bounds: tuple[str, str] | None, env: dict[str, int]) -> str:
+def _port_type(
+    bounds: tuple[str, str] | None, env: dict[str, int], resolved: bool = False
+) -> str:
     if bounds is None:
-        return "std_ulogic"
+        return "std_logic" if resolved else "std_ulogic"
     msb_s, lsb_s = bounds
     msb = _eval_int(msb_s, env)
     lsb = _eval_int(lsb_s, env)
@@ -686,7 +689,7 @@ def _parse_direction_decl(scan: Scan, env: dict[str, int]) -> list[Port]:
             break
         scan.eat(kw)
     bounds = _range(scan)
-    vtype = _port_type(bounds, env)
+    vtype = _port_type(bounds, env, resolved=(direction == "inout"))
     mode = {"input": "in", "output": "out", "inout": "inout"}[direction]
     ports: list[Port] = []
     while True:
@@ -909,7 +912,8 @@ def emit(components: list[Component]) -> str:
     a("-- Vivado's VHDL unisim sources are not used. XIL_TIMING and XIL_DR")
     a("-- are undefined, so parameters those macros hide are omitted.")
     a("-- Sized parameters are bit (width 1) or bit_vector. A string default")
-    a("-- of TRUE or FALSE is boolean. Ports stay std_ulogic / std_logic_vector.")
+    a("-- of TRUE or FALSE is boolean. Scalar ports are std_ulogic, scalar")
+    a("-- inout ports are std_logic, and vectors are std_logic_vector.")
     a("--")
     a("-- Copyright Xilinx, Inc. / Advanced Micro Devices, Inc. (source models)")
     a("-- Licensed under the Apache License, Version 2.0.")

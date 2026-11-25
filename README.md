@@ -55,8 +55,8 @@ make test     # RAM32X1D, DSP48E1, RAMB18E1, VHDL/Verilog equivalence
 `make` prints how many Verilog files it analysed. `config/primitives.txt`
 is the index: `vlog` rows plus `glbl.v` are analysed, `vhdl` rows
 analyse `src/vhdl/<NAME>.vhd` instead, and `skip` rows are left out of
-the file list. This pin is 201 `vlog`, 48 `vhdl`, and `GTM_DUAL` `skip`
-(SystemVerilog), so the Verilog analyse list is 202 including `glbl.v`.
+the file list. This pin is 188 `vlog`, 61 `vhdl`, and `GTM_DUAL` `skip`
+(SystemVerilog), so the Verilog analyse list is 189 including `glbl.v`.
 `XIL_TIMING` and `XIL_DR` are left undefined.
 
 Other targets:
@@ -85,7 +85,7 @@ Note that `GSR` is high for the first 100 ns.
 
 ## Status
 
-Forty-eight simple primitives are hand-written VHDL
+Sixty-one simple primitives are hand-written VHDL
 ([docs/vhdl-models.md](docs/vhdl-models.md)); the rest are still the
 Verilog models. Self-checking benches cover RAM32X1D, DSP48E1,
 RAMB18E1, and a VHDL-versus-Verilog equivalence bench for the converted
@@ -101,9 +101,9 @@ elaborate yet. Details are in the porting guide.
 
 [config/primitives.txt](config/primitives.txt) names every primitive in
 the submodule. Notes record the known NVC gaps: MMCM/PLL/DCM models that
-call `$realtime` need `unisim/6-mmcm`, and `IOBUF*` `inout` ports use
-`bufif0` drive strength, which NVC does not elaborate (`in` and `out`
-only). `GTM_DUAL` is `skip` because the source is SystemVerilog. A
-`skip` row is still given a component declaration when the header
-parses, so a design that instantiates it can analyse. Details are in
-the porting guide.
+call `$realtime` need `unisim/6-mmcm`. `IOBUF*` and `BIBUF` are VHDL
+with `std_logic` `inout` ports; the note on `BIBUF` records that its
+weak driver is modeled strong. `GTM_DUAL` is `skip` because the source
+is SystemVerilog. A `skip` row is still given a component declaration
+when the header parses, so a design that instantiates it can analyse.
+Details are in the porting guide.

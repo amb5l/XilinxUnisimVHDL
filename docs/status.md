@@ -1,18 +1,18 @@
 # Primitive status
 
 Which source is analysed is `config/primitives.txt` (`vlog`, `vhdl`, or
-`skip`). Forty-eight simple primitives are hand-written VHDL; see
+`skip`). Sixty-one simple primitives are hand-written VHDL; see
 [vhdl-models.md](vhdl-models.md). The rest of this table is still the
 Verilog model from the XilinxUnisimLibrary submodule. `GTM_DUAL` is the
 only `skip`: it is SystemVerilog and is not in this table. Notes in the
-index call out `$realtime` (MMCM, PLL, DCM) and the `IOBUF` `inout`
-strength caveat.
+index call out `$realtime` (MMCM, PLL, DCM). `BIBUF` is VHDL, and its
+note records that the weak Verilog driver is modeled strong.
 
 | Primitive | Implementation |
 | --- | --- |
 | `AND2B1L` | VHDL `src/vhdl/AND2B1L.vhd` |
 | `AUTOBUF` | VHDL `src/vhdl/AUTOBUF.vhd` |
-| `BIBUF` | Verilog only |
+| `BIBUF` | VHDL `src/vhdl/BIBUF.vhd` |
 | `BITSLICE_CONTROL` | Verilog only |
 | `BSCANE2` | Verilog only |
 | `BUF` | VHDL `src/vhdl/BUF.vhd` |
@@ -126,18 +126,18 @@ strength caveat.
 | `IN_FIFO` | Verilog only |
 | `INBUF` | Verilog only |
 | `INV` | VHDL `src/vhdl/INV.vhd` |
-| `IOBUF` | Verilog only |
-| `IOBUF_ANALOG` | Verilog only |
-| `IOBUF_DCIEN` | Verilog only |
-| `IOBUF_INTERMDISABLE` | Verilog only |
-| `IOBUFDS` | Verilog only |
-| `IOBUFDS_DCIEN` | Verilog only |
-| `IOBUFDS_DIFF_OUT` | Verilog only |
-| `IOBUFDS_DIFF_OUT_DCIEN` | Verilog only |
-| `IOBUFDS_DIFF_OUT_INTERMDISABLE` | Verilog only |
-| `IOBUFDS_INTERMDISABLE` | Verilog only |
-| `IOBUFDSE3` | Verilog only |
-| `IOBUFE3` | Verilog only |
+| `IOBUF` | VHDL `src/vhdl/IOBUF.vhd` |
+| `IOBUF_ANALOG` | VHDL `src/vhdl/IOBUF_ANALOG.vhd` |
+| `IOBUF_DCIEN` | VHDL `src/vhdl/IOBUF_DCIEN.vhd` |
+| `IOBUF_INTERMDISABLE` | VHDL `src/vhdl/IOBUF_INTERMDISABLE.vhd` |
+| `IOBUFDS` | VHDL `src/vhdl/IOBUFDS.vhd` |
+| `IOBUFDS_DCIEN` | VHDL `src/vhdl/IOBUFDS_DCIEN.vhd` |
+| `IOBUFDS_DIFF_OUT` | VHDL `src/vhdl/IOBUFDS_DIFF_OUT.vhd` |
+| `IOBUFDS_DIFF_OUT_DCIEN` | VHDL `src/vhdl/IOBUFDS_DIFF_OUT_DCIEN.vhd` |
+| `IOBUFDS_DIFF_OUT_INTERMDISABLE` | VHDL `src/vhdl/IOBUFDS_DIFF_OUT_INTERMDISABLE.vhd` |
+| `IOBUFDS_INTERMDISABLE` | VHDL `src/vhdl/IOBUFDS_INTERMDISABLE.vhd` |
+| `IOBUFDSE3` | VHDL `src/vhdl/IOBUFDSE3.vhd` |
+| `IOBUFE3` | VHDL `src/vhdl/IOBUFE3.vhd` |
 | `ISERDES` | Verilog only |
 | `ISERDES_NODELAY` | Verilog only |
 | `ISERDESE1` | Verilog only |
