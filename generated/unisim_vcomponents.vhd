@@ -1524,6 +1524,7 @@ package vcomponents is
   end component DCM_SP;
 
   -- DIFFINBUF.v
+  -- vhdl: src/vhdl/DIFFINBUF.vhd is analysed instead of this Verilog
   component DIFFINBUF is
     generic (
       DIFF_TERM : boolean := FALSE;
@@ -1572,6 +1573,7 @@ package vcomponents is
   end component DNA_PORTE2;
 
   -- DPHY_DIFFINBUF.v
+  -- vhdl: src/vhdl/DPHY_DIFFINBUF.vhd is analysed instead of this Verilog
   component DPHY_DIFFINBUF is
     generic (
       DIFF_TERM : boolean := TRUE;
@@ -11603,6 +11605,7 @@ package vcomponents is
   end component IBUF_INTERMDISABLE;
 
   -- IBUFCTRL.v
+  -- vhdl: src/vhdl/IBUFCTRL.vhd is analysed instead of this Verilog
   component IBUFCTRL is
     generic (
       ISTANDARD : string := "UNUSED";
@@ -12640,6 +12643,7 @@ package vcomponents is
   end component IN_FIFO;
 
   -- INBUF.v
+  -- vhdl: src/vhdl/INBUF.vhd is analysed instead of this Verilog
   component INBUF is
     generic (
       IBUF_LOW_PWR : boolean := TRUE;
@@ -23119,6 +23123,7 @@ package vcomponents is
   end component RAMB36E2;
 
   -- RAMD32.v
+  -- vhdl: src/vhdl/RAMD32.vhd is analysed instead of this Verilog
   component RAMD32 is
     generic (
       INIT : bit_vector(31 downto 0) := X"00000000";
@@ -23143,6 +23148,7 @@ package vcomponents is
   end component RAMD32;
 
   -- RAMD32M64.v
+  -- vhdl: src/vhdl/RAMD32M64.vhd is analysed instead of this Verilog
   component RAMD32M64 is
     generic (
       INIT : bit_vector(63 downto 0) := X"0000000000000000";
@@ -23168,6 +23174,7 @@ package vcomponents is
   end component RAMD32M64;
 
   -- RAMD64E.v
+  -- vhdl: src/vhdl/RAMD64E.vhd is analysed instead of this Verilog
   component RAMD64E is
     generic (
       INIT : bit_vector(63 downto 0) := X"0000000000000000";
@@ -23198,6 +23205,7 @@ package vcomponents is
   end component RAMD64E;
 
   -- RAMS32.v
+  -- vhdl: src/vhdl/RAMS32.vhd is analysed instead of this Verilog
   component RAMS32 is
     generic (
       INIT : bit_vector(31 downto 0) := X"00000000";
@@ -23217,6 +23225,7 @@ package vcomponents is
   end component RAMS32;
 
   -- RAMS64E.v
+  -- vhdl: src/vhdl/RAMS64E.vhd is analysed instead of this Verilog
   component RAMS64E is
     generic (
       INIT : bit_vector(63 downto 0) := X"0000000000000000";
@@ -23241,6 +23250,7 @@ package vcomponents is
   end component RAMS64E;
 
   -- RAMS64E1.v
+  -- vhdl: src/vhdl/RAMS64E1.vhd is analysed instead of this Verilog
   component RAMS64E1 is
     generic (
       INIT : bit_vector(63 downto 0) := X"0000000000000000";

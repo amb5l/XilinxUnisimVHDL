@@ -11,7 +11,7 @@ NVC_M ?= 1g
 BUILD ?= $(ROOT)/build
 WORK := $(abspath work)
 
-Benches := tb_ram32x1d tb_dsp48e1 tb_ramb18e1 tb_eq tb_eq_io tb_eq_ff tb_iobuf tb_eq_ram
+Benches := tb_ram32x1d tb_dsp48e1 tb_ramb18e1 tb_eq tb_eq_io tb_eq_ff tb_iobuf tb_eq_ram tb_eq_simprim
 
 # Verilog reference for the primitives that now have a VHDL model.
 # Analysed into work, not unisim: unisim already has the VHDL entity.
@@ -31,12 +31,15 @@ VREF_SRCS := $(addprefix $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/,$(adds
 VREF_IO_SRCS := $(addprefix $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/,$(addsuffix .v,$(EQ_IO_PRIMS)))
 VREF_FF_SRCS := $(addprefix $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/,$(addsuffix .v,$(EQ_FF_PRIMS)))
 VREF_RAM_SRCS := $(addprefix $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/,$(addsuffix .v,$(EQ_RAM_PRIMS)))
+EQ_SIM_PRIMS := DIFFINBUF DPHY_DIFFINBUF IBUFCTRL INBUF RAMD32 RAMD32M64 \
+	RAMD64E RAMS32 RAMS64E RAMS64E1
+VREF_SIM_SRCS := $(addprefix $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/,$(addsuffix .v,$(EQ_SIM_PRIMS)))
 
 .PHONY: all clean $(Benches)
 
 all: $(Benches)
 
-$(filter-out tb_eq tb_eq_io tb_eq_ff tb_eq_ram,$(Benches)):
+$(filter-out tb_eq tb_eq_io tb_eq_ff tb_eq_ram tb_eq_simprim,$(Benches)):
 	$(NVC) --std=2008 --work=work:$(WORK) -L $(BUILD) -M $(NVC_M) \
 	  -a $(CURDIR)/tb/$@.vhd \
 	  -e $@ unisim.GLBL -r
@@ -68,6 +71,13 @@ tb_eq_ram:
 	$(NVC) --std=2008 --work=work:$(WORK) -L $(BUILD) -M $(NVC_M) \
 	  -a $(CURDIR)/tb/tb_eq_ram.vhd \
 	  -e tb_eq_ram GLBL -r
+
+tb_eq_simprim:
+	$(NVC) --std=2008 --work=work:$(WORK) -M $(NVC_M) \
+	  -a -D XIL_TIMING $(ROOT)/XilinxUnisimLibrary/verilog/src/glbl.v $(VREF_SIM_SRCS)
+	$(NVC) --std=2008 --work=work:$(WORK) -L $(BUILD) -M $(NVC_M) \
+	  -a $(CURDIR)/tb/tb_eq_simprim.vhd \
+	  -e tb_eq_simprim GLBL -r
 
 clean:
 	rm -rf work
