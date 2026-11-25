@@ -11,7 +11,7 @@ NVC_M ?= 1g
 BUILD ?= $(ROOT)/build
 WORK := $(abspath work)
 
-Benches := tb_ram32x1d tb_dsp48e1 tb_ramb18e1 tb_eq tb_eq_io tb_eq_ff tb_iobuf tb_eq_ram tb_eq_simprim tb_eq_bufg tb_eq_ddr tb_eq_dsp tb_eq_dsp48 tb_eq_bram tb_eq_serdes tb_eq_mmcm tb_eq_cfg tb_eq_misc tb_eq_gte
+Benches := tb_ram32x1d tb_dsp48e1 tb_ramb18e1 tb_eq tb_eq_io tb_eq_ff tb_iobuf tb_eq_ram tb_eq_simprim tb_eq_bufg tb_eq_ddr tb_eq_dsp tb_eq_dsp48 tb_eq_bram tb_eq_serdes tb_eq_mmcm tb_eq_cfg tb_eq_misc tb_eq_gte tb_eq_gtm
 
 # Verilog reference for the primitives that now have a VHDL model.
 # Analysed into work, not unisim: unisim already has the VHDL entity.
@@ -46,7 +46,7 @@ VREF_DSP_SRCS := $(addprefix $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/,$(
 
 all: $(Benches)
 
-$(filter-out tb_eq tb_eq_io tb_eq_ff tb_eq_ram tb_eq_simprim tb_eq_bufg tb_eq_ddr tb_eq_dsp tb_eq_dsp48 tb_eq_bram tb_eq_serdes tb_eq_mmcm tb_eq_cfg tb_eq_misc tb_eq_gte,$(Benches)):
+$(filter-out tb_eq tb_eq_io tb_eq_ff tb_eq_ram tb_eq_simprim tb_eq_bufg tb_eq_ddr tb_eq_dsp tb_eq_dsp48 tb_eq_bram tb_eq_serdes tb_eq_mmcm tb_eq_cfg tb_eq_misc tb_eq_gte tb_eq_gtm,$(Benches)):
 	$(NVC) --std=2008 --work=work:$(WORK) -L $(BUILD) -M $(NVC_M) \
 	  -a $(CURDIR)/tb/$@.vhd \
 	  -e $@ unisim.GLBL -r
@@ -202,6 +202,18 @@ tb_eq_gte:
 	$(NVC) --std=2008 --work=work:$(WORK) -L $(BUILD) -M $(NVC_M) \
 	  -a $(CURDIR)/tb/tb_eq_gte.vhd \
 	  -e tb_eq_gte GLBL -r
+
+# IBUFDS_GTE2, IBUFDS_GTM, OBUFDS_GTM, OBUFDS_GTM_ADV.
+tb_eq_gtm:
+	$(NVC) --std=2008 --work=work:$(WORK) -M $(NVC_M) \
+	  -a $(ROOT)/XilinxUnisimLibrary/verilog/src/glbl.v \
+	    $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/IBUFDS_GTE2.v \
+	    $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/IBUFDS_GTM.v \
+	    $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/OBUFDS_GTM.v \
+	    $(ROOT)/XilinxUnisimLibrary/verilog/src/unisims/OBUFDS_GTM_ADV.v
+	$(NVC) --std=2008 --work=work:$(WORK) -L $(BUILD) -M $(NVC_M) \
+	  -a $(CURDIR)/tb/tb_eq_gtm.vhd \
+	  -e tb_eq_gtm GLBL -r
 
 clean:
 	rm -rf work
