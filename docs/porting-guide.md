@@ -55,46 +55,38 @@ overrides that parameter:
 
 | Verilog default | VHDL generic |
 | --- | --- |
-| `"..."` string | `string` |
+| `"TRUE"` or `"FALSE"` | `boolean` (`TRUE` / `FALSE`) |
+| any other `"..."` string | `string` |
 | unsized integer, or an explicit `integer` parameter | `integer` |
 | real literal, or an explicit `real` parameter | `real` |
-| sized literal such as `32'h0` or `1'b0` | `std_logic_vector` of that width |
+| sized literal of width 1, such as `1'b0` | `bit` (`'0'` or `'1'`) |
+| wider sized literal, such as `32'h0` | `bit_vector(N-1 downto 0)`, default `X"..."` or `"0101"` |
 
 An explicit `parameter integer` / `real` / `string` keeps that type even
-when the literal would suggest another one.
+when the literal would suggest another one. A sized literal that contains
+`X` or `Z` stays `std_logic_vector`, because `bit` and `bit_vector` cannot
+represent those values. This pin has no such default.
 
-### Type-mapping exceptions
+`config/type_map.yaml` is the override file. It is empty: sized parameters
+are not rewritten to `integer`, and `DSP48E1.MASK` is the 48-bit
+`bit_vector` `X"3FFFFFFFFFFF"`.
 
-The mixed-language elaborator accepts a VHDL generic only when it is
-`integer` or `string`. A `std_logic_vector` or `real` generic analyses
-with the package and is rejected when that component is elaborated
-(`generic NAME should have type INTEGER` or `STRING`).
-
-`config/type_map.yaml` records the overrides required by the primitives
-under `test/tb`:
-
-- `RAM32X1D.INIT` and `IS_WCLK_INVERTED` are `integer`. Both defaults
-  are zero and fit in `INTEGER`.
-- `DSP48E1` mask-style vectors whose default fits (`IS_*_INVERTED`,
-  `PATTERN`) are `integer`. `MASK` is `48'h3FFFFFFFFFFF`, which does not
-  fit in VHDL `INTEGER`, so the generic is omitted (`skip: true`) and
-  the Verilog default is kept.
-- Every sized init / invert / `SRVAL` parameter on `RAMB18E1` is
-  `integer`. Each default is zero.
-
-Other primitives keep `std_logic_vector` for sized literals. Extending a
-test to a new primitive means either mapping that primitive's vectors
-the same way, or teaching NVC to pass `std_logic_vector` and `real`
-generics through. `real` parameters (MMCM/PLL/DCM periods and phases)
-are the same kind of gap: they are `real` in the package and cannot be
-elaborated until NVC grows a real generic mapping.
+NVC `unisim/5-generics` elaborates `bit` and `bit_vector` generics onto a
+sized Verilog parameter, and still elaborates `integer` and `string`. A
+`boolean` generic does not bind to a Verilog string parameter on that
+build (`generic NAME should have type STRING`). VHDL entities in this
+tree use `boolean` for TRUE/FALSE parameters; a testbench that also
+instantiates the Verilog model passes the string `"TRUE"` / `"FALSE"` on
+that side. `real` generics (MMCM, PLL, DCM periods) analyse and do not
+elaborate yet.
 
 String generics have a second constraint. NVC only accepts the value
 when the generic map supplies a locally static string literal. A
 component default such as `string := "TDP"` analyses, and elaboration
 reports `generic NAME value is not a locally static string` if the
 instantiation leaves that generic unmapped. Map every `string` generic
-in the instance. Integer defaults may be left to the component.
+in the instance. `bit`, `bit_vector`, `boolean`, and `integer` defaults
+may be left to the component when the default is a locally static literal.
 
 ## The primitive index
 

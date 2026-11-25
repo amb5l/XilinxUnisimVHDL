@@ -1,125 +1,24 @@
 # Overrides for scripts/gen_vcomponents.py.
 #
-# The default mapping is:
-#   string literal           -> string
-#   unsized integer          -> integer
-#   real literal             -> real
-#   sized bit-vector literal -> std_logic_vector of that width
+# The default mapping follows Vivado's unisim_VCOMP conventions:
+#   string literal "TRUE" or "FALSE" -> boolean
+#   any other string literal          -> string
+#   unsized integer, or integer       -> integer
+#   real literal, or real             -> real
+#   1-bit sized literal               -> bit, default '0' or '1'
+#   wider sized literal               -> bit_vector(N-1 downto 0)
+#                                        default X"..." or "0101"
 #
-# NVC's mixed-language elaborator (the cursor/vlog-unisim-mixed branch)
-# accepts only integer and string generics. A std_logic_vector generic
-# analyses, then fails when the component is elaborated. The entries
-# below are the exceptions found while simulating the primitives in
-# test/tb: sized defaults whose value fits in VHDL INTEGER are passed
-# as integer (zero-extended by the Verilog parameter), and a value that
-# does not fit is skipped so the Verilog default is left alone.
+# An X or Z in a sized literal stays std_logic_vector, because bit and
+# bit_vector cannot represent it. No such default is in this pin.
 #
-# Forms:
+# There are no integer overrides. A sized parameter is no longer rewritten
+# to integer, and DSP48E1 MASK is emitted (48-bit bit_vector).
+#
+# Forms, if a later primitive needs an exception:
 #   MODULE:
-#     PARAM: integer|string|real|std_logic_vector
+#     PARAM: integer|string|real|boolean|std_logic_vector
 #     PARAM:
 #       type: std_logic_vector
 #       width: 32
 #       skip: true
-
-RAM32X1D:
-  INIT: integer
-  IS_WCLK_INVERTED: integer
-
-DSP48E1:
-  IS_ALUMODE_INVERTED: integer
-  IS_CARRYIN_INVERTED: integer
-  IS_CLK_INVERTED: integer
-  IS_INMODE_INVERTED: integer
-  IS_OPMODE_INVERTED: integer
-  PATTERN: integer
-  # 48'h3FFFFFFFFFFF does not fit in INTEGER. Omit the generic;
-  # elaboration keeps the Verilog default.
-  MASK:
-    skip: true
-
-RAMB18E1:
-  INITP_00: integer
-  INITP_01: integer
-  INITP_02: integer
-  INITP_03: integer
-  INITP_04: integer
-  INITP_05: integer
-  INITP_06: integer
-  INITP_07: integer
-  INIT_00: integer
-  INIT_01: integer
-  INIT_02: integer
-  INIT_03: integer
-  INIT_04: integer
-  INIT_05: integer
-  INIT_06: integer
-  INIT_07: integer
-  INIT_08: integer
-  INIT_09: integer
-  INIT_0A: integer
-  INIT_0B: integer
-  INIT_0C: integer
-  INIT_0D: integer
-  INIT_0E: integer
-  INIT_0F: integer
-  INIT_10: integer
-  INIT_11: integer
-  INIT_12: integer
-  INIT_13: integer
-  INIT_14: integer
-  INIT_15: integer
-  INIT_16: integer
-  INIT_17: integer
-  INIT_18: integer
-  INIT_19: integer
-  INIT_1A: integer
-  INIT_1B: integer
-  INIT_1C: integer
-  INIT_1D: integer
-  INIT_1E: integer
-  INIT_1F: integer
-  INIT_20: integer
-  INIT_21: integer
-  INIT_22: integer
-  INIT_23: integer
-  INIT_24: integer
-  INIT_25: integer
-  INIT_26: integer
-  INIT_27: integer
-  INIT_28: integer
-  INIT_29: integer
-  INIT_2A: integer
-  INIT_2B: integer
-  INIT_2C: integer
-  INIT_2D: integer
-  INIT_2E: integer
-  INIT_2F: integer
-  INIT_30: integer
-  INIT_31: integer
-  INIT_32: integer
-  INIT_33: integer
-  INIT_34: integer
-  INIT_35: integer
-  INIT_36: integer
-  INIT_37: integer
-  INIT_38: integer
-  INIT_39: integer
-  INIT_3A: integer
-  INIT_3B: integer
-  INIT_3C: integer
-  INIT_3D: integer
-  INIT_3E: integer
-  INIT_3F: integer
-  INIT_A: integer
-  INIT_B: integer
-  IS_CLKARDCLK_INVERTED: integer
-  IS_CLKBWRCLK_INVERTED: integer
-  IS_ENARDEN_INVERTED: integer
-  IS_ENBWREN_INVERTED: integer
-  IS_RSTRAMARSTRAM_INVERTED: integer
-  IS_RSTRAMB_INVERTED: integer
-  IS_RSTREGARSTREG_INVERTED: integer
-  IS_RSTREGB_INVERTED: integer
-  SRVAL_A: integer
-  SRVAL_B: integer

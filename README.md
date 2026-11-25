@@ -90,12 +90,11 @@ self-checking benches. The per-primitive table is
 [docs/status.md](docs/status.md). How to replace a model with VHDL is
 [docs/porting-guide.md](docs/porting-guide.md).
 
-Sized bit-vector parameters become `std_logic_vector` generics. NVC
-currently elaborates only `integer` and `string` generics, so the
-primitives under test override those vectors in
-[config/type_map.yaml](config/type_map.yaml). `real` generics (MMCM, PLL,
-DCM periods) analyse and do not elaborate yet. Details are in the
-porting guide.
+Sized parameters become `bit` (width 1) or `bit_vector`, and a
+`TRUE`/`FALSE` string parameter becomes `boolean`, matching Vivado's
+`unisim_VCOMP` conventions. `config/type_map.yaml` has no integer
+overrides. `real` generics (MMCM, PLL, DCM periods) analyse and do not
+elaborate yet. Details are in the porting guide.
 
 [config/primitives.txt](config/primitives.txt) names every primitive in
 the submodule. Notes record the known NVC gaps: MMCM/PLL/DCM models that
