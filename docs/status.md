@@ -1,7 +1,7 @@
 # Primitive status
 
 Which source is analysed is `config/primitives.txt` (`vlog`, `vhdl`, or
-`skip`). One hundred and eighteen simple primitives are hand-written VHDL; see
+`skip`). One hundred and twenty simple primitives are hand-written VHDL; see
 [vhdl-models.md](vhdl-models.md). The rest of this table is still the
 Verilog model from the XilinxUnisimLibrary submodule. `GTM_DUAL` is the
 only `skip`: it is SystemVerilog and is not in this table. Notes in the
@@ -45,8 +45,8 @@ note records that the weak Verilog driver is modeled strong.
 | `DNA_PORT` | Verilog only |
 | `DNA_PORTE2` | Verilog only |
 | `DPHY_DIFFINBUF` | VHDL `src/vhdl/DPHY_DIFFINBUF.vhd` |
-| `DSP48E1` | Verilog only, tested (test/tb/tb_dsp48e1.vhd) |
-| `DSP48E2` | Verilog only |
+| `DSP48E1` | VHDL `src/vhdl/DSP48E1.vhd` |
+| `DSP48E2` | VHDL `src/vhdl/DSP48E2.vhd` |
 | `DSP_A_B_DATA` | VHDL `src/vhdl/DSP_A_B_DATA.vhd` |
 | `DSP_ALU` | VHDL `src/vhdl/DSP_ALU.vhd` |
 | `DSP_C_DATA` | VHDL `src/vhdl/DSP_C_DATA.vhd` |

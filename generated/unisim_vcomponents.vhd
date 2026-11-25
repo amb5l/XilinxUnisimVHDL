@@ -1604,6 +1604,7 @@ package vcomponents is
   end component DPHY_DIFFINBUF;
 
   -- DSP48E1.v
+  -- vhdl: src/vhdl/DSP48E1.vhd is analysed instead of this Verilog
   component DSP48E1 is
     generic (
       ACASCREG : integer := 1;
@@ -1691,6 +1692,7 @@ package vcomponents is
   end component DSP48E1;
 
   -- DSP48E2.v
+  -- vhdl: src/vhdl/DSP48E2.vhd is analysed instead of this Verilog
   component DSP48E2 is
     generic (
       ACASCREG : integer := 1;

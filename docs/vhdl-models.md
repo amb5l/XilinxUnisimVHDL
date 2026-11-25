@@ -477,6 +477,29 @@ when `PREG` is 1. `P_FDBK` is always that register, so it stays 0 when
 attribute falls back to `NO_RESET`, `RESET`, `MASK`, `PATTERN`, or
 `NO_PATDET`. `tb_eq_dsp` records 123 checks.
 
+## Eleventh batch
+
+`DSP48E1` and `DSP48E2` are the DSP slices. Neither is a SIMPRIM
+`$finish` cell, so `XIL_TIMING` is left undefined. `DSP48E1` still has
+a specify block, and those paths are `(0:0:0)`; `$setuphold` is inside
+the ifdef. Defining `XIL_TIMING` would undrive the delay nets the
+behavioural model reads. `DSP48E2` has no specify block. `tb_eq_dsp48`
+compares both with the submodule Verilog.
+
+`DSP48E2` is a structural wrapper of the eight `DSP_*` models. The
+wrapper does not replace `U` and `V` itself: `DSP_ALU` does that once.
+`CCOUT_FB` is the registered carry fed back to the ALU, and `ALU_OUT`
+keeps its 1 ps delay. The `AREG`/`ACASCREG` legality check is not
+implemented, so an illegal pair does not `$finish`.
+
+`DSP48E1` is the older 25 by 18 slice. `OPMODE` is seven bits and there
+is no W mux. `AREG` 1 clocks the input mux into both A stages; `AREG` 2
+clocks stage 1 into stage 2. `PREG` 0 delays `P` by 1 ps. `USE_DPORT`
+selects the pre-adder result as the multiplier's A operand. The OPMODE
+DRC is not modelled, so an invalid OPMODE does not force pattern detect
+to X. `tb_dsp48e1` still multiplies 7 by 9, 25 by 25, 1023 by 17, and
+0 by 99. `tb_eq_dsp48` records 28 checks.
+
 ## Adding another primitive
 
 1. Read the Verilog functional model (`XIL_TIMING` undefined). Reimplement
@@ -488,8 +511,8 @@ attribute falls back to `NO_RESET`, `RESET`, `MASK`, `PATTERN`, or
 4. Extend    `test/tb/tb_eq.vhd` (`EQ_PRIMS`), `test/tb/tb_eq_io.vhd`
    (`EQ_IO_PRIMS`), `test/tb/tb_eq_ff.vhd` (`EQ_FF_PRIMS`),
    `test/tb/tb_eq_ram.vhd` (`EQ_RAM_PRIMS`), `test/tb/tb_eq_simprim.vhd`,
-   `test/tb/tb_eq_bufg.vhd`, `test/tb/tb_eq_ddr.vhd`, or
-   `test/tb/tb_eq_dsp.vhd` so the
+   `test/tb/tb_eq_bufg.vhd`, `test/tb/tb_eq_ddr.vhd`,
+   `test/tb/tb_eq_dsp.vhd`, or `test/tb/tb_eq_dsp48.vhd` so the
    VHDL model and the submodule Verilog see the same stimulus.
    Exhaustive for a small combinational cell. For a register, cover
    GSR, clock enable, reset priority, `INIT`, and `IS_*_INVERTED`.
